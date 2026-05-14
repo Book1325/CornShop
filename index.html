@@ -1,0 +1,2169 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ร้านข้าวโพด">
+<meta name="theme-color" content="#f5c842">
+<meta name="mobile-web-app-capable" content="yes">
+<title>ระบบจัดการร้านข้าวโพด</title>
+
+<!-- PWA Manifest inline via link -->
+<link rel="manifest" href="data:application/json,{%22name%22:%22%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A%E0%B8%88%E0%B8%B1%E0%B8%94%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%99%E0%B8%82%E0%B9%89%E0%B8%B2%E0%B8%A7%E0%B9%82%E0%B8%9E%E0%B8%94%22,%22short_name%22:%22%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%99%E0%B8%82%E0%B9%89%E0%B8%B2%E0%B8%A7%E0%B9%82%E0%B8%9E%E0%B8%94%22,%22display%22:%22standalone%22,%22background_color%22:%22%23fffbeb%22,%22theme_color%22:%22%23f5c842%22,%22start_url%22:%22.%22}">
+
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<style>
+/* =============================================
+   CSS VARIABLES & RESET
+   ============================================= */
+:root {
+  --corn-yellow: #f5c842;
+  --corn-yellow-dark: #e0b030;
+  --corn-yellow-light: #fdf0a8;
+  --corn-green: #4a8c3f;
+  --corn-green-light: #6ab560;
+  --corn-cream: #fffbeb;
+  --corn-brown: #8b5e3c;
+  --corn-brown-light: #c49a6c;
+
+  --bg: #fffbeb;
+  --bg-card: #ffffff;
+  --bg-nav: #ffffff;
+  --bg-input: #f9f5e7;
+  --text: #1a1208;
+  --text-sub: #7a6540;
+  --text-muted: #b09870;
+  --border: #e8d9b0;
+  --shadow: rgba(0,0,0,0.08);
+  --shadow-card: 0 2px 16px rgba(139,94,60,0.10);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --nav-h: 68px;
+  --fab-bottom: 84px;
+
+  --status-paid: #22c55e;
+  --status-partial: #f59e0b;
+  --status-unpaid: #ef4444;
+
+  --toast-bg: #1a1208;
+  --toast-text: #fff;
+}
+
+[data-theme="dark"] {
+  --bg: #1a1208;
+  --bg-card: #2a1f0e;
+  --bg-nav: #211808;
+  --bg-input: #332510;
+  --text: #fdf0c0;
+  --text-sub: #c9a86c;
+  --text-muted: #8a7050;
+  --border: #4a3520;
+  --shadow: rgba(0,0,0,0.3);
+  --shadow-card: 0 2px 16px rgba(0,0,0,0.3);
+  --corn-cream: #2a1f0e;
+  --toast-bg: #fdf0c0;
+  --toast-text: #1a1208;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+body {
+  font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* =============================================
+   LAYOUT
+   ============================================= */
+#app { min-height: 100vh; display: flex; flex-direction: column; }
+
+.page { display: none; flex: 1; flex-direction: column; padding-bottom: calc(var(--nav-h) + 8px); }
+.page.active { display: flex; }
+
+.page-header {
+  background: var(--bg-card);
+  padding: 16px 20px 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 2px 8px var(--shadow);
+}
+.page-header h2 { font-size: 1.2rem; font-weight: 700; flex: 1; }
+.page-content { flex: 1; padding: 16px; overflow-y: auto; }
+
+/* =============================================
+   BOTTOM NAVIGATION
+   ============================================= */
+#bottom-nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: var(--nav-h);
+  background: var(--bg-nav);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  z-index: 200;
+  box-shadow: 0 -2px 16px var(--shadow);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 8px 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font-size: 0.65rem;
+  font-family: inherit;
+  font-weight: 500;
+}
+.nav-item .nav-icon { font-size: 1.5rem; transition: transform 0.2s; }
+.nav-item.active { color: var(--corn-yellow-dark); }
+.nav-item.active .nav-icon { transform: scale(1.15); }
+
+/* =============================================
+   FAB
+   ============================================= */
+#fab {
+  position: fixed;
+  right: 20px;
+  bottom: var(--fab-bottom);
+  width: 58px; height: 58px;
+  border-radius: 50%;
+  background: var(--corn-yellow);
+  color: var(--text);
+  font-size: 1.8rem;
+  font-weight: 300;
+  border: none;
+  box-shadow: 0 4px 20px rgba(245,200,66,0.5);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 150;
+  transition: all 0.2s;
+}
+#fab:active { transform: scale(0.92); }
+
+/* =============================================
+   CARDS
+   ============================================= */
+.card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.card-body { padding: 16px; }
+
+/* =============================================
+   BUTTONS
+   ============================================= */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 12px 20px;
+  border-radius: var(--radius-sm);
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.18s;
+  min-height: 46px;
+  white-space: nowrap;
+}
+.btn:active { transform: scale(0.96); }
+.btn-primary { background: var(--corn-yellow); color: var(--text); }
+.btn-primary:hover { background: var(--corn-yellow-dark); }
+.btn-green { background: var(--corn-green); color: #fff; }
+.btn-outline { background: transparent; border: 2px solid var(--border); color: var(--text); }
+.btn-danger { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
+.btn-sm { padding: 8px 14px; font-size: 0.82rem; min-height: 36px; border-radius: 8px; }
+.btn-icon { padding: 10px; min-height: 42px; width: 42px; border-radius: 50%; }
+.btn-full { width: 100%; }
+
+/* =============================================
+   FORM ELEMENTS
+   ============================================= */
+.form-group { margin-bottom: 14px; }
+.form-label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-sub); margin-bottom: 6px; }
+.form-control {
+  width: 100%;
+  padding: 13px 16px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-input);
+  color: var(--text);
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+  min-height: 48px;
+}
+.form-control:focus { outline: none; border-color: var(--corn-yellow); }
+textarea.form-control { resize: vertical; min-height: 80px; }
+select.form-control { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%238a7050'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; background-size: 20px; padding-right: 40px; }
+
+/* =============================================
+   BADGES & STATUS
+   ============================================= */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.badge-paid { background: #dcfce7; color: #16a34a; }
+.badge-partial { background: #fef3c7; color: #d97706; }
+.badge-unpaid { background: #fee2e2; color: #dc2626; }
+.badge-booking { background: #dbeafe; color: #1d4ed8; }
+.badge-walkin { background: #f3e8ff; color: #7c3aed; }
+.badge-locked { background: #f3f4f6; color: #6b7280; }
+
+/* =============================================
+   SUMMARY CARDS (DASHBOARD)
+   ============================================= */
+.summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.summary-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 16px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-card);
+}
+.summary-card .label { font-size: 0.78rem; color: var(--text-muted); font-weight: 500; margin-bottom: 4px; }
+.summary-card .value { font-size: 1.4rem; font-weight: 800; color: var(--text); }
+.summary-card .unit { font-size: 0.8rem; color: var(--text-sub); font-weight: 500; }
+.summary-card.yellow { background: linear-gradient(135deg, #fdf0a8, #fdf6d0); border-color: var(--corn-yellow); }
+.summary-card.green { background: linear-gradient(135deg, #dcfce7, #f0fdf4); border-color: #86efac; }
+.summary-card.red { background: linear-gradient(135deg, #fee2e2, #fff5f5); border-color: #fca5a5; }
+.summary-card.blue { background: linear-gradient(135deg, #dbeafe, #eff6ff); border-color: #93c5fd; }
+
+/* =============================================
+   ORDER CARDS
+   ============================================= */
+.order-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-card);
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+.order-card-header {
+  padding: 14px 16px 10px;
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.order-card-body { padding: 12px 16px; }
+.order-name { font-size: 1rem; font-weight: 700; }
+.order-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; font-size: 0.88rem; }
+.order-row .key { color: var(--text-sub); }
+.order-row .val { font-weight: 600; }
+.order-actions { padding: 10px 16px 14px; display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* =============================================
+   DATE LIST
+   ============================================= */
+.date-item {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  display: flex; align-items: center; gap: 12px;
+  cursor: pointer;
+  transition: all 0.18s;
+  box-shadow: var(--shadow-card);
+}
+.date-item:active { transform: scale(0.98); }
+.date-item.today { border-color: var(--corn-yellow); background: var(--corn-yellow-light); }
+.date-item.selected { border-color: var(--corn-green); }
+.date-item .date-icon { font-size: 1.8rem; }
+.date-item .date-info { flex: 1; }
+.date-item .date-label { font-weight: 700; font-size: 0.95rem; }
+.date-item .date-sub { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
+.date-item .date-arrow { font-size: 1.2rem; color: var(--text-muted); }
+
+/* =============================================
+   MODAL
+   ============================================= */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 500;
+  align-items: flex-end;
+  justify-content: center;
+  backdrop-filter: blur(2px);
+}
+.modal-overlay.active { display: flex; }
+.modal {
+  background: var(--bg-card);
+  border-radius: 24px 24px 0 0;
+  width: 100%;
+  max-width: 640px;
+  max-height: 92vh;
+  display: flex; flex-direction: column;
+  animation: slideUp 0.25s ease;
+  overflow: hidden;
+}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.modal-header {
+  padding: 16px 20px 12px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; background: var(--bg-card); z-index: 1;
+}
+.modal-title { font-size: 1.1rem; font-weight: 700; }
+.modal-close { font-size: 1.5rem; background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 4px 8px; }
+.modal-body { flex: 1; overflow-y: auto; padding: 16px 20px; }
+.modal-footer { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; gap: 10px; }
+
+/* Confirm Modal */
+.modal-confirm .modal { border-radius: 20px; max-width: 340px; align-self: center; }
+.modal-confirm.active { align-items: center; }
+
+/* =============================================
+   TOAST
+   ============================================= */
+#toast-container {
+  position: fixed;
+  top: 16px; left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  display: flex; flex-direction: column; gap: 8px;
+  width: calc(100% - 32px);
+  max-width: 400px;
+  pointer-events: none;
+}
+.toast {
+  background: var(--toast-bg);
+  color: var(--toast-text);
+  padding: 13px 18px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  animation: toastIn 0.25s ease;
+  display: flex; align-items: center; gap: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+@keyframes toastIn { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
+.toast.success { background: #16a34a; color: #fff; }
+.toast.error { background: #dc2626; color: #fff; }
+.toast.warning { background: #d97706; color: #fff; }
+
+/* =============================================
+   EMPTY STATE
+   ============================================= */
+.empty-state {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 48px 24px; gap: 12px; text-align: center;
+}
+.empty-state .empty-icon { font-size: 3.5rem; }
+.empty-state .empty-title { font-size: 1.1rem; font-weight: 700; color: var(--text); }
+.empty-state .empty-sub { font-size: 0.88rem; color: var(--text-muted); }
+
+/* =============================================
+   SECTION DIVIDER
+   ============================================= */
+.section-title {
+  font-size: 0.78rem; font-weight: 700;
+  color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em;
+  padding: 6px 0 10px;
+}
+
+/* =============================================
+   ALERT
+   ============================================= */
+.alert {
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.alert-danger { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
+.alert-warning { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+.alert-success { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+
+/* =============================================
+   SLIP IMAGE
+   ============================================= */
+.slip-thumb {
+  width: 64px; height: 64px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 2px solid var(--border);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.slip-thumb:active { transform: scale(0.95); }
+.slips-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.slip-wrapper { position: relative; }
+.slip-del { position: absolute; top: -6px; right: -6px; background: #dc2626; color: #fff; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-size: 0.75rem; display: flex; align-items: center; justify-content: center; }
+
+/* =============================================
+   PHOTO LIGHTBOX
+   ============================================= */
+#lightbox {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.92);
+  z-index: 9000;
+  align-items: center; justify-content: center;
+}
+#lightbox.active { display: flex; }
+#lightbox img { max-width: 95vw; max-height: 90vh; border-radius: 12px; }
+#lightbox-close { position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.2); border: none; color: #fff; font-size: 1.6rem; width: 44px; height: 44px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+/* =============================================
+   CHART WRAPPER
+   ============================================= */
+.chart-wrap { position: relative; width: 100%; height: 220px; margin-bottom: 16px; }
+
+/* =============================================
+   SETTINGS ROW
+   ============================================= */
+.settings-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.settings-row:last-child { border-bottom: none; }
+.settings-label { font-size: 0.95rem; font-weight: 500; }
+.settings-sub { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
+
+/* Toggle Switch */
+.toggle { position: relative; width: 48px; height: 26px; }
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute; inset: 0;
+  background: var(--border);
+  border-radius: 13px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.toggle-slider::before {
+  content: '';
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 20px; height: 20px;
+  background: #fff;
+  border-radius: 50%;
+  transition: 0.2s;
+}
+.toggle input:checked + .toggle-slider { background: var(--corn-green); }
+.toggle input:checked + .toggle-slider::before { transform: translateX(22px); }
+
+/* =============================================
+   BACK BUTTON
+   ============================================= */
+.btn-back {
+  background: none; border: none; cursor: pointer;
+  font-size: 1.5rem; color: var(--text-sub); padding: 2px 6px;
+  display: flex; align-items: center;
+}
+
+/* =============================================
+   SEARCH INPUT
+   ============================================= */
+.search-wrap { position: relative; }
+.search-wrap .form-control { padding-left: 42px; }
+.search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 1.1rem; color: var(--text-muted); pointer-events: none; }
+
+/* =============================================
+   LOCKED OVERLAY
+   ============================================= */
+.locked-banner {
+  background: #f3f4f6;
+  border: 2px dashed #9ca3af;
+  border-radius: var(--radius-sm);
+  padding: 10px 16px;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+[data-theme="dark"] .locked-banner { background: #2d2d2d; border-color: #4b5563; color: #9ca3af; }
+
+/* =============================================
+   RESPONSIVE - TABLET/DESKTOP
+   ============================================= */
+@media (min-width: 768px) {
+  .page { padding-bottom: 0; }
+  #bottom-nav { display: none; }
+  #fab { right: 32px; bottom: 28px; }
+
+  #sidebar {
+    display: flex !important;
+    position: fixed;
+    left: 0; top: 0; bottom: 0;
+    width: 240px;
+    background: var(--bg-card);
+    border-right: 1px solid var(--border);
+    flex-direction: column;
+    padding: 24px 0;
+    z-index: 200;
+  }
+  #app-main { margin-left: 240px; }
+  .page-content { max-width: 720px; }
+  .summary-grid { grid-template-columns: repeat(3, 1fr); }
+  .chart-wrap { height: 280px; }
+  .modal { border-radius: 20px; max-height: 85vh; }
+  .modal-overlay { align-items: center; }
+}
+
+#sidebar { display: none; }
+.sidebar-logo { padding: 0 20px 20px; }
+.sidebar-logo h1 { font-size: 1.1rem; font-weight: 800; color: var(--text); }
+.sidebar-logo p { font-size: 0.78rem; color: var(--text-muted); }
+.sidebar-nav { flex: 1; }
+.sidebar-nav-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 20px;
+  cursor: pointer;
+  font-size: 0.95rem; font-weight: 500;
+  color: var(--text-sub);
+  transition: all 0.15s;
+  border: none; background: none; width: 100%; font-family: inherit;
+}
+.sidebar-nav-item .icon { font-size: 1.3rem; }
+.sidebar-nav-item.active { background: var(--corn-yellow-light); color: var(--text); font-weight: 700; border-right: 3px solid var(--corn-yellow-dark); }
+[data-theme="dark"] .sidebar-nav-item.active { background: rgba(245,200,66,0.12); }
+
+/* =============================================
+   QUICK STATS BAR
+   ============================================= */
+.quick-stats {
+  background: linear-gradient(135deg, var(--corn-yellow), var(--corn-yellow-dark));
+  padding: 20px;
+  border-radius: var(--radius);
+  margin-bottom: 16px;
+  color: var(--text);
+}
+.quick-stats h3 { font-size: 0.85rem; font-weight: 600; opacity: 0.75; margin-bottom: 4px; }
+.quick-stats .big-num { font-size: 2rem; font-weight: 800; }
+.quick-stats .small-note { font-size: 0.8rem; opacity: 0.7; }
+
+/* =============================================
+   UTILS
+   ============================================= */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.gap-8 { gap: 8px; }
+.gap-12 { gap: 12px; }
+.mt-8 { margin-top: 8px; }
+.mt-12 { margin-top: 12px; }
+.mt-16 { margin-top: 16px; }
+.mb-8 { margin-bottom: 8px; }
+.mb-12 { margin-bottom: 12px; }
+.mb-16 { margin-bottom: 16px; }
+.text-right { text-align: right; }
+.text-center { text-align: center; }
+.font-bold { font-weight: 700; }
+.text-sm { font-size: 0.85rem; }
+.text-muted { color: var(--text-muted); }
+.text-green { color: var(--corn-green); }
+.text-red { color: #dc2626; }
+.text-yellow { color: var(--corn-yellow-dark); }
+.w-full { width: 100%; }
+.divider { height: 1px; background: var(--border); margin: 12px 0; }
+.scroll-x { overflow-x: auto; }
+</style>
+</head>
+<body>
+
+<!-- =================== TOAST CONTAINER =================== -->
+<div id="toast-container"></div>
+
+<!-- =================== LIGHTBOX =================== -->
+<div id="lightbox">
+  <button id="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightbox-img" src="" alt="หลักฐาน">
+</div>
+
+<!-- =================== SIDEBAR (tablet/desktop) =================== -->
+<nav id="sidebar">
+  <div class="sidebar-logo">
+    <h1>🌽 ร้านข้าวโพด</h1>
+    <p>ระบบจัดการร้าน</p>
+  </div>
+  <div class="sidebar-nav">
+    <button class="sidebar-nav-item active" onclick="navigate('dashboard')" data-page="dashboard"><span class="icon">🏠</span>แดชบอร์ด</button>
+    <button class="sidebar-nav-item" onclick="navigate('dates')" data-page="dates"><span class="icon">📅</span>รายการวันที่</button>
+    <button class="sidebar-nav-item" onclick="navigate('unpaid')" data-page="unpaid"><span class="icon">💰</span>ยอดค้างจ่าย</button>
+    <button class="sidebar-nav-item" onclick="navigate('search')" data-page="search"><span class="icon">🔍</span>ค้นหาลูกค้า</button>
+    <button class="sidebar-nav-item" onclick="navigate('report')" data-page="report"><span class="icon">📊</span>รายงาน</button>
+    <button class="sidebar-nav-item" onclick="navigate('settings')" data-page="settings"><span class="icon">⚙️</span>ตั้งค่า</button>
+  </div>
+</nav>
+
+<!-- =================== MAIN APP =================== -->
+<div id="app-main">
+<div id="app">
+
+<!-- ========== PAGE: DASHBOARD ========== -->
+<div class="page active" id="page-dashboard">
+  <div class="page-header">
+    <span style="font-size:1.5rem">🌽</span>
+    <h2>ระบบจัดการร้านข้าวโพด</h2>
+    <button class="btn btn-sm btn-outline" onclick="navigate('settings')" style="padding:8px 10px;">⚙️</button>
+  </div>
+  <div class="page-content">
+    <div id="dash-today-banner" class="quick-stats mb-16">
+      <h3>ยอดขายวันนี้</h3>
+      <div class="big-num" id="dash-sale-total">฿0</div>
+      <div class="small-note" id="dash-date-label">วันที่ -</div>
+    </div>
+
+    <div class="summary-grid mb-16" id="dash-grid"></div>
+
+    <div class="section-title">เมนูหลัก</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+      <button class="btn btn-primary btn-full" style="height:64px;font-size:1rem;" onclick="navigate('dates')">📅 รายการวันที่</button>
+      <button class="btn btn-outline btn-full" style="height:64px;font-size:1rem;" onclick="navigate('unpaid')">💰 ยอดค้างจ่าย</button>
+      <button class="btn btn-outline btn-full" style="height:64px;font-size:1rem;" onclick="navigate('report')">📊 รายงาน</button>
+      <button class="btn btn-outline btn-full" style="height:64px;font-size:1rem;" onclick="navigate('search')">🔍 ค้นหาลูกค้า</button>
+    </div>
+
+    <div class="section-title">คำสั่งด่วน</div>
+    <button class="btn btn-green btn-full" style="height:54px;margin-bottom:12px;" onclick="showQuickAdd()">➕ เพิ่มออเดอร์วันนี้อย่างรวดเร็ว</button>
+    <button class="btn btn-outline btn-full" style="height:46px;" onclick="goToday()">📆 เปิดข้อมูลวันนี้</button>
+  </div>
+</div>
+
+<!-- ========== PAGE: DATES ========== -->
+<div class="page" id="page-dates">
+  <div class="page-header">
+    <button class="btn-back" onclick="navigate('dashboard')">‹</button>
+    <h2>รายการวันที่</h2>
+    <button class="btn btn-sm btn-primary" onclick="showAddDate()">+ เพิ่มวัน</button>
+  </div>
+  <div class="page-content">
+    <div class="section-title">รายการปัจจุบัน</div>
+    <div id="dates-current-list"></div>
+    <div class="section-title mt-16">ข้อมูลเก่า (Archive)</div>
+    <div id="dates-archive-list"></div>
+  </div>
+</div>
+
+<!-- ========== PAGE: DAY DETAIL ========== -->
+<div class="page" id="page-day">
+  <div class="page-header">
+    <button class="btn-back" onclick="navigate('dates')">‹</button>
+    <h2 id="day-title">รายละเอียดวัน</h2>
+    <div style="display:flex;gap:6px;">
+      <button class="btn btn-sm btn-outline" id="day-lock-btn" onclick="toggleDayLock()">🔓 ปิดวัน</button>
+      <button class="btn btn-sm btn-outline" onclick="showDayCopyMenu()" title="คัดลอกสรุป">📋</button>
+      <button class="btn btn-sm btn-outline" onclick="exportDayCSV()" title="Export CSV">📥</button>
+    </div>
+  </div>
+  <div class="page-content">
+    <div id="day-locked-banner" class="locked-banner" style="display:none;">🔒 วันนี้ถูกปิดแล้ว ไม่สามารถแก้ไขได้</div>
+
+    <!-- Day Summary -->
+    <div class="card mb-12">
+      <div class="card-body">
+        <div class="flex justify-between items-center mb-12">
+          <span class="font-bold" style="font-size:1rem;">📊 สรุปยอดวัน</span>
+          <button class="btn btn-sm btn-outline" id="day-settings-btn" onclick="showDaySettings()">⚙️ ตั้งค่าวัน</button>
+        </div>
+        <div id="day-summary-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;"></div>
+        <div id="day-alert" style="margin-top:10px;"></div>
+      </div>
+    </div>
+
+    <!-- Orders -->
+    <div class="flex justify-between items-center mb-8">
+      <span class="section-title" style="margin:0;">รายการออเดอร์</span>
+      <button class="btn btn-sm btn-primary" id="day-add-order-btn" onclick="showAddOrder()">+ เพิ่มออเดอร์</button>
+    </div>
+    <div id="day-orders-list"></div>
+  </div>
+</div>
+
+<!-- ========== PAGE: UNPAID ========== -->
+<div class="page" id="page-unpaid">
+  <div class="page-header">
+    <button class="btn-back" onclick="navigate('dashboard')">‹</button>
+    <h2>ยอดค้างจ่าย</h2>
+  </div>
+  <div class="page-content">
+    <div id="unpaid-total-card" class="quick-stats mb-16" style="background:linear-gradient(135deg,#fee2e2,#fecaca);color:#7f1d1d;"></div>
+    <div class="search-wrap mb-16">
+      <span class="search-icon">🔍</span>
+      <input class="form-control" placeholder="ค้นหาชื่อลูกค้า..." oninput="renderUnpaid(this.value)" id="unpaid-search">
+    </div>
+    <div id="unpaid-list"></div>
+  </div>
+</div>
+
+<!-- ========== PAGE: SEARCH ========== -->
+<div class="page" id="page-search">
+  <div class="page-header">
+    <button class="btn-back" onclick="navigate('dashboard')">‹</button>
+    <h2>ค้นหาลูกค้า</h2>
+  </div>
+  <div class="page-content">
+    <div class="search-wrap mb-16">
+      <span class="search-icon">🔍</span>
+      <input class="form-control" placeholder="พิมพ์ชื่อลูกค้า..." oninput="renderSearch(this.value)" id="search-input">
+    </div>
+    <div id="search-results"></div>
+  </div>
+</div>
+
+<!-- ========== PAGE: REPORT ========== -->
+<div class="page" id="page-report">
+  <div class="page-header">
+    <button class="btn-back" onclick="navigate('dashboard')">‹</button>
+    <h2>รายงาน</h2>
+  </div>
+  <div class="page-content">
+    <div style="display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;padding-bottom:4px;">
+      <button class="btn btn-primary btn-sm" onclick="setReportMode('today')" id="rpt-today">วันนี้</button>
+      <button class="btn btn-outline btn-sm" onclick="setReportMode('month')" id="rpt-month">เดือนนี้</button>
+      <button class="btn btn-outline btn-sm" onclick="setReportMode('year')" id="rpt-year">ปีนี้</button>
+      <button class="btn btn-outline btn-sm" onclick="setReportMode('custom')" id="rpt-custom">กำหนดเอง</button>
+    </div>
+    <div id="report-custom-range" style="display:none;margin-bottom:12px;">
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <input type="date" class="form-control" id="rpt-from" style="flex:1;" onchange="renderReport()">
+        <span>ถึง</span>
+        <input type="date" class="form-control" id="rpt-to" style="flex:1;" onchange="renderReport()">
+      </div>
+    </div>
+    <div id="report-summary-grid" class="summary-grid mb-16"></div>
+    <div class="card mb-16">
+      <div class="card-body">
+        <div class="font-bold mb-8">📈 ยอดขายรายวัน</div>
+        <div class="chart-wrap"><canvas id="chart-sales"></canvas></div>
+      </div>
+    </div>
+    <div class="card mb-16">
+      <div class="card-body">
+        <div class="font-bold mb-8">💹 กำไรรายวัน</div>
+        <div class="chart-wrap"><canvas id="chart-profit"></canvas></div>
+      </div>
+    </div>
+    <div class="card mb-16">
+      <div class="card-body">
+        <div class="font-bold mb-8">⚖️ กิโลที่ขายรายวัน</div>
+        <div class="chart-wrap"><canvas id="chart-kg"></canvas></div>
+      </div>
+    </div>
+    <div id="report-best"></div>
+  </div>
+</div>
+
+<!-- ========== PAGE: SETTINGS ========== -->
+<div class="page" id="page-settings">
+  <div class="page-header">
+    <button class="btn-back" onclick="navigate('dashboard')">‹</button>
+    <h2>ตั้งค่า</h2>
+  </div>
+  <div class="page-content">
+    <div class="section-title">การแสดงผล</div>
+    <div class="card mb-16">
+      <div class="settings-row">
+        <div><div class="settings-label">โหมดมืด (Dark Mode)</div></div>
+        <label class="toggle"><input type="checkbox" id="setting-dark" onchange="toggleDark(this)"><span class="toggle-slider"></span></label>
+      </div>
+      <div class="settings-row">
+        <div><div class="settings-label">แสดงปีแบบ พ.ศ.</div><div class="settings-sub">ปิด = ค.ศ.</div></div>
+        <label class="toggle"><input type="checkbox" id="setting-buddhist" onchange="saveSetting('buddhistYear',this.checked)"><span class="toggle-slider"></span></label>
+      </div>
+    </div>
+
+    <div class="section-title">ข้อมูล</div>
+    <div class="card mb-16">
+      <div class="settings-row" style="cursor:pointer;" onclick="exportBackup()">
+        <div><div class="settings-label">📤 Export Backup (JSON)</div><div class="settings-sub">บันทึกข้อมูลทั้งหมด</div></div>
+        <span>›</span>
+      </div>
+      <div class="settings-row" style="cursor:pointer;" onclick="document.getElementById('import-file').click()">
+        <div><div class="settings-label">📥 Import Backup (JSON)</div><div class="settings-sub">นำข้อมูลกลับมา</div></div>
+        <span>›</span>
+      </div>
+      <input type="file" id="import-file" accept=".json" style="display:none;" onchange="importBackup(event)">
+      <div class="settings-row" style="cursor:pointer;" onclick="deleteOldImages()">
+        <div><div class="settings-label">🗑️ ลบรูปหลักฐานเก่า (>3 เดือน)</div><div class="settings-sub">คงข้อมูลออเดอร์ไว้</div></div>
+        <span>›</span>
+      </div>
+      <div class="settings-row" style="cursor:pointer;" onclick="confirmDeleteAll()">
+        <div><div class="settings-label" style="color:#dc2626;">⚠️ ลบข้อมูลทั้งหมด</div><div class="settings-sub">ไม่สามารถกู้คืนได้</div></div>
+        <span>›</span>
+      </div>
+    </div>
+
+    <div class="section-title">เกี่ยวกับแอป</div>
+    <div class="card mb-16">
+      <div class="card-body text-center">
+        <div style="font-size:2.5rem;">🌽</div>
+        <div class="font-bold mt-8">ระบบจัดการร้านข้าวโพด</div>
+        <div class="text-muted text-sm mt-8">Version 1.0.0 • LocalStorage</div>
+        <div class="text-muted text-sm mt-8">ข้อมูลเก็บในเครื่องของคุณ</div>
+      </div>
+    </div>
+
+    <div class="card mb-16">
+      <div class="card-body">
+        <div class="font-bold mb-8 text-sm">💡 Service Worker (PWA)</div>
+        <div class="text-sm text-muted">สำหรับใช้งานแบบ Offline เต็มรูปแบบ ให้แยกไฟล์ <b>service-worker.js</b> ออกมา และลงทะเบียนด้วย:<br><br>
+          <code style="background:var(--bg-input);padding:2px 6px;border-radius:4px;font-size:0.8rem;">navigator.serviceWorker.register('/service-worker.js')</code>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end #app -->
+</div><!-- end #app-main -->
+
+<!-- =================== BOTTOM NAVIGATION =================== -->
+<nav id="bottom-nav">
+  <button class="nav-item active" onclick="navigate('dashboard')" data-page="dashboard">
+    <span class="nav-icon">🏠</span>แดชบอร์ด
+  </button>
+  <button class="nav-item" onclick="navigate('dates')" data-page="dates">
+    <span class="nav-icon">📅</span>วันที่
+  </button>
+  <button class="nav-item" onclick="navigate('unpaid')" data-page="unpaid">
+    <span class="nav-icon">💰</span>ค้างจ่าย
+  </button>
+  <button class="nav-item" onclick="navigate('report')" data-page="report">
+    <span class="nav-icon">📊</span>รายงาน
+  </button>
+  <button class="nav-item" onclick="navigate('settings')" data-page="settings">
+    <span class="nav-icon">⚙️</span>ตั้งค่า
+  </button>
+</nav>
+
+<!-- =================== FAB =================== -->
+<button id="fab" onclick="showQuickAdd()" title="เพิ่มออเดอร์">＋</button>
+
+<!-- ========== MODAL: ADD DATE ========== -->
+<div class="modal-overlay" id="modal-add-date">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">➕ เพิ่มวันที่ใหม่</span>
+      <button class="modal-close" onclick="closeModal('modal-add-date')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">เลือกวันที่</label>
+        <input type="date" class="form-control" id="new-date-input">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" style="flex:1;" onclick="closeModal('modal-add-date')">ยกเลิก</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="addDate()">เพิ่มวันที่</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== MODAL: DAY SETTINGS ========== -->
+<div class="modal-overlay" id="modal-day-settings">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">⚙️ ตั้งค่าวัน</span>
+      <button class="modal-close" onclick="closeModal('modal-day-settings')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">ข้าวโพดทั้งหมด (กิโล)</label>
+        <input type="number" class="form-control" id="ds-total-kg" placeholder="0" min="0">
+      </div>
+      <div class="form-group">
+        <label class="form-label">ราคาขายต่อกิโล (บาท)</label>
+        <input type="number" class="form-control" id="ds-sell-price" placeholder="0" min="0">
+      </div>
+      <div class="form-group">
+        <label class="form-label">ต้นทุนต่อกิโล (บาท)</label>
+        <input type="number" class="form-control" id="ds-cost-price" placeholder="0" min="0">
+      </div>
+      <div class="form-group">
+        <label class="form-label">ข้าวโพดเสีย (กิโล)</label>
+        <input type="number" class="form-control" id="ds-waste-kg" placeholder="0" min="0">
+      </div>
+      <div class="section-title">ค่าใช้จ่ายเพิ่มเติม</div>
+      <div id="ds-expenses-list"></div>
+      <button class="btn btn-outline btn-sm mt-8" onclick="addExpenseRow()">+ เพิ่มค่าใช้จ่าย</button>
+      <div class="form-group mt-12">
+        <label class="form-label">หมายเหตุวัน</label>
+        <textarea class="form-control" id="ds-note" rows="2" placeholder="หมายเหตุ..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" style="flex:1;" onclick="closeModal('modal-day-settings')">ยกเลิก</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="saveDaySettings()">บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== MODAL: ADD/EDIT ORDER ========== -->
+<div class="modal-overlay" id="modal-order">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-order-title">➕ เพิ่มออเดอร์</span>
+      <button class="modal-close" onclick="closeModal('modal-order')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="order-edit-id">
+      <div class="form-group">
+        <label class="form-label">ชื่อลูกค้า *</label>
+        <input type="text" class="form-control" id="o-name" placeholder="ชื่อลูกค้า">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div class="form-group">
+          <label class="form-label">จำนวน (กิโล)</label>
+          <input type="number" class="form-control" id="o-kg" placeholder="0" min="0" oninput="calcOrderTotal()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">ราคา/กิโล</label>
+          <input type="number" class="form-control" id="o-price" placeholder="0" min="0" oninput="calcOrderTotal()">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">ประเภทออเดอร์</label>
+        <select class="form-control" id="o-type">
+          <option value="booking">จองล่วงหน้า</option>
+          <option value="walkin">หน้าร้าน</option>
+        </select>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div class="form-group">
+          <label class="form-label">ยอดที่ต้องจ่าย</label>
+          <input type="number" class="form-control" id="o-total" placeholder="0" readonly style="opacity:0.7;">
+        </div>
+        <div class="form-group">
+          <label class="form-label">จ่ายแล้ว (บาท)</label>
+          <input type="number" class="form-control" id="o-paid" placeholder="0" min="0" oninput="calcOrderTotal()">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">หมายเหตุ</label>
+        <input type="text" class="form-control" id="o-note" placeholder="หมายเหตุ...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">หลักฐานการจ่ายเงิน</label>
+        <input type="file" class="form-control" id="o-slips" accept="image/*" multiple capture="environment" onchange="handleSlipFiles(event)" style="padding:10px;">
+        <div id="o-slips-preview" class="slips-row mt-8"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" style="flex:1;" onclick="closeModal('modal-order')">ยกเลิก</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="saveOrder()">บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== MODAL: QUICK ADD ========== -->
+<div class="modal-overlay" id="modal-quick-add">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">⚡ เพิ่มออเดอร์เร็ว</span>
+      <button class="modal-close" onclick="closeModal('modal-quick-add')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="text-sm text-muted mb-12" id="quick-add-day-info"></div>
+      <div class="form-group">
+        <label class="form-label">ชื่อลูกค้า *</label>
+        <input type="text" class="form-control" id="qa-name" placeholder="ชื่อลูกค้า" style="font-size:1.1rem;">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div class="form-group">
+          <label class="form-label">กิโล</label>
+          <input type="number" class="form-control" id="qa-kg" placeholder="0" min="0" style="font-size:1.1rem;" oninput="calcQA()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">จ่ายแล้ว</label>
+          <input type="number" class="form-control" id="qa-paid" placeholder="0" min="0" style="font-size:1.1rem;">
+        </div>
+      </div>
+      <div class="alert alert-warning" id="qa-total-show" style="margin-top:4px;"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" style="flex:1;" onclick="closeModal('modal-quick-add')">ยกเลิก</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="saveQuickAdd()">เพิ่มทันที</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== MODAL: OLD IMAGES ALERT ========== -->
+<div class="modal-overlay modal-confirm" id="modal-old-images">
+  <div class="modal" style="border-radius:20px;max-width:360px;align-self:center;">
+    <div class="modal-body" style="padding:24px 20px;">
+      <div style="font-size:2rem;text-align:center;margin-bottom:12px;">🗑️</div>
+      <div class="font-bold" style="text-align:center;margin-bottom:8px;font-size:1.05rem;">พบรูปหลักฐานเก่า</div>
+      <div class="text-sm text-muted text-center" id="old-images-msg">มีรูปหลักฐานที่เก่ากว่า 3 เดือน ควรลบเพื่อประหยัดพื้นที่ (ข้อมูลออเดอร์ยังคงอยู่)</div>
+    </div>
+    <div class="modal-footer" style="flex-direction:column;gap:8px;">
+      <button class="btn btn-danger btn-full" id="old-images-delete-btn">🗑️ ลบตอนนี้</button>
+      <button class="btn btn-outline btn-full" onclick="closeModal('modal-old-images')">ไว้ทีหลัง</button>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal-overlay modal-confirm" id="modal-confirm">
+  <div class="modal" style="border-radius:20px;max-width:340px;align-self:center;">
+    <div class="modal-body" style="padding:24px 20px;">
+      <div style="font-size:2rem;text-align:center;margin-bottom:12px;" id="confirm-icon">⚠️</div>
+      <div class="font-bold" style="text-align:center;margin-bottom:8px;font-size:1.05rem;" id="confirm-title"></div>
+      <div class="text-sm text-muted text-center" id="confirm-msg"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" style="flex:1;" onclick="closeModal('modal-confirm')">ยกเลิก</button>
+      <button class="btn btn-danger" style="flex:1;" id="confirm-ok-btn">ยืนยัน</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== MODAL: COPY SUMMARY ========== -->
+<div class="modal-overlay" id="modal-copy">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">📋 คัดลอกสรุป</span>
+      <button class="modal-close" onclick="closeModal('modal-copy')">✕</button>
+    </div>
+    <div class="modal-body">
+      <textarea class="form-control" id="copy-text" rows="14" readonly style="font-size:0.85rem;font-family:monospace;"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary btn-full" onclick="copyText()">📋 คัดลอก</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// =============================================
+//  DATA STORE
+// =============================================
+const DB_KEY = 'corn_shop_v1';
+let db = { days: {}, settings: { dark: false, buddhistYear: true } };
+
+function loadDB() {
+  try {
+    const raw = localStorage.getItem(DB_KEY);
+    if (raw) db = JSON.parse(raw);
+    if (!db.days) db.days = {};
+    if (!db.settings) db.settings = { dark: false, buddhistYear: true };
+  } catch(e) { console.error('loadDB', e); }
+}
+
+function saveDB() {
+  try { localStorage.setItem(DB_KEY, JSON.stringify(db)); }
+  catch(e) { toast('พื้นที่เก็บข้อมูลเต็ม กรุณาลบรูปเก่า', 'error'); }
+}
+
+// =============================================
+//  SETTINGS
+// =============================================
+function saveSetting(key, val) {
+  db.settings[key] = val;
+  saveDB();
+}
+
+function toggleDark(el) {
+  db.settings.dark = el.checked;
+  applyTheme();
+  saveDB();
+}
+
+function applyTheme() {
+  document.documentElement.setAttribute('data-theme', db.settings.dark ? 'dark' : 'light');
+}
+
+function applySettings() {
+  document.getElementById('setting-dark').checked = !!db.settings.dark;
+  document.getElementById('setting-buddhist').checked = db.settings.buddhistYear !== false;
+  applyTheme();
+}
+
+// =============================================
+//  DATE HELPERS
+// =============================================
+function todayStr() {
+  const d = new Date();
+  return d.toISOString().slice(0, 10);
+}
+
+function fmtDate(str) {
+  if (!str) return '';
+  const d = new Date(str + 'T00:00:00');
+  const isBuddhist = db.settings.buddhistYear !== false;
+  const year = isBuddhist ? d.getFullYear() + 543 : d.getFullYear();
+  const months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  const days = ['อา.','จ.','อ.','พ.','พฤ.','ศ.','ส.'];
+  return `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]} ${year}`;
+}
+
+function isOlderThan3Months(str) {
+  const d = new Date(str + 'T00:00:00');
+  const cutoff = new Date();
+  cutoff.setMonth(cutoff.getMonth() - 3);
+  return d < cutoff;
+}
+
+function numFmt(n) {
+  return Number(n || 0).toLocaleString('th-TH', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+}
+
+function moneyFmt(n) { return '฿' + numFmt(n); }
+
+// =============================================
+//  NAVIGATION
+// =============================================
+let currentPage = 'dashboard';
+
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  currentPage = page;
+
+  // Update nav
+  document.querySelectorAll('[data-page]').forEach(el => {
+    el.classList.toggle('active', el.dataset.page === page);
+  });
+
+  // Render on navigate
+  if (page === 'dashboard') renderDashboard();
+  if (page === 'dates') renderDates();
+  if (page === 'unpaid') renderUnpaid();
+  if (page === 'report') renderReport();
+  if (page === 'settings') applySettings();
+  if (page === 'search') document.getElementById('search-input').value = '';
+}
+
+// =============================================
+//  DAY DATA STRUCTURE
+// =============================================
+function getDay(dateStr) {
+  if (!db.days[dateStr]) {
+    db.days[dateStr] = {
+      date: dateStr,
+      totalKg: 0,
+      sellPrice: 0,
+      costPrice: 0,
+      wasteKg: 0,
+      expenses: [],
+      note: '',
+      locked: false,
+      orders: []
+    };
+  }
+  return db.days[dateStr];
+}
+
+function calcDay(dateStr) {
+  const day = getDay(dateStr);
+  const soldKg = day.orders.reduce((s, o) => s + parseFloat(o.kg || 0), 0);
+  const remaining = parseFloat(day.totalKg || 0) - soldKg - parseFloat(day.wasteKg || 0);
+  const saleTotal = day.orders.reduce((s, o) => s + (parseFloat(o.kg || 0) * parseFloat(o.price || 0)), 0);
+  const paidTotal = day.orders.reduce((s, o) => s + parseFloat(o.paid || 0), 0);
+  const unpaidTotal = saleTotal - paidTotal;
+  const cornCost = parseFloat(day.totalKg || 0) * parseFloat(day.costPrice || 0);
+  const extraExpenses = (day.expenses || []).reduce((s, e) => s + parseFloat(e.amount || 0), 0);
+  const profit = saleTotal - cornCost - extraExpenses;
+  return { soldKg, remaining, saleTotal, paidTotal, unpaidTotal, cornCost, extraExpenses, profit };
+}
+
+// =============================================
+//  DASHBOARD
+// =============================================
+function renderDashboard() {
+  const today = todayStr();
+  const day = getDay(today);
+  const c = calcDay(today);
+
+  document.getElementById('dash-sale-total').textContent = moneyFmt(c.saleTotal);
+  document.getElementById('dash-date-label').textContent = fmtDate(today);
+
+  const grid = document.getElementById('dash-grid');
+  grid.innerHTML = `
+    <div class="summary-card yellow"><div class="label">กำไรวันนี้</div><div class="value">${moneyFmt(c.profit)}</div></div>
+    <div class="summary-card green"><div class="label">ข้าวโพดคงเหลือ</div><div class="value">${numFmt(c.remaining)}<span class="unit"> กก.</span></div></div>
+    <div class="summary-card red"><div class="label">ยอดค้างจ่าย</div><div class="value">${moneyFmt(c.unpaidTotal)}</div></div>
+    <div class="summary-card blue"><div class="label">จำนวนลูกค้า</div><div class="value">${day.orders.length}<span class="unit"> คน</span></div></div>
+    <div class="summary-card"><div class="label">จ่ายแล้ว</div><div class="value">${moneyFmt(c.paidTotal)}</div></div>
+    <div class="summary-card"><div class="label">ขายแล้ว</div><div class="value">${numFmt(c.soldKg)}<span class="unit"> กก.</span></div></div>
+  `;
+}
+
+// =============================================
+//  DATE LIST
+// =============================================
+function renderDates() {
+  const allDates = Object.keys(db.days).sort((a, b) => b.localeCompare(a));
+  const today = todayStr();
+  const currentList = document.getElementById('dates-current-list');
+  const archiveList = document.getElementById('dates-archive-list');
+  currentList.innerHTML = '';
+  archiveList.innerHTML = '';
+
+  if (!allDates.length) {
+    currentList.innerHTML = `<div class="empty-state"><div class="empty-icon">📅</div><div class="empty-title">ยังไม่มีข้อมูล</div><div class="empty-sub">กด + เพิ่มวันที่ เพื่อเริ่มต้น</div></div>`;
+    return;
+  }
+
+  allDates.forEach(date => {
+    const c = calcDay(date);
+    const day = getDay(date);
+    const isToday = date === today;
+    const isArchive = isOlderThan3Months(date);
+    const el = document.createElement('div');
+    el.className = 'date-item' + (isToday ? ' today' : '');
+    el.innerHTML = `
+      <span class="date-icon">${isToday ? '📌' : '📅'}</span>
+      <div class="date-info">
+        <div class="date-label">${fmtDate(date)} ${day.locked ? '<span class="badge badge-locked">🔒</span>' : ''}</div>
+        <div class="date-sub">ยอดขาย ${moneyFmt(c.saleTotal)} • กำไร ${moneyFmt(c.profit)} • คงเหลือ ${numFmt(c.remaining)} กก.</div>
+      </div>
+      <span class="date-arrow">›</span>
+    `;
+    el.onclick = () => openDay(date);
+    if (isArchive) archiveList.appendChild(el);
+    else currentList.appendChild(el);
+  });
+
+  if (!archiveList.children.length) archiveList.innerHTML = `<div class="text-sm text-muted text-center" style="padding:16px;">ไม่มีข้อมูลเก่า</div>`;
+}
+
+function showAddDate() {
+  document.getElementById('new-date-input').value = todayStr();
+  openModal('modal-add-date');
+}
+
+function addDate() {
+  const val = document.getElementById('new-date-input').value;
+  if (!val) return toast('กรุณาเลือกวันที่', 'error');
+  if (db.days[val]) { closeModal('modal-add-date'); openDay(val); return; }
+  getDay(val);
+  saveDB();
+  closeModal('modal-add-date');
+  renderDates();
+  toast('เพิ่มวันที่สำเร็จ ✅', 'success');
+}
+
+// =============================================
+//  DAY DETAIL
+// =============================================
+let currentDay = '';
+
+function openDay(dateStr) {
+  currentDay = dateStr;
+  navigate('day');
+  renderDay();
+}
+
+function goToday() {
+  const today = todayStr();
+  if (!db.days[today]) getDay(today);
+  saveDB();
+  openDay(today);
+}
+
+function renderDay() {
+  const day = getDay(currentDay);
+  const c = calcDay(currentDay);
+  const locked = day.locked;
+
+  document.getElementById('day-title').textContent = fmtDate(currentDay);
+  document.getElementById('day-locked-banner').style.display = locked ? 'block' : 'none';
+  document.getElementById('day-settings-btn').style.display = locked ? 'none' : '';
+  document.getElementById('day-add-order-btn').style.display = locked ? 'none' : '';
+  document.getElementById('day-lock-btn').textContent = locked ? '🔓 ปลดล็อก' : '🔒 ปิดวัน';
+
+  // Summary grid
+  const grid = document.getElementById('day-summary-grid');
+  grid.innerHTML = `
+    <div class="summary-card"><div class="label">ข้าวโพดทั้งหมด</div><div class="value">${numFmt(day.totalKg)}<span class="unit">กก.</span></div></div>
+    <div class="summary-card green"><div class="label">คงเหลือ</div><div class="value" style="color:${c.remaining < 0 ? '#dc2626' : 'inherit'}">${numFmt(c.remaining)}<span class="unit">กก.</span></div></div>
+    <div class="summary-card yellow"><div class="label">ยอดขายรวม</div><div class="value">${moneyFmt(c.saleTotal)}</div></div>
+    <div class="summary-card green"><div class="label">จ่ายแล้ว</div><div class="value">${moneyFmt(c.paidTotal)}</div></div>
+    <div class="summary-card red"><div class="label">ค้างจ่าย</div><div class="value">${moneyFmt(c.unpaidTotal)}</div></div>
+    <div class="summary-card"><div class="label">กำไรสุทธิ</div><div class="value" style="color:${c.profit>=0?'var(--corn-green)':'#dc2626'}">${moneyFmt(c.profit)}</div></div>
+    <div class="summary-card"><div class="label">ขาย/จองแล้ว</div><div class="value">${numFmt(c.soldKg)}<span class="unit">กก.</span></div></div>
+    <div class="summary-card"><div class="label">ข้าวโพดเสีย</div><div class="value">${numFmt(day.wasteKg)}<span class="unit">กก.</span></div></div>
+    <div class="summary-card"><div class="label">ต้นทุนข้าวโพด</div><div class="value">${moneyFmt(c.cornCost)}</div></div>
+    <div class="summary-card"><div class="label">ค่าใช้จ่ายรวม</div><div class="value">${moneyFmt(c.extraExpenses)}</div></div>
+  `;
+
+  const alert = document.getElementById('day-alert');
+  if (c.remaining < 0) {
+    alert.innerHTML = `<div class="alert alert-danger">⚠️ ข้าวโพดไม่พอ! ขาดอยู่ ${numFmt(Math.abs(c.remaining))} กก.</div>`;
+  } else { alert.innerHTML = ''; }
+
+  // Orders
+  renderOrders();
+}
+
+function renderOrders() {
+  const day = getDay(currentDay);
+  const list = document.getElementById('day-orders-list');
+  list.innerHTML = '';
+
+  if (!day.orders.length) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon">🛒</div><div class="empty-title">ยังไม่มีออเดอร์</div><div class="empty-sub">กด + เพิ่มออเดอร์ด้านบน</div></div>`;
+    return;
+  }
+
+  day.orders.forEach((o, i) => {
+    const total = parseFloat(o.kg || 0) * parseFloat(o.price || 0);
+    const paid = parseFloat(o.paid || 0);
+    const unpaid = total - paid;
+    let status, statusClass;
+    if (unpaid <= 0) { status = 'จ่ายแล้ว'; statusClass = 'badge-paid'; }
+    else if (paid > 0) { status = 'จ่ายบางส่วน'; statusClass = 'badge-partial'; }
+    else { status = 'ยังไม่จ่าย'; statusClass = 'badge-unpaid'; }
+
+    const hasSlips = o.slips && o.slips.length;
+    const slipBadge = hasSlips
+      ? `<span class="badge" style="background:#dbeafe;color:#1d4ed8;font-size:0.7rem;">📎 มีหลักฐาน ${o.slips.length} รูป</span>`
+      : `<span class="badge" style="background:#f3f4f6;color:#6b7280;font-size:0.7rem;">ยังไม่มีหลักฐาน</span>`;
+
+    const typeBadge = o.type === 'booking'
+      ? `<span class="badge badge-booking">จอง</span>`
+      : `<span class="badge badge-walkin">หน้าร้าน</span>`;
+
+    const slipsHtml = hasSlips ? o.slips.map((s, si) =>
+      `<div class="slip-wrapper">${s.deleted ? `<div style="width:64px;height:64px;border-radius:10px;background:var(--bg-input);display:flex;align-items:center;justify-content:center;font-size:0.65rem;color:var(--text-muted);text-align:center;border:2px dashed var(--border);">ลบแล้ว</div>` : `<img class="slip-thumb" src="${s.data}" onclick="openLightbox('${s.data}')" loading="lazy">${!day.locked ? `<button class="slip-del" onclick="deleteSlip(${i},${si})">✕</button>` : ''}`}</div>`
+    ).join('') : '';
+
+    const div = document.createElement('div');
+    div.className = 'order-card';
+    div.innerHTML = `
+      <div class="order-card-header">
+        <div style="flex:1;">
+          <div class="order-name">${escHtml(o.name)}</div>
+          <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">${typeBadge}<span class="badge ${statusClass}">${status}</span>${slipBadge}</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="font-bold">${moneyFmt(total)}</div>
+          <div class="text-sm text-muted">${numFmt(o.kg)} กก. × ฿${numFmt(o.price)}</div>
+        </div>
+      </div>
+      <div class="order-card-body">
+        <div class="order-row"><span class="key">จ่ายแล้ว</span><span class="val text-green">${moneyFmt(paid)}</span></div>
+        <div class="order-row"><span class="key">ค้างจ่าย</span><span class="val" style="color:${unpaid>0?'#dc2626':'var(--text)'};">${moneyFmt(unpaid)}</span></div>
+        ${o.note ? `<div class="order-row text-sm text-muted">${escHtml(o.note)}</div>` : ''}
+        ${slipsHtml ? `<div class="slips-row">${slipsHtml}</div>` : ''}
+      </div>
+      ${!day.locked ? `<div class="order-actions">
+        <button class="btn btn-sm btn-outline" onclick="editOrder(${i})">✏️ แก้ไข</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteOrder(${i})">🗑️ ลบ</button>
+      </div>` : ''}
+    `;
+    list.appendChild(div);
+  });
+}
+
+// =============================================
+//  DAY SETTINGS
+// =============================================
+function showDaySettings() {
+  const day = getDay(currentDay);
+  if (day.locked) return toast('วันนี้ถูกปิดแล้ว', 'warning');
+  document.getElementById('ds-total-kg').value = day.totalKg || '';
+  document.getElementById('ds-sell-price').value = day.sellPrice || '';
+  document.getElementById('ds-cost-price').value = day.costPrice || '';
+  document.getElementById('ds-waste-kg').value = day.wasteKg || '';
+  document.getElementById('ds-note').value = day.note || '';
+  renderExpenseRows(day.expenses || []);
+  openModal('modal-day-settings');
+}
+
+function renderExpenseRows(expenses) {
+  const list = document.getElementById('ds-expenses-list');
+  list.innerHTML = '';
+  expenses.forEach((e, i) => {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;gap:8px;margin-bottom:8px;';
+    row.innerHTML = `
+      <input class="form-control" placeholder="รายการ" value="${escHtml(e.label)}" oninput="updateExpense(${i},'label',this.value)" style="flex:2;">
+      <input class="form-control" type="number" placeholder="0" value="${e.amount}" oninput="updateExpense(${i},'amount',this.value)" style="flex:1;">
+      <button class="btn btn-danger btn-sm btn-icon" onclick="removeExpense(${i})">✕</button>
+    `;
+    list.appendChild(row);
+  });
+}
+
+let tempExpenses = [];
+
+function showDaySettingsWithExpenses() {
+  const day = getDay(currentDay);
+  tempExpenses = JSON.parse(JSON.stringify(day.expenses || []));
+  renderExpenseRows(tempExpenses);
+}
+
+function addExpenseRow() {
+  const day = getDay(currentDay);
+  if (!tempExpenses) tempExpenses = JSON.parse(JSON.stringify(day.expenses || []));
+  tempExpenses.push({ label: '', amount: 0 });
+  renderExpenseRows(tempExpenses);
+}
+
+function updateExpense(i, key, val) {
+  if (!tempExpenses) return;
+  tempExpenses[i][key] = key === 'amount' ? parseFloat(val) || 0 : val;
+}
+
+function removeExpense(i) {
+  if (!tempExpenses) return;
+  tempExpenses.splice(i, 1);
+  renderExpenseRows(tempExpenses);
+}
+
+function saveDaySettings() {
+  const day = getDay(currentDay);
+  day.totalKg = parseFloat(document.getElementById('ds-total-kg').value) || 0;
+  day.sellPrice = parseFloat(document.getElementById('ds-sell-price').value) || 0;
+  day.costPrice = parseFloat(document.getElementById('ds-cost-price').value) || 0;
+  day.wasteKg = parseFloat(document.getElementById('ds-waste-kg').value) || 0;
+  day.note = document.getElementById('ds-note').value;
+  if (tempExpenses) day.expenses = tempExpenses;
+  tempExpenses = [];
+  saveDB();
+  closeModal('modal-day-settings');
+  renderDay();
+  toast('บันทึกตั้งค่าวันสำเร็จ ✅', 'success');
+}
+
+// =============================================
+//  LOCK DAY
+// =============================================
+function toggleDayLock() {
+  const day = getDay(currentDay);
+  if (day.locked) {
+    showConfirm('ปลดล็อกวัน', 'ต้องการปลดล็อกวันนี้? คุณจะสามารถแก้ไขข้อมูลได้อีกครั้ง', () => {
+      day.locked = false;
+      saveDB();
+      renderDay();
+      toast('ปลดล็อกแล้ว 🔓', 'success');
+    });
+  } else {
+    showConfirm('ปิดวัน', 'ต้องการปิดวันนี้? ข้อมูลจะถูกล็อกไม่ให้แก้ไข', () => {
+      day.locked = true;
+      saveDB();
+      renderDay();
+      toast('ปิดวันสำเร็จ 🔒', 'success');
+    });
+  }
+}
+
+// =============================================
+//  ORDERS
+// =============================================
+let tempSlips = [];
+
+function showAddOrder() {
+  const day = getDay(currentDay);
+  if (day.locked) return toast('วันนี้ถูกปิดแล้ว', 'warning');
+  tempSlips = [];
+  document.getElementById('modal-order-title').textContent = '➕ เพิ่มออเดอร์';
+  document.getElementById('order-edit-id').value = '';
+  document.getElementById('o-name').value = '';
+  document.getElementById('o-kg').value = '';
+  document.getElementById('o-price').value = day.sellPrice || '';
+  document.getElementById('o-type').value = 'walkin';
+  document.getElementById('o-total').value = '';
+  document.getElementById('o-paid').value = '';
+  document.getElementById('o-note').value = '';
+  document.getElementById('o-slips').value = '';
+  document.getElementById('o-slips-preview').innerHTML = '';
+  openModal('modal-order');
+}
+
+function editOrder(i) {
+  const day = getDay(currentDay);
+  if (day.locked) return toast('วันนี้ถูกปิดแล้ว', 'warning');
+  const o = day.orders[i];
+  tempSlips = JSON.parse(JSON.stringify(o.slips || []));
+  document.getElementById('modal-order-title').textContent = '✏️ แก้ไขออเดอร์';
+  document.getElementById('order-edit-id').value = i;
+  document.getElementById('o-name').value = o.name;
+  document.getElementById('o-kg').value = o.kg;
+  document.getElementById('o-price').value = o.price;
+  document.getElementById('o-type').value = o.type || 'walkin';
+  document.getElementById('o-total').value = parseFloat(o.kg) * parseFloat(o.price);
+  document.getElementById('o-paid').value = o.paid;
+  document.getElementById('o-note').value = o.note || '';
+  document.getElementById('o-slips').value = '';
+  renderSlipsPreview();
+  openModal('modal-order');
+}
+
+function calcOrderTotal() {
+  const kg = parseFloat(document.getElementById('o-kg').value) || 0;
+  const price = parseFloat(document.getElementById('o-price').value) || 0;
+  document.getElementById('o-total').value = kg * price;
+}
+
+async function handleSlipFiles(evt) {
+  const files = Array.from(evt.target.files);
+  for (const f of files) {
+    const b64 = await compressImage(f, 1000);
+    tempSlips.push({ data: b64, deleted: false, date: new Date().toISOString() });
+  }
+  renderSlipsPreview();
+}
+
+function compressImage(file, maxWidth) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let w = img.width, h = img.height;
+        if (w > maxWidth) { h = h * maxWidth / w; w = maxWidth; }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', 0.7));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderSlipsPreview() {
+  const preview = document.getElementById('o-slips-preview');
+  preview.innerHTML = tempSlips.map((s, i) => `
+    <div class="slip-wrapper">
+      ${s.deleted ? `<div style="width:64px;height:64px;border-radius:10px;background:var(--bg-input);display:flex;align-items:center;justify-content:center;font-size:0.6rem;color:var(--text-muted);text-align:center;border:2px dashed var(--border);">ลบแล้ว</div>` :
+      `<img class="slip-thumb" src="${s.data}" onclick="openLightbox('${s.data}')">
+       <button class="slip-del" onclick="removeTempSlip(${i})">✕</button>`}
+    </div>
+  `).join('');
+}
+
+function removeTempSlip(i) {
+  tempSlips.splice(i, 1);
+  renderSlipsPreview();
+}
+
+function saveOrder() {
+  const name = document.getElementById('o-name').value.trim();
+  if (!name) return toast('กรุณากรอกชื่อลูกค้า', 'error');
+  const kg = parseFloat(document.getElementById('o-kg').value) || 0;
+  const price = parseFloat(document.getElementById('o-price').value) || 0;
+  const paid = parseFloat(document.getElementById('o-paid').value) || 0;
+  const order = {
+    id: Date.now().toString(),
+    name,
+    kg,
+    price,
+    type: document.getElementById('o-type').value,
+    paid,
+    note: document.getElementById('o-note').value,
+    slips: tempSlips,
+    createdAt: new Date().toISOString()
+  };
+  const day = getDay(currentDay);
+  const editId = document.getElementById('order-edit-id').value;
+  if (editId !== '') {
+    order.id = day.orders[editId].id;
+    order.createdAt = day.orders[editId].createdAt;
+    day.orders[editId] = order;
+    toast('แก้ไขออเดอร์สำเร็จ ✅', 'success');
+  } else {
+    day.orders.push(order);
+    toast('เพิ่มออเดอร์สำเร็จ ✅', 'success');
+  }
+  saveDB();
+  closeModal('modal-order');
+  renderDay();
+}
+
+function deleteOrder(i) {
+  showConfirm('ลบออเดอร์', 'ต้องการลบออเดอร์นี้?', () => {
+    const day = getDay(currentDay);
+    day.orders.splice(i, 1);
+    saveDB();
+    renderDay();
+    toast('ลบออเดอร์แล้ว', 'success');
+  });
+}
+
+function deleteSlip(orderIdx, slipIdx) {
+  const day = getDay(currentDay);
+  day.orders[orderIdx].slips[slipIdx].deleted = true;
+  day.orders[orderIdx].slips[slipIdx].data = '';
+  saveDB();
+  renderDay();
+  toast('ลบรูปแล้ว', 'success');
+}
+
+// =============================================
+//  QUICK ADD
+// =============================================
+// V1.1: ถ้ากำลังเปิดหน้า day อยู่ ใช้ currentDay; ไม่งั้นใช้ todayStr()
+function getQuickAddTargetDay() {
+  if (currentPage === 'day' && currentDay) return currentDay;
+  return todayStr();
+}
+
+function showQuickAdd() {
+  const targetDate = getQuickAddTargetDay();
+  if (!db.days[targetDate]) getDay(targetDate);
+  const day = db.days[targetDate];
+  document.getElementById('qa-name').value = '';
+  document.getElementById('qa-kg').value = '';
+  document.getElementById('qa-paid').value = '';
+  document.getElementById('qa-total-show').textContent = '';
+  const isToday = targetDate === todayStr();
+  document.getElementById('quick-add-day-info').innerHTML =
+    `<span style="background:var(--corn-yellow-light);border:1px solid var(--corn-yellow);border-radius:8px;padding:4px 10px;font-weight:600;color:var(--text);">
+      ${isToday ? '📌 วันนี้' : '📅 ' + fmtDate(targetDate)}
+    </span>
+    <span style="margin-left:8px;">ราคา: ฿${numFmt(day.sellPrice || 0)}/กก.</span>`;
+  openModal('modal-quick-add');
+}
+
+function calcQA() {
+  const targetDate = getQuickAddTargetDay();
+  const day = getDay(targetDate);
+  const kg = parseFloat(document.getElementById('qa-kg').value) || 0;
+  const price = day.sellPrice || 0;
+  const total = kg * price;
+  document.getElementById('qa-total-show').textContent = total > 0 ? `ยอดที่ต้องจ่าย: ${moneyFmt(total)}` : '';
+}
+
+function saveQuickAdd() {
+  const name = document.getElementById('qa-name').value.trim();
+  if (!name) return toast('กรุณากรอกชื่อลูกค้า', 'error');
+  const targetDate = getQuickAddTargetDay();
+  const day = getDay(targetDate);
+  if (day.locked) return toast('วันนี้ถูกปิดแล้ว ไม่สามารถเพิ่มได้', 'warning');
+  const kg = parseFloat(document.getElementById('qa-kg').value) || 0;
+  const paid = parseFloat(document.getElementById('qa-paid').value) || 0;
+  day.orders.push({
+    id: Date.now().toString(),
+    name, kg,
+    price: day.sellPrice || 0,
+    type: 'walkin', paid,
+    note: '',
+    slips: [],
+    createdAt: new Date().toISOString()
+  });
+  saveDB();
+  closeModal('modal-quick-add');
+  renderDashboard();
+  if (currentPage === 'day' && currentDay === targetDate) renderDay();
+  const isToday = targetDate === todayStr();
+  toast(`เพิ่ม ${name} เข้า${isToday ? 'วันนี้' : fmtDate(targetDate)} ✅`, 'success');
+}
+
+// =============================================
+//  UNPAID
+// =============================================
+function renderUnpaid(filter = '') {
+  const list = document.getElementById('unpaid-list');
+  const totalCard = document.getElementById('unpaid-total-card');
+  let items = [];
+  let grandTotal = 0;
+
+  Object.keys(db.days).sort((a,b) => b.localeCompare(a)).forEach(date => {
+    const day = getDay(date);
+    day.orders.forEach(o => {
+      const total = parseFloat(o.kg || 0) * parseFloat(o.price || 0);
+      const paid = parseFloat(o.paid || 0);
+      const unpaid = total - paid;
+      if (unpaid > 0 && (!filter || o.name.toLowerCase().includes(filter.toLowerCase()))) {
+        items.push({ date, order: o, total, paid, unpaid });
+        grandTotal += unpaid;
+      }
+    });
+  });
+
+  totalCard.innerHTML = `<h3>ยอดค้างจ่ายทั้งหมด</h3><div class="big-num">${moneyFmt(grandTotal)}</div><div class="small-note">${items.length} รายการ</div>`;
+
+  if (!items.length) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon">✅</div><div class="empty-title">ไม่มียอดค้างจ่าย</div><div class="empty-sub">ลูกค้าจ่ายครบหมดแล้ว</div></div>`;
+    return;
+  }
+
+  list.innerHTML = items.map(item => `
+    <div class="order-card mb-12" onclick="openDay('${item.date}')" style="cursor:pointer;">
+      <div class="order-card-header">
+        <div><div class="order-name">${escHtml(item.order.name)}</div><div class="text-sm text-muted">${fmtDate(item.date)}</div></div>
+        <span class="badge badge-unpaid">ค้าง ${moneyFmt(item.unpaid)}</span>
+      </div>
+      <div class="order-card-body">
+        <div class="order-row"><span class="key">ยอดต้องจ่าย</span><span class="val">${moneyFmt(item.total)}</span></div>
+        <div class="order-row"><span class="key">จ่ายแล้ว</span><span class="val text-green">${moneyFmt(item.paid)}</span></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// =============================================
+//  SEARCH / CUSTOMER HISTORY
+// =============================================
+function renderSearch(q = '') {
+  const results = document.getElementById('search-results');
+  if (!q.trim()) {
+    results.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">ค้นหาชื่อลูกค้า</div><div class="empty-sub">พิมพ์ชื่อด้านบนเพื่อค้นหา</div></div>`;
+    return;
+  }
+
+  const customers = {};
+  Object.keys(db.days).sort((a,b)=>b.localeCompare(a)).forEach(date => {
+    const day = getDay(date);
+    day.orders.forEach(o => {
+      if (!o.name.toLowerCase().includes(q.toLowerCase())) return;
+      if (!customers[o.name]) customers[o.name] = { orders: [], totalKg: 0, totalSale: 0, totalPaid: 0 };
+      const total = parseFloat(o.kg||0)*parseFloat(o.price||0);
+      const paid = parseFloat(o.paid||0);
+      customers[o.name].orders.push({ date, order: o, total, paid });
+      customers[o.name].totalKg += parseFloat(o.kg||0);
+      customers[o.name].totalSale += total;
+      customers[o.name].totalPaid += paid;
+    });
+  });
+
+  const keys = Object.keys(customers);
+  if (!keys.length) {
+    results.innerHTML = `<div class="empty-state"><div class="empty-icon">😕</div><div class="empty-title">ไม่พบลูกค้า</div></div>`;
+    return;
+  }
+
+  results.innerHTML = keys.map(name => {
+    const c = customers[name];
+    const unpaid = c.totalSale - c.totalPaid;
+    return `<div class="card mb-12">
+      <div class="card-body">
+        <div class="font-bold" style="font-size:1.05rem;">${escHtml(name)}</div>
+        <div class="order-row mt-8"><span class="key">จำนวนครั้ง</span><span class="val">${c.orders.length} ครั้ง</span></div>
+        <div class="order-row"><span class="key">รวมกิโล</span><span class="val">${numFmt(c.totalKg)} กก.</span></div>
+        <div class="order-row"><span class="key">รวมยอดเงิน</span><span class="val">${moneyFmt(c.totalSale)}</span></div>
+        <div class="order-row"><span class="key">ค้างจ่าย</span><span class="val" style="color:${unpaid>0?'#dc2626':'var(--corn-green)'};">${moneyFmt(unpaid)}</span></div>
+        <div class="divider"></div>
+        ${c.orders.map(item=>`
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);cursor:pointer;" onclick="openDay('${item.date}')">
+            <div><div class="text-sm font-bold">${fmtDate(item.date)}</div><div class="text-sm text-muted">${numFmt(item.order.kg)} กก.</div></div>
+            <div class="text-right"><div class="text-sm font-bold">${moneyFmt(item.total)}</div>${item.total-item.paid>0?`<div class="badge badge-partial" style="font-size:0.65rem;">ค้าง ${moneyFmt(item.total-item.paid)}</div>`:''}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// =============================================
+//  REPORT
+// =============================================
+let reportMode = 'today';
+let salesChart, profitChart, kgChart;
+
+function setReportMode(mode) {
+  reportMode = mode;
+  ['today','month','year','custom'].forEach(m => {
+    document.getElementById('rpt-'+m).className = 'btn btn-sm ' + (m === mode ? 'btn-primary' : 'btn-outline');
+  });
+  document.getElementById('report-custom-range').style.display = mode === 'custom' ? 'block' : 'none';
+  renderReport();
+}
+
+function getReportDates() {
+  const today = todayStr();
+  const now = new Date();
+  if (reportMode === 'today') return [today, today];
+  if (reportMode === 'month') {
+    const first = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-01`;
+    return [first, today];
+  }
+  if (reportMode === 'year') {
+    return [`${now.getFullYear()}-01-01`, today];
+  }
+  if (reportMode === 'custom') {
+    return [document.getElementById('rpt-from').value || today, document.getElementById('rpt-to').value || today];
+  }
+  return [today, today];
+}
+
+function renderReport() {
+  const [from, to] = getReportDates();
+  const allDates = Object.keys(db.days).filter(d => d >= from && d <= to).sort();
+
+  let totalSale = 0, totalKg = 0, totalCost = 0, totalExp = 0, totalProfit = 0, totalUnpaid = 0, totalCustomers = 0;
+  const daySales = [], dayProfits = [], dayKgs = [], dayLabels = [];
+  let bestSaleDay = null, bestSaleVal = -Infinity;
+
+  allDates.forEach(date => {
+    const c = calcDay(date);
+    const day = getDay(date);
+    totalSale += c.saleTotal;
+    totalKg += c.soldKg;
+    totalCost += c.cornCost;
+    totalExp += c.extraExpenses;
+    totalProfit += c.profit;
+    totalUnpaid += c.unpaidTotal;
+    totalCustomers += day.orders.length;
+    daySales.push(c.saleTotal);
+    dayProfits.push(c.profit);
+    dayKgs.push(c.soldKg);
+    dayLabels.push(fmtDate(date).split(' ').slice(0,3).join(' '));
+    if (c.saleTotal > bestSaleVal) { bestSaleVal = c.saleTotal; bestSaleDay = date; }
+  });
+
+  const grid = document.getElementById('report-summary-grid');
+  grid.innerHTML = `
+    <div class="summary-card yellow"><div class="label">ยอดขายรวม</div><div class="value">${moneyFmt(totalSale)}</div></div>
+    <div class="summary-card green"><div class="label">กำไรสุทธิ</div><div class="value">${moneyFmt(totalProfit)}</div></div>
+    <div class="summary-card"><div class="label">กิโลขายรวม</div><div class="value">${numFmt(totalKg)}<span class="unit"> กก.</span></div></div>
+    <div class="summary-card red"><div class="label">ยอดค้างจ่าย</div><div class="value">${moneyFmt(totalUnpaid)}</div></div>
+    <div class="summary-card"><div class="label">ต้นทุนรวม</div><div class="value">${moneyFmt(totalCost)}</div></div>
+    <div class="summary-card"><div class="label">ค่าใช้จ่ายรวม</div><div class="value">${moneyFmt(totalExp)}</div></div>
+  `;
+
+  document.getElementById('report-best').innerHTML = bestSaleDay ? `
+    <div class="alert alert-success">🏆 วันขายดีที่สุด: ${fmtDate(bestSaleDay)} ยอด ${moneyFmt(bestSaleVal)}</div>
+  ` : '';
+
+  // Charts
+  const chartOpts = (label, color) => ({
+    type: 'bar',
+    data: { labels: dayLabels, datasets: [{ label, data: [], backgroundColor: color, borderRadius: 6 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { font: { size: 10 } } }, y: { ticks: { font: { size: 10 } } } } }
+  });
+
+  if (salesChart) salesChart.destroy();
+  if (profitChart) profitChart.destroy();
+  if (kgChart) kgChart.destroy();
+
+  const sc = document.getElementById('chart-sales').getContext('2d');
+  salesChart = new Chart(sc, chartOpts('ยอดขาย', 'rgba(245,200,66,0.8)'));
+  salesChart.data.datasets[0].data = daySales;
+  salesChart.update();
+
+  const pc = document.getElementById('chart-profit').getContext('2d');
+  profitChart = new Chart(pc, chartOpts('กำไร', 'rgba(74,140,63,0.8)'));
+  profitChart.data.datasets[0].data = dayProfits;
+  profitChart.update();
+
+  const kc = document.getElementById('chart-kg').getContext('2d');
+  kgChart = new Chart(kc, chartOpts('กิโล', 'rgba(139,94,60,0.6)'));
+  kgChart.data.datasets[0].data = dayKgs;
+  kgChart.update();
+}
+
+// =============================================
+//  COPY / EXPORT
+// =============================================
+function showDayCopyMenu() {
+  const day = getDay(currentDay);
+  const c = calcDay(currentDay);
+  const text = `🌽 สรุปยอดข้าวโพด
+📅 วันที่: ${fmtDate(currentDay)}
+━━━━━━━━━━━━━━━━
+🌾 ข้าวโพดทั้งหมด: ${numFmt(day.totalKg)} กก.
+📦 ขายแล้ว: ${numFmt(c.soldKg)} กก.
+🗑 ของเสีย: ${numFmt(day.wasteKg)} กก.
+✅ คงเหลือ: ${numFmt(c.remaining)} กก.
+━━━━━━━━━━━━━━━━
+💰 ยอดขาย: ${moneyFmt(c.saleTotal)}
+✅ จ่ายแล้ว: ${moneyFmt(c.paidTotal)}
+⚠️ ค้างจ่าย: ${moneyFmt(c.unpaidTotal)}
+━━━━━━━━━━━━━━━━
+📊 ต้นทุนข้าวโพด: ${moneyFmt(c.cornCost)}
+📊 ค่าใช้จ่ายรวม: ${moneyFmt(c.extraExpenses)}
+💹 กำไรสุทธิ: ${moneyFmt(c.profit)}
+━━━━━━━━━━━━━━━━
+👥 ลูกค้า ${day.orders.length} คน
+${day.orders.map(o=>`  • ${o.name}: ${numFmt(o.kg)}กก. จ่าย ${moneyFmt(o.paid)}`).join('\n')}`;
+
+  document.getElementById('copy-text').value = text;
+  openModal('modal-copy');
+}
+
+function copyText() {
+  const text = document.getElementById('copy-text').value;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => toast('คัดลอกแล้ว ✅', 'success'));
+  } else {
+    document.getElementById('copy-text').select();
+    document.execCommand('copy');
+    toast('คัดลอกแล้ว ✅', 'success');
+  }
+}
+
+function exportBackup() {
+  const blob = new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `corn_backup_${todayStr()}.json`;
+  a.click();
+  toast('Export สำเร็จ ✅', 'success');
+}
+
+// =============================================
+//  EXPORT CSV รายวัน (V1.1)
+// =============================================
+function exportDayCSV() {
+  if (!currentDay) return toast('ไม่พบข้อมูลวัน', 'error');
+  const day = getDay(currentDay);
+  const c = calcDay(currentDay);
+
+  // Header rows (day summary)
+  const summaryRows = [
+    ['สรุปยอดวัน', fmtDate(currentDay)],
+    ['ข้าวโพดทั้งหมด (กก.)', day.totalKg],
+    ['ราคาขาย/กก.', day.sellPrice],
+    ['ต้นทุน/กก.', day.costPrice],
+    ['ขายแล้ว (กก.)', c.soldKg],
+    ['ของเสีย (กก.)', day.wasteKg],
+    ['คงเหลือ (กก.)', c.remaining],
+    ['ยอดขายรวม', c.saleTotal],
+    ['จ่ายแล้ว', c.paidTotal],
+    ['ค้างจ่าย', c.unpaidTotal],
+    ['ต้นทุนข้าวโพด', c.cornCost],
+    ['ค่าใช้จ่ายรวม', c.extraExpenses],
+    ['กำไรสุทธิ', c.profit],
+    [],
+    ['รายการออเดอร์'],
+    ['ชื่อลูกค้า','ประเภท','กิโล','ราคา/กก.','ยอดต้องจ่าย','จ่ายแล้ว','ค้างจ่าย','สถานะ','หมายเหตุ']
+  ];
+
+  const orderRows = day.orders.map(o => {
+    const total = parseFloat(o.kg||0)*parseFloat(o.price||0);
+    const paid = parseFloat(o.paid||0);
+    const unpaid = total - paid;
+    let status = unpaid <= 0 ? 'จ่ายแล้ว' : paid > 0 ? 'จ่ายบางส่วน' : 'ยังไม่จ่าย';
+    const typeLabel = o.type === 'booking' ? 'จอง' : 'หน้าร้าน';
+    return [o.name, typeLabel, o.kg, o.price, total, paid, unpaid, status, o.note || ''];
+  });
+
+  const allRows = [...summaryRows, ...orderRows];
+  const csvContent = allRows.map(row =>
+    row.map(cell => {
+      const s = String(cell === undefined || cell === null ? '' : cell);
+      return s.includes(',') || s.includes('"') || s.includes('\n') ? `"${s.replace(/"/g,'""')}"` : s;
+    }).join(',')
+  ).join('\r\n');
+
+  // BOM for Thai character support in Excel
+  const bom = '\uFEFF';
+  const blob = new Blob([bom + csvContent], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `corn_${currentDay}.csv`;
+  a.click();
+  toast('Export CSV สำเร็จ ✅', 'success');
+}
+
+function importBackup(evt) {
+  const file = evt.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    showConfirm('Import ข้อมูล', 'ข้อมูลปัจจุบันจะถูกแทนที่ทั้งหมด ต้องการดำเนินการต่อ?', () => {
+      try {
+        db = JSON.parse(e.target.result);
+        saveDB();
+        renderDashboard();
+        toast('Import สำเร็จ ✅', 'success');
+      } catch(err) { toast('ไฟล์ไม่ถูกต้อง', 'error'); }
+    });
+  };
+  reader.readAsText(file);
+}
+
+function deleteOldImages() {
+  showConfirm('ลบรูปเก่า', 'ลบรูปหลักฐานที่เก่ากว่า 3 เดือน? ข้อมูลออเดอร์ยังคงอยู่', () => {
+    let count = 0;
+    Object.keys(db.days).forEach(date => {
+      if (isOlderThan3Months(date)) {
+        const day = getDay(date);
+        day.orders.forEach(o => {
+          (o.slips || []).forEach(s => {
+            if (s.data) { s.data = ''; s.deleted = true; count++; }
+          });
+        });
+      }
+    });
+    saveDB();
+    toast(`ลบรูปแล้ว ${count} รูป`, 'success');
+  });
+}
+
+function confirmDeleteAll() {
+  showConfirm('⚠️ ลบข้อมูลทั้งหมด', 'ข้อมูลทั้งหมดจะถูกลบและไม่สามารถกู้คืนได้!', () => {
+    db = { days: {}, settings: db.settings };
+    saveDB();
+    renderDashboard();
+    toast('ลบข้อมูลทั้งหมดแล้ว', 'warning');
+  }, '⚠️');
+}
+
+// =============================================
+//  MODAL HELPERS
+// =============================================
+function openModal(id) {
+  document.getElementById(id).classList.add('active');
+  if (id === 'modal-day-settings') showDaySettingsWithExpenses();
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) overlay.classList.remove('active');
+  });
+});
+
+// =============================================
+//  CONFIRM MODAL
+// =============================================
+function showConfirm(title, msg, onOk, icon = '⚠️') {
+  document.getElementById('confirm-icon').textContent = icon;
+  document.getElementById('confirm-title').textContent = title;
+  document.getElementById('confirm-msg').textContent = msg;
+  const btn = document.getElementById('confirm-ok-btn');
+  btn.onclick = () => { closeModal('modal-confirm'); onOk(); };
+  openModal('modal-confirm');
+}
+
+// =============================================
+//  LIGHTBOX
+// =============================================
+function openLightbox(src) {
+  document.getElementById('lightbox-img').src = src;
+  document.getElementById('lightbox').classList.add('active');
+}
+function closeLightbox() { document.getElementById('lightbox').classList.remove('active'); }
+
+// =============================================
+//  TOAST
+// =============================================
+function toast(msg, type = 'default') {
+  const container = document.getElementById('toast-container');
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  const icons = { success: '✅', error: '❌', warning: '⚠️', default: 'ℹ️' };
+  el.innerHTML = `<span>${icons[type] || 'ℹ️'}</span><span>${msg}</span>`;
+  container.appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity 0.3s'; setTimeout(() => el.remove(), 300); }, 2500);
+}
+
+// =============================================
+//  UTIL
+// =============================================
+function escHtml(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// =============================================
+//  SAMPLE DATA
+// =============================================
+function insertSampleData() {
+  const today = todayStr();
+  const d = new Date();
+
+  // Helper to offset date
+  function offsetDate(days) {
+    const dt = new Date(d);
+    dt.setDate(dt.getDate() + days);
+    return dt.toISOString().slice(0, 10);
+  }
+
+  // Today
+  const todayDay = getDay(today);
+  if (!todayDay.totalKg) {
+    todayDay.totalKg = 1000;
+    todayDay.sellPrice = 20;
+    todayDay.costPrice = 12;
+    todayDay.wasteKg = 20;
+    todayDay.note = 'ตัวอย่างข้อมูลทดสอบ';
+    todayDay.expenses = [
+      { label: 'ค่าน้ำมัน', amount: 300 },
+      { label: 'ค่าถุง', amount: 200 }
+    ];
+    todayDay.orders = [
+      { id: '1', name: 'ลูกค้า A', kg: 300, price: 20, type: 'booking', paid: 6000, note: '', slips: [], createdAt: new Date().toISOString() },
+      { id: '2', name: 'ลูกค้า B', kg: 150, price: 20, type: 'walkin', paid: 1500, note: 'จ่ายบางส่วน', slips: [], createdAt: new Date().toISOString() },
+      { id: '3', name: 'ลูกค้า C', kg: 100, price: 20, type: 'booking', paid: 0, note: '', slips: [], createdAt: new Date().toISOString() }
+    ];
+  }
+
+  // Yesterday
+  const y1 = offsetDate(-1);
+  const day1 = getDay(y1);
+  if (!day1.totalKg) {
+    day1.totalKg = 800; day1.sellPrice = 20; day1.costPrice = 12; day1.wasteKg = 10;
+    day1.expenses = [{ label: 'ค่าน้ำมัน', amount: 250 }];
+    day1.orders = [
+      { id: '10', name: 'ลูกค้า D', kg: 200, price: 20, type: 'walkin', paid: 4000, note: '', slips: [], createdAt: new Date().toISOString() },
+      { id: '11', name: 'ลูกค้า B', kg: 100, price: 20, type: 'booking', paid: 2000, note: '', slips: [], createdAt: new Date().toISOString() },
+      { id: '12', name: 'ลูกค้า E', kg: 50, price: 20, type: 'walkin', paid: 0, note: '', slips: [], createdAt: new Date().toISOString() }
+    ];
+    day1.locked = false;
+  }
+
+  // 2 days ago
+  const y2 = offsetDate(-2);
+  const day2 = getDay(y2);
+  if (!day2.totalKg) {
+    day2.totalKg = 600; day2.sellPrice = 18; day2.costPrice = 11; day2.wasteKg = 5;
+    day2.expenses = [{ label: 'ค่าแรง', amount: 400 }];
+    day2.orders = [
+      { id: '20', name: 'ลูกค้า A', kg: 150, price: 18, type: 'booking', paid: 2700, note: '', slips: [], createdAt: new Date().toISOString() },
+      { id: '21', name: 'ลูกค้า F', kg: 80, price: 18, type: 'walkin', paid: 1440, note: '', slips: [], createdAt: new Date().toISOString() }
+    ];
+    day2.locked = true;
+  }
+
+  saveDB();
+}
+
+// =============================================
+//  INIT
+// =============================================
+function init() {
+  loadDB();
+  insertSampleData();
+  applyTheme();
+  renderDashboard();
+
+  // Set today as default date for add
+  document.getElementById('new-date-input').value = todayStr();
+  document.getElementById('rpt-from').value = todayStr();
+  document.getElementById('rpt-to').value = todayStr();
+}
+
+init();
+</script>
+</body>
+</html>
