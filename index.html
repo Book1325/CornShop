@@ -8,17 +8,13 @@
 <meta name="apple-mobile-web-app-title" content="ร้านข้าวโพด">
 <meta name="theme-color" content="#f5c842">
 <meta name="mobile-web-app-capable" content="yes">
-<title>ระบบจัดการร้านข้าวโพด</title>
+<title>ระบบจัดการร้านข้าวโพด V2.0</title>
 
-<!-- PWA Manifest inline via link -->
 <link rel="manifest" href="data:application/json,{%22name%22:%22%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A%E0%B8%88%E0%B8%B1%E0%B8%94%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%99%E0%B8%82%E0%B9%89%E0%B8%B2%E0%B8%A7%E0%B9%82%E0%B8%9E%E0%B8%94%22,%22short_name%22:%22%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%99%E0%B8%82%E0%B9%89%E0%B8%B2%E0%B8%A7%E0%B9%82%E0%B8%9E%E0%B8%94%22,%22display%22:%22standalone%22,%22background_color%22:%22%23fffbeb%22,%22theme_color%22:%22%23f5c842%22,%22start_url%22:%22.%22}">
 
-<!-- Google Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-<!-- Chart.js CDN -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
 <style>
@@ -108,6 +104,39 @@ body {
 }
 .page-header h2 { font-size: 1.2rem; font-weight: 700; flex: 1; }
 .page-content { flex: 1; padding: 16px; overflow-y: auto; }
+
+/* =============================================
+   SYNC STATUS BAR (V2.0)
+   ============================================= */
+#sync-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 16px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 99;
+  min-height: 32px;
+  transition: background 0.3s;
+}
+#sync-bar.bar-online { background: #dcfce7; color: #166534; }
+#sync-bar.bar-offline { background: #fef3c7; color: #92400e; }
+#sync-bar.bar-saving { background: #dbeafe; color: #1e40af; }
+#sync-bar.bar-error { background: #fee2e2; color: #dc2626; }
+#sync-bar.bar-synced { background: #dcfce7; color: #166534; }
+[data-theme="dark"] #sync-bar.bar-online { background: rgba(74,140,63,0.25); color: #86efac; }
+[data-theme="dark"] #sync-bar.bar-offline { background: rgba(245,200,66,0.15); color: #fde68a; }
+[data-theme="dark"] #sync-bar.bar-saving { background: rgba(59,130,246,0.2); color: #93c5fd; }
+[data-theme="dark"] #sync-bar.bar-error { background: rgba(220,38,38,0.2); color: #fca5a5; }
+[data-theme="dark"] #sync-bar.bar-synced { background: rgba(74,140,63,0.25); color: #86efac; }
+#sync-status-text { display: flex; align-items: center; gap: 6px; }
+#sync-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; display: inline-block; }
+#sync-bar.bar-saving #sync-dot { animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
 
 /* =============================================
    BOTTOM NAVIGATION
@@ -411,6 +440,7 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
 .alert-danger { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
 .alert-warning { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
 .alert-success { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+.alert-info { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
 
 /* =============================================
    SLIP IMAGE
@@ -615,7 +645,7 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
 <nav id="sidebar">
   <div class="sidebar-logo">
     <h1>🌽 ร้านข้าวโพด</h1>
-    <p>ระบบจัดการร้าน</p>
+    <p>V2.0 Firebase Sync</p>
   </div>
   <div class="sidebar-nav">
     <button class="sidebar-nav-item active" onclick="navigate('dashboard')" data-page="dashboard"><span class="icon">🏠</span>แดชบอร์ด</button>
@@ -629,6 +659,19 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
 
 <!-- =================== MAIN APP =================== -->
 <div id="app-main">
+
+<!-- =================== SYNC BAR =================== -->
+<div id="sync-bar" class="bar-offline">
+  <div id="sync-status-text">
+    <span id="sync-dot"></span>
+    <span id="sync-label">กำลังเชื่อมต่อ...</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <span id="sync-time" style="font-size:0.72rem;opacity:0.75;"></span>
+    <button onclick="manualSync()" style="background:none;border:1px solid currentColor;border-radius:6px;padding:2px 8px;font-size:0.72rem;font-family:inherit;font-weight:700;cursor:pointer;color:inherit;">🔄 Sync</button>
+  </div>
+</div>
+
 <div id="app">
 
 <!-- ========== PAGE: DASHBOARD ========== -->
@@ -690,7 +733,6 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
   <div class="page-content">
     <div id="day-locked-banner" class="locked-banner" style="display:none;">🔒 วันนี้ถูกปิดแล้ว ไม่สามารถแก้ไขได้</div>
 
-    <!-- Day Summary -->
     <div class="card mb-12">
       <div class="card-body">
         <div class="flex justify-between items-center mb-12">
@@ -702,7 +744,6 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
       </div>
     </div>
 
-    <!-- Orders -->
     <div class="flex justify-between items-center mb-8">
       <span class="section-title" style="margin:0;">รายการออเดอร์</span>
       <button class="btn btn-sm btn-primary" id="day-add-order-btn" onclick="showAddOrder()">+ เพิ่มออเดอร์</button>
@@ -792,6 +833,25 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
     <h2>ตั้งค่า</h2>
   </div>
   <div class="page-content">
+
+    <!-- Firebase Sync Status Card (V2.0) -->
+    <div class="section-title">☁️ Firebase Sync (V2.0)</div>
+    <div class="card mb-16">
+      <div class="card-body">
+        <div id="firebase-status-card">
+          <div class="flex justify-between items-center mb-12">
+            <span class="font-bold">สถานะการเชื่อมต่อ</span>
+            <span id="fb-status-badge" class="badge">กำลังโหลด...</span>
+          </div>
+          <div class="text-sm text-muted mb-8" id="fb-last-sync">ยังไม่เคย Sync</div>
+        </div>
+        <div class="divider"></div>
+        <button class="btn btn-primary btn-full mb-8" onclick="manualSync()">🔄 Sync ตอนนี้ (ดึงจาก Firebase)</button>
+        <button class="btn btn-outline btn-full mb-8" onclick="uploadLocalToFirebase()">☁️ อัปโหลด LocalStorage → Firebase</button>
+        <button class="btn btn-outline btn-full" onclick="migrateFromLocalStorage()">📦 Migrate จาก V1.1 → Firebase</button>
+      </div>
+    </div>
+
     <div class="section-title">การแสดงผล</div>
     <div class="card mb-16">
       <div class="settings-row">
@@ -830,16 +890,18 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
       <div class="card-body text-center">
         <div style="font-size:2.5rem;">🌽</div>
         <div class="font-bold mt-8">ระบบจัดการร้านข้าวโพด</div>
-        <div class="text-muted text-sm mt-8">Version 1.0.0 • LocalStorage</div>
-        <div class="text-muted text-sm mt-8">ข้อมูลเก็บในเครื่องของคุณ</div>
+        <div class="text-muted text-sm mt-8">Version 2.0.0 • Firebase Firestore Sync</div>
+        <div class="text-muted text-sm mt-8">ข้อมูล sync ทุกเครื่องผ่าน Firebase</div>
       </div>
     </div>
 
     <div class="card mb-16">
       <div class="card-body">
-        <div class="font-bold mb-8 text-sm">💡 Service Worker (PWA)</div>
-        <div class="text-sm text-muted">สำหรับใช้งานแบบ Offline เต็มรูปแบบ ให้แยกไฟล์ <b>service-worker.js</b> ออกมา และลงทะเบียนด้วย:<br><br>
-          <code style="background:var(--bg-input);padding:2px 6px;border-radius:4px;font-size:0.8rem;">navigator.serviceWorker.register('/service-worker.js')</code>
+        <div class="font-bold mb-8 text-sm">⚠️ หมายเหตุ V2.0</div>
+        <div class="text-sm text-muted">
+          <b>รูปหลักฐานสลิปใน V2.0 ยังเก็บเฉพาะเครื่องนี้</b><br>
+          (Firebase Storage จะเพิ่มใน V3.0)<br><br>
+          รูปสลิปจะ<b>ไม่ sync</b>ข้ามเครื่อง แต่ข้อมูลออเดอร์ทุกอย่าง sync ปกติ
         </div>
       </div>
     </div>
@@ -976,6 +1038,7 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
       </div>
       <div class="form-group">
         <label class="form-label">หลักฐานการจ่ายเงิน</label>
+        <div class="alert alert-info" style="font-size:0.78rem;padding:8px 12px;margin-bottom:8px;">📱 รูปหลักฐานใน V2.0 ยังเก็บเฉพาะเครื่องนี้</div>
         <input type="file" class="form-control" id="o-slips" accept="image/*" multiple onchange="handleSlipFiles(event)" style="padding:10px;">
         <div id="o-slips-preview" class="slips-row mt-8"></div>
       </div>
@@ -1034,7 +1097,6 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
   </div>
 </div>
 
-
 <div class="modal-overlay modal-confirm" id="modal-confirm">
   <div class="modal" style="border-radius:20px;max-width:340px;align-self:center;">
     <div class="modal-body" style="padding:24px 20px;">
@@ -1065,25 +1127,397 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
   </div>
 </div>
 
+<!-- =============================================
+     FIREBASE SDK (V2.0) - โหลดแบบ module
+     ============================================= -->
+<script type="module">
+// =============================================
+//  🔥 FIREBASE CONFIG — ใส่ค่าจาก Firebase Console ของคุณ
+// =============================================
+const firebaseConfig = {
+  apiKey: "ใส่ค่าจาก Firebase Console",
+  authDomain: "ใส่ค่าจาก Firebase Console",
+  projectId: "ใส่ค่าจาก Firebase Console",
+  storageBucket: "ใส่ค่าจาก Firebase Console",
+  messagingSenderId: "ใส่ค่าจาก Firebase Console",
+  appId: "ใส่ค่าจาก Firebase Console"
+};
+
+// =============================================
+//  FIREBASE IMPORTS
+// =============================================
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+  deleteDoc,
+  onSnapshot,
+  serverTimestamp,
+  enableIndexedDbPersistence
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// =============================================
+//  INIT FIREBASE
+// =============================================
+const FIREBASE_CONFIGURED = !firebaseConfig.apiKey.includes('ใส่ค่า');
+
+let app, firestoreDb;
+let unsubscribeSnapshot = null;
+
+if (FIREBASE_CONFIGURED) {
+  try {
+    app = initializeApp(firebaseConfig);
+    firestoreDb = getFirestore(app);
+    // เปิด offline persistence (IndexedDB cache)
+    enableIndexedDbPersistence(firestoreDb).catch(err => {
+      console.warn('Offline persistence:', err.code);
+    });
+  } catch (e) {
+    console.error('Firebase init error:', e);
+  }
+}
+
+// =============================================
+//  FIRESTORE PATH HELPERS
+// =============================================
+// cornShops/defaultShop/days/{YYYY-MM-DD}
+const SHOP_ID = 'defaultShop';
+
+function getDaysCol() {
+  return collection(firestoreDb, 'cornShops', SHOP_ID, 'days');
+}
+
+function getDayDocRef(dateStr) {
+  return doc(firestoreDb, 'cornShops', SHOP_ID, 'days', dateStr);
+}
+
+// =============================================
+//  SYNC STATE
+// =============================================
+let syncStatus = 'offline'; // offline | online | saving | synced | error
+let lastSyncTime = null;
+let isOnline = navigator.onLine;
+
+function setSyncStatus(status, msg) {
+  syncStatus = status;
+  const bar = document.getElementById('sync-bar');
+  const label = document.getElementById('sync-label');
+  const badge = document.getElementById('fb-status-badge');
+  const timeEl = document.getElementById('sync-time');
+
+  bar.className = 'bar-' + status;
+  const statusMap = {
+    online:  { text: '🟢 Online',         barLabel: '🟢 เชื่อมต่อแล้ว',  badgeCls: 'badge' },
+    offline: { text: '🟡 Offline',        barLabel: '🟡 ออฟไลน์ (ใช้ Cache)', badgeCls: 'badge badge-partial' },
+    saving:  { text: '🔵 กำลังบันทึก...', barLabel: '🔵 กำลังบันทึก...', badgeCls: 'badge badge-booking' },
+    synced:  { text: '✅ Synced',          barLabel: '✅ ซิงค์สำเร็จ',    badgeCls: 'badge badge-paid' },
+    error:   { text: '🔴 Sync Error',     barLabel: '🔴 เกิดข้อผิดพลาด', badgeCls: 'badge badge-unpaid' },
+  };
+  const s = statusMap[status] || statusMap.offline;
+  if (label) label.textContent = msg || s.barLabel;
+  if (badge) { badge.textContent = msg || s.text; badge.className = s.badgeCls; }
+  if (status === 'synced' && timeEl) {
+    lastSyncTime = new Date();
+    const t = lastSyncTime.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+    timeEl.textContent = `อัปเดต ${t}`;
+    const lastSyncEl = document.getElementById('fb-last-sync');
+    if (lastSyncEl) lastSyncEl.textContent = `ซิงค์ล่าสุด: ${t}`;
+  }
+}
+
+// Online/offline event listeners
+window.addEventListener('online', () => {
+  isOnline = true;
+  if (FIREBASE_CONFIGURED && firestoreDb) {
+    setSyncStatus('online');
+    startRealtimeSync();
+  }
+});
+window.addEventListener('offline', () => {
+  isOnline = false;
+  setSyncStatus('offline');
+  if (unsubscribeSnapshot) { unsubscribeSnapshot(); unsubscribeSnapshot = null; }
+});
+
+// =============================================
+//  LOAD ALL DAYS FROM FIRESTORE → local db
+// =============================================
+async function loadFromFirestore() {
+  if (!FIREBASE_CONFIGURED || !firestoreDb) return false;
+  try {
+    setSyncStatus('saving', '🔵 กำลังโหลดจาก Firebase...');
+    const snap = await getDocs(getDaysCol());
+    snap.forEach(docSnap => {
+      const data = docSnap.data();
+      const dateStr = docSnap.id;
+      // Merge: Firebase overrides local for same date
+      // Preserve slips (local-only) when merging
+      const existingOrders = (window._db && window._db.days && window._db.days[dateStr])
+        ? window._db.days[dateStr].orders || []
+        : [];
+      const mergedOrders = (data.orders || []).map((fbOrder, i) => {
+        const localOrder = existingOrders.find(lo => lo.id === fbOrder.id);
+        return {
+          ...fbOrder,
+          slips: localOrder ? (localOrder.slips || []) : []
+        };
+      });
+      window._db.days[dateStr] = { ...data, orders: mergedOrders };
+    });
+    saveDB();
+    setSyncStatus('synced');
+    return true;
+  } catch (e) {
+    console.error('loadFromFirestore', e);
+    setSyncStatus('error', '🔴 โหลดไม่สำเร็จ');
+    return false;
+  }
+}
+
+// =============================================
+//  SAVE ONE DAY TO FIRESTORE
+// =============================================
+async function saveDayToFirestore(dateStr) {
+  if (!FIREBASE_CONFIGURED || !firestoreDb) return;
+  try {
+    const day = window._db.days[dateStr];
+    if (!day) return;
+    setSyncStatus('saving');
+    // Strip slips.data (base64) before saving to Firestore — keep only metadata
+    const ordersForFirestore = (day.orders || []).map(o => ({
+      ...o,
+      slips: (o.slips || []).map(s => ({
+        date: s.date || '',
+        deleted: s.deleted || false
+        // data (base64) intentionally excluded — local only
+      }))
+    }));
+    const payload = {
+      date: day.date,
+      totalKg: day.totalKg || 0,
+      sellPrice: day.sellPrice || 0,
+      costPrice: day.costPrice || 0,
+      wasteKg: day.wasteKg || 0,
+      expenses: day.expenses || [],
+      note: day.note || '',
+      locked: day.locked || false,
+      orders: ordersForFirestore,
+      updatedAt: serverTimestamp()
+    };
+    await setDoc(getDayDocRef(dateStr), payload, { merge: true });
+    setSyncStatus('synced');
+  } catch (e) {
+    console.error('saveDayToFirestore', e);
+    setSyncStatus('error', '🔴 บันทึกไม่สำเร็จ');
+    toast('Sync ไม่สำเร็จ — บันทึก Local แล้ว', 'warning');
+  }
+}
+
+// =============================================
+//  REALTIME SNAPSHOT — sync จาก Firestore แบบ realtime
+// =============================================
+function startRealtimeSync() {
+  if (!FIREBASE_CONFIGURED || !firestoreDb) return;
+  if (unsubscribeSnapshot) unsubscribeSnapshot(); // unsubscribe เดิมก่อน
+
+  unsubscribeSnapshot = onSnapshot(getDaysCol(), (snapshot) => {
+    let changed = false;
+    snapshot.docChanges().forEach(change => {
+      const dateStr = change.doc.id;
+      const data = change.doc.data();
+
+      if (change.type === 'removed') {
+        delete window._db.days[dateStr];
+        changed = true;
+        return;
+      }
+
+      // Merge: preserve local slips
+      const existingOrders = (window._db.days[dateStr] || {}).orders || [];
+      const mergedOrders = (data.orders || []).map(fbOrder => {
+        const localOrder = existingOrders.find(lo => lo.id === fbOrder.id);
+        return { ...fbOrder, slips: localOrder ? (localOrder.slips || []) : [] };
+      });
+
+      const wasLocked = window._db.days[dateStr] ? window._db.days[dateStr].locked : undefined;
+      window._db.days[dateStr] = { ...data, orders: mergedOrders };
+      changed = true;
+
+      // Re-render ถ้ากำลังดูวันนี้อยู่
+      if (window._currentDay === dateStr && window._currentPage === 'day') {
+        renderDay();
+      }
+    });
+
+    if (changed) {
+      saveDB();
+      renderDashboard();
+      setSyncStatus('synced');
+    }
+  }, (err) => {
+    console.error('onSnapshot error', err);
+    setSyncStatus('error', '🔴 Realtime sync ขาด');
+  });
+
+  setSyncStatus('online', '🟢 Realtime Sync');
+}
+
+// =============================================
+//  MANUAL SYNC (ปุ่ม Sync ตอนนี้)
+// =============================================
+window.manualSync = async function() {
+  if (!FIREBASE_CONFIGURED) {
+    toast('ยังไม่ได้ตั้งค่า Firebase Config', 'error');
+    return;
+  }
+  if (!navigator.onLine) {
+    toast('ไม่มีอินเทอร์เน็ต', 'warning');
+    return;
+  }
+  const ok = await loadFromFirestore();
+  if (ok) {
+    renderDashboard();
+    if (window._currentPage === 'dates') renderDates();
+    if (window._currentPage === 'day') renderDay();
+    toast('Sync สำเร็จ ✅', 'success');
+  }
+};
+
+// =============================================
+//  UPLOAD LOCAL → FIREBASE (สำหรับ manual push)
+// =============================================
+window.uploadLocalToFirebase = async function() {
+  if (!FIREBASE_CONFIGURED) { toast('ยังไม่ได้ตั้งค่า Firebase Config', 'error'); return; }
+  if (!navigator.onLine) { toast('ไม่มีอินเทอร์เน็ต', 'warning'); return; }
+  showConfirm('อัปโหลดไป Firebase', 'อัปโหลดข้อมูล LocalStorage ทั้งหมดไปยัง Firebase Firestore?', async () => {
+    const dates = Object.keys(window._db.days);
+    if (!dates.length) { toast('ไม่มีข้อมูลให้อัปโหลด', 'warning'); return; }
+    setSyncStatus('saving', `🔵 กำลังอัปโหลด ${dates.length} วัน...`);
+    let count = 0;
+    for (const dateStr of dates) {
+      await saveDayToFirestore(dateStr);
+      count++;
+    }
+    setSyncStatus('synced');
+    toast(`อัปโหลดสำเร็จ ${count} วัน ✅`, 'success');
+  });
+};
+
+// =============================================
+//  MIGRATE FROM V1.1 LOCALSTORAGE → FIREBASE
+// =============================================
+window.migrateFromLocalStorage = async function() {
+  if (!FIREBASE_CONFIGURED) { toast('ยังไม่ได้ตั้งค่า Firebase Config', 'error'); return; }
+  if (!navigator.onLine) { toast('ไม่มีอินเทอร์เน็ต', 'warning'); return; }
+
+  const v1Raw = localStorage.getItem('corn_shop_v1');
+  if (!v1Raw) {
+    toast('ไม่พบข้อมูล V1.1 (corn_shop_v1)', 'warning');
+    return;
+  }
+  let v1Data;
+  try { v1Data = JSON.parse(v1Raw); } catch(e) { toast('ไฟล์ V1.1 เสียหาย', 'error'); return; }
+
+  const dates = Object.keys(v1Data.days || {});
+  if (!dates.length) { toast('ไม่มีข้อมูลวันใน V1.1', 'warning'); return; }
+
+  showConfirm(
+    '📦 Migrate V1.1 → Firebase',
+    `พบข้อมูล ${dates.length} วัน จาก V1.1\nจะนำเข้า Firestore ทั้งหมด\n\n(LocalStorage เดิมจะยังคงอยู่ ไม่ถูกลบ)`,
+    async () => {
+      setSyncStatus('saving', `🔵 Migrate ${dates.length} วัน...`);
+      // Merge v1 data into current db
+      for (const dateStr of dates) {
+        if (!window._db.days[dateStr]) {
+          window._db.days[dateStr] = v1Data.days[dateStr];
+        } else {
+          // ถ้ามีอยู่แล้ว ใช้ของใหม่กว่า (ไม่ overwrite)
+        }
+        await saveDayToFirestore(dateStr);
+      }
+      saveDB();
+      renderDashboard();
+      setSyncStatus('synced');
+      toast(`Migrate สำเร็จ ${dates.length} วัน ✅`, 'success');
+    },
+    '📦'
+  );
+};
+
+// =============================================
+//  EXPOSE FIREBASE SAVE FUNCTION TO GLOBAL
+//  (ให้ saveDB() เรียกได้จาก non-module scope)
+// =============================================
+window._saveDayToFirestore = saveDayToFirestore;
+window._loadFromFirestore = loadFromFirestore;
+window._startRealtimeSync = startRealtimeSync;
+window._FIREBASE_CONFIGURED = FIREBASE_CONFIGURED;
+
+// =============================================
+//  INIT FIREBASE ON LOAD
+// =============================================
+window.addEventListener('load', () => {
+  if (FIREBASE_CONFIGURED) {
+    if (navigator.onLine) {
+      loadFromFirestore().then(ok => {
+        if (ok) {
+          renderDashboard();
+          startRealtimeSync();
+        }
+      });
+    } else {
+      setSyncStatus('offline');
+    }
+  } else {
+    setSyncStatus('offline', '⚠️ ยังไม่ได้ตั้งค่า Firebase');
+    const badge = document.getElementById('fb-status-badge');
+    if (badge) {
+      badge.textContent = '⚠️ ยังไม่ได้ตั้งค่า Firebase Config';
+      badge.className = 'badge badge-unpaid';
+    }
+    const lastSyncEl = document.getElementById('fb-last-sync');
+    if (lastSyncEl) lastSyncEl.textContent = 'ใส่ค่า firebaseConfig แล้วบันทึกไฟล์ใหม่';
+  }
+});
+</script>
+
 <script>
 // =============================================
-//  DATA STORE
+//  DATA STORE (V2.0 — เพิ่ม Firebase hooks)
 // =============================================
-const DB_KEY = 'corn_shop_v1';
+const DB_KEY = 'corn_shop_v2';
 let db = { days: {}, settings: { dark: false, buddhistYear: true } };
+window._db = db; // expose ให้ module script เข้าถึง
 
 function loadDB() {
   try {
     const raw = localStorage.getItem(DB_KEY);
-    if (raw) db = JSON.parse(raw);
-    if (!db.days) db.days = {};
-    if (!db.settings) db.settings = { dark: false, buddhistYear: true };
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      db.days = parsed.days || {};
+      db.settings = parsed.settings || { dark: false, buddhistYear: true };
+      window._db = db;
+    }
   } catch(e) { console.error('loadDB', e); }
 }
 
 function saveDB() {
-  try { localStorage.setItem(DB_KEY, JSON.stringify(db)); }
-  catch(e) { toast('พื้นที่เก็บข้อมูลเต็ม กรุณาลบรูปเก่า', 'error'); }
+  try {
+    localStorage.setItem(DB_KEY, JSON.stringify(db));
+    window._db = db;
+  } catch(e) { toast('พื้นที่เก็บข้อมูลเต็ม กรุณาลบรูปเก่า', 'error'); }
+}
+
+// saveDB พร้อม sync Firebase — ใช้แทน saveDB() เมื่อแก้ไขข้อมูลวัน
+function saveAndSync(dateStr) {
+  saveDB();
+  if (typeof window._saveDayToFirestore === 'function' && window._FIREBASE_CONFIGURED) {
+    window._saveDayToFirestore(dateStr);
+  }
 }
 
 // =============================================
@@ -1145,18 +1579,18 @@ function moneyFmt(n) { return '฿' + numFmt(n); }
 //  NAVIGATION
 // =============================================
 let currentPage = 'dashboard';
+window._currentPage = currentPage;
 
 function navigate(page) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-' + page).classList.add('active');
   currentPage = page;
+  window._currentPage = page;
 
-  // Update nav
   document.querySelectorAll('[data-page]').forEach(el => {
     el.classList.toggle('active', el.dataset.page === page);
   });
 
-  // Render on navigate
   if (page === 'dashboard') renderDashboard();
   if (page === 'dates') renderDates();
   if (page === 'unpaid') renderUnpaid();
@@ -1269,7 +1703,7 @@ function addDate() {
   if (!val) return toast('กรุณาเลือกวันที่', 'error');
   if (db.days[val]) { closeModal('modal-add-date'); openDay(val); return; }
   getDay(val);
-  saveDB();
+  saveAndSync(val);
   closeModal('modal-add-date');
   renderDates();
   toast('เพิ่มวันที่สำเร็จ ✅', 'success');
@@ -1279,17 +1713,21 @@ function addDate() {
 //  DAY DETAIL
 // =============================================
 let currentDay = '';
+window._currentDay = currentDay;
 
 function openDay(dateStr) {
   currentDay = dateStr;
+  window._currentDay = dateStr;
   navigate('day');
   renderDay();
 }
 
 function goToday() {
   const today = todayStr();
-  if (!db.days[today]) getDay(today);
-  saveDB();
+  if (!db.days[today]) {
+    getDay(today);
+    saveAndSync(today);
+  }
   openDay(today);
 }
 
@@ -1304,7 +1742,6 @@ function renderDay() {
   document.getElementById('day-add-order-btn').style.display = locked ? 'none' : '';
   document.getElementById('day-lock-btn').textContent = locked ? '🔓 ปลดล็อก' : '🔒 ปิดวัน';
 
-  // Summary grid
   const grid = document.getElementById('day-summary-grid');
   grid.innerHTML = `
     <div class="summary-card"><div class="label">ข้าวโพดทั้งหมด</div><div class="value">${numFmt(day.totalKg)}<span class="unit">กก.</span></div></div>
@@ -1324,7 +1761,6 @@ function renderDay() {
     alert.innerHTML = `<div class="alert alert-danger">⚠️ ข้าวโพดไม่พอ! ขาดอยู่ ${numFmt(Math.abs(c.remaining))} กก.</div>`;
   } else { alert.innerHTML = ''; }
 
-  // Orders
   renderOrders();
 }
 
@@ -1347,18 +1783,19 @@ function renderOrders() {
     else if (paid > 0) { status = 'จ่ายบางส่วน'; statusClass = 'badge-partial'; }
     else { status = 'ยังไม่จ่าย'; statusClass = 'badge-unpaid'; }
 
-    const hasSlips = o.slips && o.slips.length;
+    const hasSlips = o.slips && o.slips.filter(s => !s.deleted && s.data).length > 0;
+    const slipCount = hasSlips ? o.slips.filter(s => !s.deleted && s.data).length : 0;
     const slipBadge = hasSlips
-      ? `<span class="badge" style="background:#dbeafe;color:#1d4ed8;font-size:0.7rem;">📎 มีหลักฐาน ${o.slips.length} รูป</span>`
+      ? `<span class="badge" style="background:#dbeafe;color:#1d4ed8;font-size:0.7rem;">📎 มีหลักฐาน ${slipCount} รูป</span>`
       : `<span class="badge" style="background:#f3f4f6;color:#6b7280;font-size:0.7rem;">ยังไม่มีหลักฐาน</span>`;
 
     const typeBadge = o.type === 'booking'
       ? `<span class="badge badge-booking">จอง</span>`
       : `<span class="badge badge-walkin">หน้าร้าน</span>`;
 
-    const slipsHtml = hasSlips ? o.slips.map((s, si) =>
+    const slipsHtml = (o.slips || []).filter(s => s.data || s.deleted).map((s, si) =>
       `<div class="slip-wrapper">${s.deleted ? `<div style="width:64px;height:64px;border-radius:10px;background:var(--bg-input);display:flex;align-items:center;justify-content:center;font-size:0.65rem;color:var(--text-muted);text-align:center;border:2px dashed var(--border);">ลบแล้ว</div>` : `<img class="slip-thumb" src="${s.data}" onclick="openLightbox('${s.data}')" loading="lazy">${!day.locked ? `<button class="slip-del" onclick="deleteSlip(${i},${si})">✕</button>` : ''}`}</div>`
-    ).join('') : '';
+    ).join('');
 
     const div = document.createElement('div');
     div.className = 'order-card';
@@ -1453,7 +1890,7 @@ function saveDaySettings() {
   day.note = document.getElementById('ds-note').value;
   if (tempExpenses) day.expenses = tempExpenses;
   tempExpenses = [];
-  saveDB();
+  saveAndSync(currentDay);
   closeModal('modal-day-settings');
   renderDay();
   toast('บันทึกตั้งค่าวันสำเร็จ ✅', 'success');
@@ -1467,14 +1904,14 @@ function toggleDayLock() {
   if (day.locked) {
     showConfirm('ปลดล็อกวัน', 'ต้องการปลดล็อกวันนี้? คุณจะสามารถแก้ไขข้อมูลได้อีกครั้ง', () => {
       day.locked = false;
-      saveDB();
+      saveAndSync(currentDay);
       renderDay();
       toast('ปลดล็อกแล้ว 🔓', 'success');
     });
   } else {
     showConfirm('ปิดวัน', 'ต้องการปิดวันนี้? ข้อมูลจะถูกล็อกไม่ให้แก้ไข', () => {
       day.locked = true;
-      saveDB();
+      saveAndSync(currentDay);
       renderDay();
       toast('ปิดวันสำเร็จ 🔒', 'success');
     });
@@ -1601,7 +2038,7 @@ function saveOrder() {
     day.orders.push(order);
     toast('เพิ่มออเดอร์สำเร็จ ✅', 'success');
   }
-  saveDB();
+  saveAndSync(currentDay);
   closeModal('modal-order');
   renderDay();
 }
@@ -1610,7 +2047,7 @@ function deleteOrder(i) {
   showConfirm('ลบออเดอร์', 'ต้องการลบออเดอร์นี้?', () => {
     const day = getDay(currentDay);
     day.orders.splice(i, 1);
-    saveDB();
+    saveAndSync(currentDay);
     renderDay();
     toast('ลบออเดอร์แล้ว', 'success');
   });
@@ -1620,7 +2057,7 @@ function deleteSlip(orderIdx, slipIdx) {
   const day = getDay(currentDay);
   day.orders[orderIdx].slips[slipIdx].deleted = true;
   day.orders[orderIdx].slips[slipIdx].data = '';
-  saveDB();
+  saveAndSync(currentDay);
   renderDay();
   toast('ลบรูปแล้ว', 'success');
 }
@@ -1628,7 +2065,6 @@ function deleteSlip(orderIdx, slipIdx) {
 // =============================================
 //  QUICK ADD
 // =============================================
-// V1.1: ถ้ากำลังเปิดหน้า day อยู่ ใช้ currentDay; ไม่งั้นใช้ todayStr()
 function getQuickAddTargetDay() {
   if (currentPage === 'day' && currentDay) return currentDay;
   return todayStr();
@@ -1677,7 +2113,7 @@ function saveQuickAdd() {
     slips: [],
     createdAt: new Date().toISOString()
   });
-  saveDB();
+  saveAndSync(targetDate);
   closeModal('modal-quick-add');
   renderDashboard();
   if (currentPage === 'day' && currentDay === targetDate) renderDay();
@@ -1852,7 +2288,6 @@ function renderReport() {
     <div class="alert alert-success">🏆 วันขายดีที่สุด: ${fmtDate(bestSaleDay)} ยอด ${moneyFmt(bestSaleVal)}</div>
   ` : '';
 
-  // Charts
   const chartOpts = (label, color) => ({
     type: 'bar',
     data: { labels: dayLabels, datasets: [{ label, data: [], backgroundColor: color, borderRadius: 6 }] },
@@ -1923,20 +2358,19 @@ function exportBackup() {
   const blob = new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `corn_backup_${todayStr()}.json`;
+  a.download = `corn_backup_v2_${todayStr()}.json`;
   a.click();
   toast('Export สำเร็จ ✅', 'success');
 }
 
 // =============================================
-//  EXPORT CSV รายวัน (V1.1)
+//  EXPORT CSV รายวัน
 // =============================================
 function exportDayCSV() {
   if (!currentDay) return toast('ไม่พบข้อมูลวัน', 'error');
   const day = getDay(currentDay);
   const c = calcDay(currentDay);
 
-  // Header rows (day summary)
   const summaryRows = [
     ['สรุปยอดวัน', fmtDate(currentDay)],
     ['ข้าวโพดทั้งหมด (กก.)', day.totalKg],
@@ -1973,7 +2407,6 @@ function exportDayCSV() {
     }).join(',')
   ).join('\r\n');
 
-  // BOM for Thai character support in Excel
   const bom = '\uFEFF';
   const blob = new Blob([bom + csvContent], { type: 'text/csv;charset=utf-8;' });
   const a = document.createElement('a');
@@ -1990,9 +2423,13 @@ function importBackup(evt) {
   reader.onload = (e) => {
     showConfirm('Import ข้อมูล', 'ข้อมูลปัจจุบันจะถูกแทนที่ทั้งหมด ต้องการดำเนินการต่อ?', () => {
       try {
-        db = JSON.parse(e.target.result);
+        const parsed = JSON.parse(e.target.result);
+        db.days = parsed.days || {};
+        db.settings = parsed.settings || db.settings;
         saveDB();
+        window._db = db;
         renderDashboard();
+        applySettings();
         toast('Import สำเร็จ ✅', 'success');
       } catch(err) { toast('ไฟล์ไม่ถูกต้อง', 'error'); }
     });
@@ -2020,8 +2457,10 @@ function deleteOldImages() {
 
 function confirmDeleteAll() {
   showConfirm('⚠️ ลบข้อมูลทั้งหมด', 'ข้อมูลทั้งหมดจะถูกลบและไม่สามารถกู้คืนได้!', () => {
-    db = { days: {}, settings: db.settings };
+    db.days = {};
+    db.settings = db.settings;
     saveDB();
+    window._db = db;
     renderDashboard();
     toast('ลบข้อมูลทั้งหมดแล้ว', 'warning');
   }, '⚠️');
@@ -2037,7 +2476,6 @@ function openModal(id) {
 
 function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
-// Close modal on overlay click
 document.querySelectorAll('.modal-overlay').forEach(overlay => {
   overlay.addEventListener('click', (e) => {
     if (e.target === overlay) overlay.classList.remove('active');
@@ -2092,14 +2530,12 @@ function insertSampleData() {
   const today = todayStr();
   const d = new Date();
 
-  // Helper to offset date
   function offsetDate(days) {
     const dt = new Date(d);
     dt.setDate(dt.getDate() + days);
     return dt.toISOString().slice(0, 10);
   }
 
-  // Today
   const todayDay = getDay(today);
   if (!todayDay.totalKg) {
     todayDay.totalKg = 1000;
@@ -2118,7 +2554,6 @@ function insertSampleData() {
     ];
   }
 
-  // Yesterday
   const y1 = offsetDate(-1);
   const day1 = getDay(y1);
   if (!day1.totalKg) {
@@ -2132,7 +2567,6 @@ function insertSampleData() {
     day1.locked = false;
   }
 
-  // 2 days ago
   const y2 = offsetDate(-2);
   const day2 = getDay(y2);
   if (!day2.totalKg) {
@@ -2157,7 +2591,6 @@ function init() {
   applyTheme();
   renderDashboard();
 
-  // Set today as default date for add
   document.getElementById('new-date-input').value = todayStr();
   document.getElementById('rpt-from').value = todayStr();
   document.getElementById('rpt-to').value = todayStr();
