@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-title" content="ร้านข้าวโพด">
 <meta name="theme-color" content="#f5c842">
 <meta name="mobile-web-app-capable" content="yes">
-<title>ระบบจัดการร้านข้าวโพด V3</title>
+<title>ระบบจัดการร้านข้าวโพด V3.1</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -350,6 +350,57 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
   .modal { border-radius: 20px; max-height: 85vh; }
   .modal-overlay { align-items: center; }
 }
+
+/* EASY CHECK PAGE */
+.easycheck-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.easycheck-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; min-width: 560px; }
+.easycheck-table th {
+  background: var(--corn-yellow); color: var(--text); font-weight: 700;
+  padding: 10px 8px; text-align: center; border: 1px solid var(--corn-yellow-dark);
+  position: sticky; top: 0; z-index: 5; white-space: nowrap;
+}
+.easycheck-table td {
+  padding: 9px 8px; border: 1px solid var(--border); vertical-align: middle;
+  background: var(--bg-card); color: var(--text);
+}
+.easycheck-table tr:nth-child(even) td { background: var(--bg-input); }
+.easycheck-table tr:hover td { background: var(--corn-yellow-light); }
+[data-theme="dark"] .easycheck-table tr:hover td { background: rgba(245,200,66,0.08); }
+.easycheck-table td.col-name { font-weight: 700; min-width: 90px; }
+.easycheck-table td.col-num { text-align: right; white-space: nowrap; }
+.easycheck-table td.col-cb { text-align: center; }
+.easycheck-table td.col-note input {
+  width: 100%; border: 1px solid var(--border); border-radius: 6px;
+  padding: 5px 8px; font-size: 0.82rem; background: var(--bg-input); color: var(--text); font-family: inherit;
+}
+.easycheck-table td.col-note input:focus { outline: none; border-color: var(--corn-yellow); }
+.cb-big {
+  width: 24px; height: 24px; cursor: pointer; accent-color: var(--corn-green);
+  border-radius: 4px;
+}
+.easycheck-row-paid td { background: #f0fdf4 !important; }
+.easycheck-row-delivered td { background: #eff6ff !important; }
+.easycheck-row-done td { background: #f0fdf4 !important; opacity: 0.7; }
+[data-theme="dark"] .easycheck-row-paid td    { background: rgba(74,140,63,0.12) !important; }
+[data-theme="dark"] .easycheck-row-delivered td { background: rgba(59,130,246,0.08) !important; }
+[data-theme="dark"] .easycheck-row-done td   { background: rgba(74,140,63,0.12) !important; opacity: 0.7; }
+.easycheck-date-bar {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  background: var(--bg-card); padding: 10px 0 14px; position: sticky; top: 0; z-index: 10;
+}
+.easycheck-date-bar input[type=date] {
+  border: 2px solid var(--border); border-radius: var(--radius-sm);
+  padding: 8px 12px; background: var(--bg-input); color: var(--text);
+  font-size: 0.95rem; font-family: inherit; min-height: 42px;
+}
+.easycheck-date-bar input[type=date]:focus { outline: none; border-color: var(--corn-yellow); }
+.easycheck-summary {
+  display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px;
+}
+.easycheck-stat { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 8px 14px; font-size: 0.82rem; flex: 1; min-width: 90px; text-align: center; }
+.easycheck-stat .ec-val { font-size: 1.1rem; font-weight: 800; }
+.easycheck-stat .ec-lbl { color: var(--text-muted); font-size: 0.75rem; }
 </style>
 </head>
 <body>
@@ -367,12 +418,13 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
 <nav id="sidebar">
   <div class="sidebar-logo">
     <h1>🌽 ร้านข้าวโพด</h1>
-    <p>V3.0 Firebase Sync</p>
+    <p>V3.1 Firebase Sync</p>
   </div>
   <div class="sidebar-nav">
     <button class="sidebar-nav-item active" onclick="App.navigate('dashboard')" data-page="dashboard"><span class="icon">🏠</span>แดชบอร์ด</button>
     <button class="sidebar-nav-item" onclick="App.navigate('dates')" data-page="dates"><span class="icon">📅</span>รายการวันที่</button>
     <button class="sidebar-nav-item" onclick="App.navigate('unpaid')" data-page="unpaid"><span class="icon">💰</span>ยอดค้างจ่าย</button>
+    <button class="sidebar-nav-item" onclick="App.navigate('easycheck')" data-page="easycheck"><span class="icon">✅</span>เช็กงาน</button>
     <button class="sidebar-nav-item" onclick="App.navigate('search')" data-page="search"><span class="icon">🔍</span>ค้นหาลูกค้า</button>
     <button class="sidebar-nav-item" onclick="App.navigate('report')" data-page="report"><span class="icon">📊</span>รายงาน</button>
     <button class="sidebar-nav-item" onclick="App.navigate('settings')" data-page="settings"><span class="icon">⚙️</span>ตั้งค่า</button>
@@ -447,6 +499,7 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
       <button class="btn btn-sm btn-outline" id="day-lock-btn" onclick="App.toggleDayLock()">🔒 ปิดวัน</button>
       <button class="btn btn-sm btn-outline" onclick="App.showDayCopyMenu()" title="คัดลอกสรุป">📋</button>
       <button class="btn btn-sm btn-outline" onclick="App.exportDayCSV()" title="Export CSV">📥</button>
+      <button class="btn btn-sm btn-danger" onclick="App.deleteCurrentDay()" title="ลบวันนี้">🗑️</button>
     </div>
   </div>
   <div class="page-content">
@@ -585,15 +638,55 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
       <div class="card-body text-center">
         <div style="font-size:2.5rem;">🌽</div>
         <div class="font-bold mt-8">ระบบจัดการร้านข้าวโพด</div>
-        <div class="text-muted text-sm mt-8">Version 3.0.0 • Firebase Firestore Sync</div>
+        <div class="text-muted text-sm mt-8">Version 3.1.0 • Firebase Firestore Sync</div>
         <div class="text-muted text-sm mt-8">Single Source of Truth • Clean Architecture</div>
       </div>
     </div>
     <div class="card mb-16">
       <div class="card-body">
-        <div class="font-bold mb-8 text-sm">📌 หมายเหตุ V3.0</div>
-        <div class="text-sm text-muted">รูปหลักฐานสลิปเก็บเฉพาะเครื่องนี้ (local-only)<br>ข้อมูลออเดอร์ทุกอย่าง sync ผ่าน Firebase ปกติ</div>
+        <div class="font-bold mb-8 text-sm">📌 หมายเหตุ V3.1</div>
+        <div class="text-sm text-muted">รูปหลักฐานสลิปเก็บเฉพาะเครื่องนี้ (local-only)<br>ข้อมูลออเดอร์ทุกอย่าง sync ผ่าน Firebase ปกติ<br>✅ Easy Check, ลบวัน, ลบข้ามเครื่อง</div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: EASY CHECK -->
+<div class="page" id="page-easycheck">
+  <div class="page-header">
+    <button class="btn-back" onclick="App.navigate('dashboard')">‹</button>
+    <h2>✅ เช็กงาน</h2>
+    <button class="btn btn-sm btn-outline" onclick="App.refreshEasyCheck()" title="รีเฟรช">🔄</button>
+  </div>
+  <div class="page-content">
+    <div class="easycheck-date-bar">
+      <span style="font-weight:700;font-size:0.9rem;">📅 วันที่:</span>
+      <input type="date" id="ec-date-input" onchange="App.renderEasyCheck()">
+      <button class="btn btn-sm btn-primary" onclick="App.ecGoToday()">วันนี้</button>
+    </div>
+    <div class="easycheck-summary" id="ec-summary"></div>
+    <div class="easycheck-table-wrap">
+      <table class="easycheck-table" id="ec-table">
+        <thead>
+          <tr>
+            <th style="width:36px;">#</th>
+            <th class="col-name">ชื่อลูกค้า</th>
+            <th style="width:60px;">กิโล</th>
+            <th style="width:80px;">ยอดรวม</th>
+            <th style="width:70px;">จ่ายแล้ว</th>
+            <th style="width:60px;">ค้าง</th>
+            <th style="width:54px;">💰จ่าย</th>
+            <th style="width:54px;">🚚ส่ง</th>
+            <th>หมายเหตุ</th>
+          </tr>
+        </thead>
+        <tbody id="ec-tbody"></tbody>
+      </table>
+    </div>
+    <div id="ec-empty" class="empty-state" style="display:none;">
+      <div class="empty-icon">📋</div>
+      <div class="empty-title">ไม่มีออเดอร์ในวันนี้</div>
+      <div class="empty-sub">เลือกวันที่มีออเดอร์ หรือเพิ่มออเดอร์ใหม่</div>
     </div>
   </div>
 </div>
@@ -605,8 +698,8 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
 <nav id="bottom-nav">
   <button class="nav-item active" onclick="App.navigate('dashboard')" data-page="dashboard"><span class="nav-icon">🏠</span>แดชบอร์ด</button>
   <button class="nav-item" onclick="App.navigate('dates')" data-page="dates"><span class="nav-icon">📅</span>วันที่</button>
+  <button class="nav-item" onclick="App.navigate('easycheck')" data-page="easycheck"><span class="nav-icon">✅</span>เช็กงาน</button>
   <button class="nav-item" onclick="App.navigate('unpaid')" data-page="unpaid"><span class="nav-icon">💰</span>ค้างจ่าย</button>
-  <button class="nav-item" onclick="App.navigate('report')" data-page="report"><span class="nav-icon">📊</span>รายงาน</button>
   <button class="nav-item" onclick="App.navigate('settings')" data-page="settings"><span class="nav-icon">⚙️</span>ตั้งค่า</button>
 </nav>
 
@@ -838,12 +931,29 @@ async function deleteDay(dateStr) {
   try { await deleteDoc(dayRef(dateStr)); } catch(e) { console.error('deleteDay', e); }
 }
 
+// Delete ALL days from Firestore (for cross-device wipe)
+async function deleteAllDays() {
+  if (!IS_CONFIGURED || !fsdb) return false;
+  try {
+    const snap = await getDocs(daysCol());
+    const promises = [];
+    snap.forEach(ds => promises.push(deleteDoc(ds.ref)));
+    await Promise.all(promises);
+    return true;
+  } catch(e) {
+    console.error('deleteAllDays', e);
+    return false;
+  }
+}
+
 // Realtime snapshot
 function startSnapshot() {
   if (!IS_CONFIGURED || !fsdb) return;
   if (unsubSnap) unsubSnap();
 
   unsubSnap = onSnapshot(daysCol(), (snapshot) => {
+    // If app is resetting, ignore incoming snapshots (prevent re-upload from old cache)
+    if (window._isResetting) return;
     let changed = false;
     snapshot.docChanges().forEach(change => {
       const dateStr = change.doc.id;
@@ -881,6 +991,7 @@ window._firebase = {
   loadAll,
   saveDay,
   deleteDay,
+  deleteAllDays,
   startSnapshot,
   stopSnapshot
 };
@@ -938,6 +1049,7 @@ window.DB = {
 };
 
 const CACHE_KEY = 'corn_shop_v3_cache';
+window._isResetting = false; // Flag to block sync/upload during full reset
 
 // =============================================
 //  App NAMESPACE — all functions here
@@ -982,10 +1094,12 @@ const App = window.App = (() => {
   //  FIREBASE SAVE (debounced per day)
   // =============================================
   function syncDay(dateStr) {
+    if (window._isResetting) return; // block sync during reset
     saveCache();
     if (!window._firebase || !window._firebase.IS_CONFIGURED) return;
     clearTimeout(_saveDebounce[dateStr]);
     _saveDebounce[dateStr] = setTimeout(async () => {
+      if (window._isResetting) return; // double-check after debounce
       setSyncStatus('saving');
       try {
         await window._firebase.saveDay(dateStr);
@@ -1126,6 +1240,7 @@ const App = window.App = (() => {
     if (page === 'unpaid')    renderUnpaid();
     if (page === 'report')    renderReport();
     if (page === 'settings')  applySettings();
+    if (page === 'easycheck') renderEasyCheck();
     if (page === 'search') {
       const inp = document.getElementById('search-input');
       if (inp) inp.value = '';
@@ -1143,6 +1258,7 @@ const App = window.App = (() => {
     if (currentPage === 'search')    renderSearch(document.getElementById('search-input') ? document.getElementById('search-input').value : '');
     if (currentPage === 'day')       renderDayPage();
     if (currentPage === 'report')    renderReport();
+    if (currentPage === 'easycheck') renderEasyCheck();
     // Also always refresh dashboard data silently
     if (currentPage !== 'dashboard') renderDashboard();
   }
@@ -1927,13 +2043,218 @@ const App = window.App = (() => {
     });
   }
 
-  function confirmDeleteAll() {
-    showConfirm('⚠️ ลบข้อมูลทั้งหมด', 'ข้อมูลทั้งหมดจะถูกลบและไม่สามารถกู้คืนได้!', () => {
+  async function confirmDeleteAll() {
+    showConfirm('⚠️ ลบข้อมูลทั้งหมด', 'ข้อมูลทั้งหมดจะถูกลบจากทุกเครื่อง (Firebase + Local) และไม่สามารถกู้คืนได้!', async () => {
+      // 1. Set resetting flag — blocks syncDay, snapshot callbacks
+      window._isResetting = true;
+
+      // 2. Stop realtime snapshot to prevent re-download
+      if (window._firebase && window._firebase.stopSnapshot) {
+        window._firebase.stopSnapshot();
+      }
+
+      setSyncStatus('saving', '🔵 กำลังลบข้อมูล...');
+
+      // 3. Delete all Firestore documents (phones will receive 'removed' events)
+      let fbOk = false;
+      if (window._firebase && window._firebase.IS_CONFIGURED && navigator.onLine) {
+        fbOk = await window._firebase.deleteAllDays();
+      }
+
+      // 4. Clear local DB
       window.DB.days = {};
+
+      // 5. Clear localStorage cache
+      try { localStorage.removeItem(CACHE_KEY); } catch(e) {}
       saveCache();
+
+      // 6. Render everything empty
       renderAll();
-      toast('ลบข้อมูลทั้งหมดแล้ว', 'warning');
+
+      // 7. Re-enable after brief delay (let Firestore settle)
+      setTimeout(() => {
+        window._isResetting = false;
+        if (window._firebase && window._firebase.IS_CONFIGURED && navigator.onLine) {
+          window._firebase.startSnapshot();
+          setSyncStatus('synced');
+        } else {
+          setSyncStatus('offline');
+        }
+      }, 1500);
+
+      if (fbOk) {
+        toast('ลบข้อมูลทั้งหมดแล้ว (ทุกเครื่อง) ✅', 'success');
+      } else if (!navigator.onLine) {
+        toast('ลบ Local แล้ว (Offline — Firebase จะลบเมื่อออนไลน์)', 'warning');
+      } else {
+        toast('ลบ Local แล้ว', 'success');
+      }
     }, '⚠️');
+  }
+
+  // =============================================
+  //  DELETE CURRENT DAY
+  // =============================================
+  function deleteCurrentDay() {
+    if (!currentDay) return toast('ไม่พบข้อมูลวัน', 'error');
+    const day = getDay(currentDay);
+    showConfirm(
+      '🗑️ ลบวันนี้',
+      `ลบวัน ${fmtDate(currentDay)} ทั้งหมด ${day.orders.length} ออเดอร์? ไม่สามารถกู้คืนได้`,
+      async () => {
+        const dateToDelete = currentDay;
+
+        // Remove from local DB
+        delete window.DB.days[dateToDelete];
+        saveCache();
+
+        // Remove from Firestore (all devices will get 'removed' event)
+        if (window._firebase && window._firebase.IS_CONFIGURED && navigator.onLine) {
+          window._firebase.deleteDay(dateToDelete).catch(() => {});
+        }
+
+        // Navigate back and refresh
+        currentDay = '';
+        navigate('dates');
+        renderDates();
+        renderDashboard();
+        toast(`ลบวัน ${fmtDate(dateToDelete)} แล้ว ✅`, 'success');
+      },
+      '🗑️'
+    );
+  }
+
+  // =============================================
+  //  EASY CHECK
+  // =============================================
+  function renderEasyCheck() {
+    // Set date to today if not set
+    const ecInput = document.getElementById('ec-date-input');
+    if (ecInput && !ecInput.value) {
+      ecInput.value = todayStr();
+    }
+    const dateStr = ecInput ? ecInput.value : todayStr();
+    _renderEasyCheckTable(dateStr);
+  }
+
+  function refreshEasyCheck() {
+    renderEasyCheck();
+    toast('รีเฟรชแล้ว ✅', 'success');
+  }
+
+  function ecGoToday() {
+    const ecInput = document.getElementById('ec-date-input');
+    if (ecInput) { ecInput.value = todayStr(); }
+    renderEasyCheck();
+  }
+
+  function _renderEasyCheckTable(dateStr) {
+    const tbody  = document.getElementById('ec-tbody');
+    const empty  = document.getElementById('ec-empty');
+    const table  = document.getElementById('ec-table');
+    const summary = document.getElementById('ec-summary');
+    if (!tbody || !empty || !table) return;
+
+    // Ensure the day object exists
+    const day = window.DB.days[dateStr];
+    const orders = day ? (day.orders || []) : [];
+
+    if (!orders.length) {
+      table.style.display = 'none';
+      empty.style.display = '';
+      if (summary) summary.innerHTML = '';
+      return;
+    }
+
+    table.style.display = '';
+    empty.style.display = 'none';
+
+    // Summary stats
+    let totalKg = 0, totalAmt = 0, totalPaid = 0, cntPaidChecked = 0, cntDelivered = 0;
+    orders.forEach(o => {
+      const tot = parseFloat(o.kg||0)*parseFloat(o.price||0);
+      totalKg   += parseFloat(o.kg||0);
+      totalAmt  += tot;
+      totalPaid += parseFloat(o.paid||0);
+      if (o.paidChecked)      cntPaidChecked++;
+      if (o.deliveredChecked) cntDelivered++;
+    });
+
+    if (summary) summary.innerHTML = `
+      <div class="easycheck-stat"><div class="ec-val">${orders.length}</div><div class="ec-lbl">ออเดอร์</div></div>
+      <div class="easycheck-stat"><div class="ec-val">${numFmt(totalKg)}</div><div class="ec-lbl">กก.</div></div>
+      <div class="easycheck-stat"><div class="ec-val" style="color:var(--corn-green);">${moneyFmt(totalPaid)}</div><div class="ec-lbl">จ่ายแล้ว</div></div>
+      <div class="easycheck-stat"><div class="ec-val" style="color:#dc2626;">${moneyFmt(totalAmt-totalPaid)}</div><div class="ec-lbl">ค้างจ่าย</div></div>
+      <div class="easycheck-stat"><div class="ec-val">${cntPaidChecked}/${orders.length}</div><div class="ec-lbl">✅ติ๊กจ่าย</div></div>
+      <div class="easycheck-stat"><div class="ec-val">${cntDelivered}/${orders.length}</div><div class="ec-lbl">🚚ส่งแล้ว</div></div>
+    `;
+
+    tbody.innerHTML = '';
+    orders.forEach((o, i) => {
+      const total  = parseFloat(o.kg||0)*parseFloat(o.price||0);
+      const paid   = parseFloat(o.paid||0);
+      const unpaid = total - paid;
+      const isDone = o.paidChecked && o.deliveredChecked;
+      const isPaid = o.paidChecked && !o.deliveredChecked;
+      const isDeliv = o.deliveredChecked && !o.paidChecked;
+
+      let rowClass = '';
+      if (isDone)       rowClass = 'easycheck-row-done';
+      else if (isPaid)  rowClass = 'easycheck-row-paid';
+      else if (isDeliv) rowClass = 'easycheck-row-delivered';
+
+      const tr = document.createElement('tr');
+      if (rowClass) tr.className = rowClass;
+
+      tr.innerHTML = `
+        <td style="text-align:center;color:var(--text-muted);font-size:0.8rem;">${i+1}</td>
+        <td class="col-name">${esc(o.name)}</td>
+        <td class="col-num">${numFmt(o.kg)}</td>
+        <td class="col-num">${moneyFmt(total)}</td>
+        <td class="col-num" style="color:var(--corn-green);">${moneyFmt(paid)}</td>
+        <td class="col-num" style="color:${unpaid>0?'#dc2626':'var(--corn-green)'};">${unpaid>0?moneyFmt(unpaid):'✅'}</td>
+        <td class="col-cb"><input type="checkbox" class="cb-big" ${o.paidChecked?'checked':''} onchange="App.ecTogglePaid('${dateStr}',${i},this.checked)" title="จ่ายแล้ว"></td>
+        <td class="col-cb"><input type="checkbox" class="cb-big" ${o.deliveredChecked?'checked':''} onchange="App.ecToggleDelivered('${dateStr}',${i},this.checked)" title="ส่งแล้ว"></td>
+        <td class="col-note"><input type="text" value="${esc(o.ecNote||'')}" placeholder="note..." onchange="App.ecSaveNote('${dateStr}',${i},this.value)" onblur="App.ecSaveNote('${dateStr}',${i},this.value)"></td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function ecTogglePaid(dateStr, idx, checked) {
+    const day = getDay(dateStr);
+    if (!day.orders[idx]) return;
+    day.orders[idx].paidChecked = checked;
+
+    // If ticking "paid", offer to set paid = total
+    if (checked) {
+      const o = day.orders[idx];
+      const total = parseFloat(o.kg||0)*parseFloat(o.price||0);
+      const alreadyPaid = parseFloat(o.paid||0);
+      if (alreadyPaid < total) {
+        // Auto-set paid = total without asking (per spec: can auto-set)
+        day.orders[idx].paid = total;
+      }
+    }
+
+    syncDay(dateStr);
+    _renderEasyCheckTable(dateStr);
+  }
+
+  function ecToggleDelivered(dateStr, idx, checked) {
+    const day = getDay(dateStr);
+    if (!day.orders[idx]) return;
+    day.orders[idx].deliveredChecked = checked;
+    syncDay(dateStr);
+    _renderEasyCheckTable(dateStr);
+  }
+
+  function ecSaveNote(dateStr, idx, val) {
+    const day = getDay(dateStr);
+    if (!day.orders[idx]) return;
+    if (day.orders[idx].ecNote === val) return; // no change
+    day.orders[idx].ecNote = val;
+    syncDay(dateStr);
   }
 
   // =============================================
@@ -1958,6 +2279,7 @@ const App = window.App = (() => {
   async function uploadLocalToFirebase() {
     if (!window._firebase || !window._firebase.IS_CONFIGURED) { toast('ยังไม่ได้ตั้งค่า Firebase Config', 'error'); return; }
     if (!navigator.onLine) { toast('ไม่มีอินเทอร์เน็ต', 'warning'); return; }
+    if (window._isResetting) { toast('กำลังรีเซ็ตข้อมูล กรุณารอ...', 'warning'); return; }
     showConfirm('อัปโหลดไป Firebase', 'อัปโหลดข้อมูล Local ทั้งหมดไปยัง Firebase Firestore?', async () => {
       const dates = Object.keys(window.DB.days);
       if (!dates.length) { toast('ไม่มีข้อมูลให้อัปโหลด', 'warning'); return; }
@@ -2070,10 +2392,13 @@ const App = window.App = (() => {
     init, navigate, renderAll,
     renderDashboard, renderDates, renderDayPage, renderOrders,
     renderUnpaid, renderSearch, renderReport,
+    renderEasyCheck, refreshEasyCheck, ecGoToday,
+    ecTogglePaid, ecToggleDelivered, ecSaveNote,
     showAddDate, addDate, openDay, goToday,
     showDaySettings, saveDaySettings,
     addExpenseRow, updateExpense, removeExpense,
     toggleDayLock,
+    deleteCurrentDay,
     showAddOrder, editOrder, saveOrder, deleteOrder,
     calcOrderTotal, handleSlipFiles, removeTempSlip, deleteSlip,
     showQuickAdd, calcQA, saveQuickAdd,
