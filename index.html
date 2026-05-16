@@ -8,10 +8,7 @@
 <meta name="apple-mobile-web-app-title" content="ร้านข้าวโพด">
 <meta name="theme-color" content="#f5c842">
 <meta name="mobile-web-app-capable" content="yes">
-<title>ระบบจัดการร้านข้าวโพด V2.0</title>
-
-<link rel="manifest" href="data:application/json,{%22name%22:%22%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%9A%E0%B8%88%E0%B8%B1%E0%B8%94%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%99%E0%B8%82%E0%B9%89%E0%B8%B2%E0%B8%A7%E0%B9%82%E0%B8%9E%E0%B8%94%22,%22short_name%22:%22%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%99%E0%B8%82%E0%B9%89%E0%B8%B2%E0%B8%A7%E0%B9%82%E0%B8%9E%E0%B8%94%22,%22display%22:%22standalone%22,%22background_color%22:%22%23fffbeb%22,%22theme_color%22:%22%23f5c842%22,%22start_url%22:%22.%22}">
-
+<title>ระบบจัดการร้านข้าวโพด V3</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -30,7 +27,6 @@
   --corn-cream: #fffbeb;
   --corn-brown: #8b5e3c;
   --corn-brown-light: #c49a6c;
-
   --bg: #fffbeb;
   --bg-card: #ffffff;
   --bg-nav: #ffffff;
@@ -45,15 +41,12 @@
   --radius-sm: 10px;
   --nav-h: 68px;
   --fab-bottom: 84px;
-
   --status-paid: #22c55e;
   --status-partial: #f59e0b;
   --status-unpaid: #ef4444;
-
   --toast-bg: #1a1208;
   --toast-text: #fff;
 }
-
 [data-theme="dark"] {
   --bg: #1a1208;
   --bg-card: #2a1f0e;
@@ -69,7 +62,6 @@
   --toast-bg: #fdf0c0;
   --toast-text: #1a1208;
 }
-
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 16px; }
 body {
@@ -82,147 +74,90 @@ body {
   transition: background 0.3s, color 0.3s;
 }
 
-/* =============================================
-   LAYOUT
-   ============================================= */
+/* LAYOUT */
 #app { min-height: 100vh; display: flex; flex-direction: column; }
-
 .page { display: none; flex: 1; flex-direction: column; padding-bottom: calc(var(--nav-h) + 8px); }
 .page.active { display: flex; }
-
 .page-header {
   background: var(--bg-card);
   padding: 16px 20px 12px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  display: flex; align-items: center; gap: 12px;
+  position: sticky; top: 0; z-index: 100;
   border-bottom: 1px solid var(--border);
   box-shadow: 0 2px 8px var(--shadow);
 }
 .page-header h2 { font-size: 1.2rem; font-weight: 700; flex: 1; }
 .page-content { flex: 1; padding: 16px; overflow-y: auto; }
 
-/* =============================================
-   SYNC STATUS BAR (V2.0)
-   ============================================= */
+/* SYNC STATUS BAR */
 #sync-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display: flex; align-items: center; justify-content: space-between;
   padding: 6px 16px;
-  font-size: 0.78rem;
-  font-weight: 600;
+  font-size: 0.78rem; font-weight: 600;
   background: var(--bg-card);
   border-bottom: 1px solid var(--border);
-  position: sticky;
-  top: 0;
-  z-index: 99;
-  min-height: 32px;
-  transition: background 0.3s;
+  position: sticky; top: 0; z-index: 99;
+  min-height: 32px; transition: background 0.3s;
 }
-#sync-bar.bar-online { background: #dcfce7; color: #166534; }
+#sync-bar.bar-online  { background: #dcfce7; color: #166534; }
 #sync-bar.bar-offline { background: #fef3c7; color: #92400e; }
-#sync-bar.bar-saving { background: #dbeafe; color: #1e40af; }
-#sync-bar.bar-error { background: #fee2e2; color: #dc2626; }
-#sync-bar.bar-synced { background: #dcfce7; color: #166534; }
-[data-theme="dark"] #sync-bar.bar-online { background: rgba(74,140,63,0.25); color: #86efac; }
+#sync-bar.bar-saving  { background: #dbeafe; color: #1e40af; }
+#sync-bar.bar-error   { background: #fee2e2; color: #dc2626; }
+#sync-bar.bar-synced  { background: #dcfce7; color: #166534; }
+[data-theme="dark"] #sync-bar.bar-online  { background: rgba(74,140,63,0.25); color: #86efac; }
 [data-theme="dark"] #sync-bar.bar-offline { background: rgba(245,200,66,0.15); color: #fde68a; }
-[data-theme="dark"] #sync-bar.bar-saving { background: rgba(59,130,246,0.2); color: #93c5fd; }
-[data-theme="dark"] #sync-bar.bar-error { background: rgba(220,38,38,0.2); color: #fca5a5; }
-[data-theme="dark"] #sync-bar.bar-synced { background: rgba(74,140,63,0.25); color: #86efac; }
+[data-theme="dark"] #sync-bar.bar-saving  { background: rgba(59,130,246,0.2); color: #93c5fd; }
+[data-theme="dark"] #sync-bar.bar-error   { background: rgba(220,38,38,0.2); color: #fca5a5; }
+[data-theme="dark"] #sync-bar.bar-synced  { background: rgba(74,140,63,0.25); color: #86efac; }
 #sync-status-text { display: flex; align-items: center; gap: 6px; }
 #sync-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; display: inline-block; }
 #sync-bar.bar-saving #sync-dot { animation: pulse 1s infinite; }
 @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
 
-/* =============================================
-   BOTTOM NAVIGATION
-   ============================================= */
+/* BOTTOM NAVIGATION */
 #bottom-nav {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
+  position: fixed; bottom: 0; left: 0; right: 0;
   height: var(--nav-h);
   background: var(--bg-nav);
   border-top: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
+  display: flex; align-items: center; justify-content: space-around;
   z-index: 200;
   box-shadow: 0 -2px 16px var(--shadow);
   padding-bottom: env(safe-area-inset-bottom, 0);
 }
 .nav-item {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  padding: 8px 4px;
-  cursor: pointer;
-  transition: all 0.2s;
-  border: none;
-  background: none;
-  color: var(--text-muted);
-  font-size: 0.65rem;
-  font-family: inherit;
-  font-weight: 500;
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 8px 4px; cursor: pointer; transition: all 0.2s;
+  border: none; background: none; color: var(--text-muted);
+  font-size: 0.65rem; font-family: inherit; font-weight: 500;
 }
 .nav-item .nav-icon { font-size: 1.5rem; transition: transform 0.2s; }
 .nav-item.active { color: var(--corn-yellow-dark); }
 .nav-item.active .nav-icon { transform: scale(1.15); }
 
-/* =============================================
-   FAB
-   ============================================= */
+/* FAB */
 #fab {
-  position: fixed;
-  right: 20px;
-  bottom: var(--fab-bottom);
+  position: fixed; right: 20px; bottom: var(--fab-bottom);
   width: 58px; height: 58px;
   border-radius: 50%;
   background: var(--corn-yellow);
-  color: var(--text);
-  font-size: 1.8rem;
-  font-weight: 300;
-  border: none;
-  box-shadow: 0 4px 20px rgba(245,200,66,0.5);
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  z-index: 150;
-  transition: all 0.2s;
+  color: var(--text); font-size: 1.8rem; font-weight: 300;
+  border: none; box-shadow: 0 4px 20px rgba(245,200,66,0.5);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  z-index: 150; transition: all 0.2s;
 }
 #fab:active { transform: scale(0.92); }
 
-/* =============================================
-   CARDS
-   ============================================= */
-.card {
-  background: var(--bg-card);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-card);
-  border: 1px solid var(--border);
-  overflow: hidden;
-}
+/* CARDS */
+.card { background: var(--bg-card); border-radius: var(--radius); box-shadow: var(--shadow-card); border: 1px solid var(--border); overflow: hidden; }
 .card-body { padding: 16px; }
 
-/* =============================================
-   BUTTONS
-   ============================================= */
+/* BUTTONS */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-  padding: 12px 20px;
-  border-radius: var(--radius-sm);
-  border: none;
-  font-size: 0.95rem;
-  font-weight: 600;
-  font-family: inherit;
-  cursor: pointer;
-  transition: all 0.18s;
-  min-height: 46px;
-  white-space: nowrap;
+  padding: 12px 20px; border-radius: var(--radius-sm); border: none;
+  font-size: 0.95rem; font-weight: 600; font-family: inherit; cursor: pointer;
+  transition: all 0.18s; min-height: 46px; white-space: nowrap;
 }
 .btn:active { transform: scale(0.96); }
 .btn-primary { background: var(--corn-yellow); color: var(--text); }
@@ -234,79 +169,41 @@ body {
 .btn-icon { padding: 10px; min-height: 42px; width: 42px; border-radius: 50%; }
 .btn-full { width: 100%; }
 
-/* =============================================
-   FORM ELEMENTS
-   ============================================= */
+/* FORM ELEMENTS */
 .form-group { margin-bottom: 14px; }
 .form-label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-sub); margin-bottom: 6px; }
 .form-control {
-  width: 100%;
-  padding: 13px 16px;
-  border: 2px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: var(--bg-input);
-  color: var(--text);
-  font-size: 1rem;
-  font-family: inherit;
-  transition: border-color 0.2s;
-  min-height: 48px;
+  width: 100%; padding: 13px 16px; border: 2px solid var(--border);
+  border-radius: var(--radius-sm); background: var(--bg-input); color: var(--text);
+  font-size: 1rem; font-family: inherit; transition: border-color 0.2s; min-height: 48px;
 }
 .form-control:focus { outline: none; border-color: var(--corn-yellow); }
 textarea.form-control { resize: vertical; min-height: 80px; }
 select.form-control { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%238a7050'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; background-size: 20px; padding-right: 40px; }
 
-/* =============================================
-   BADGES & STATUS
-   ============================================= */
-.badge {
-  display: inline-flex; align-items: center; gap: 4px;
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 700;
-}
-.badge-paid { background: #dcfce7; color: #16a34a; }
+/* BADGES */
+.badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
+.badge-paid    { background: #dcfce7; color: #16a34a; }
 .badge-partial { background: #fef3c7; color: #d97706; }
-.badge-unpaid { background: #fee2e2; color: #dc2626; }
+.badge-unpaid  { background: #fee2e2; color: #dc2626; }
 .badge-booking { background: #dbeafe; color: #1d4ed8; }
-.badge-walkin { background: #f3e8ff; color: #7c3aed; }
-.badge-locked { background: #f3f4f6; color: #6b7280; }
+.badge-walkin  { background: #f3e8ff; color: #7c3aed; }
+.badge-locked  { background: #f3f4f6; color: #6b7280; }
 
-/* =============================================
-   SUMMARY CARDS (DASHBOARD)
-   ============================================= */
+/* SUMMARY CARDS */
 .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.summary-card {
-  background: var(--bg-card);
-  border-radius: var(--radius);
-  padding: 16px;
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-card);
-}
+.summary-card { background: var(--bg-card); border-radius: var(--radius); padding: 16px; border: 1px solid var(--border); box-shadow: var(--shadow-card); }
 .summary-card .label { font-size: 0.78rem; color: var(--text-muted); font-weight: 500; margin-bottom: 4px; }
 .summary-card .value { font-size: 1.4rem; font-weight: 800; color: var(--text); }
 .summary-card .unit { font-size: 0.8rem; color: var(--text-sub); font-weight: 500; }
-.summary-card.yellow { background: linear-gradient(135deg, #fdf0a8, #fdf6d0); border-color: var(--corn-yellow); }
-.summary-card.green { background: linear-gradient(135deg, #dcfce7, #f0fdf4); border-color: #86efac; }
-.summary-card.red { background: linear-gradient(135deg, #fee2e2, #fff5f5); border-color: #fca5a5; }
-.summary-card.blue { background: linear-gradient(135deg, #dbeafe, #eff6ff); border-color: #93c5fd; }
+.summary-card.yellow { background: linear-gradient(135deg,#fdf0a8,#fdf6d0); border-color: var(--corn-yellow); }
+.summary-card.green  { background: linear-gradient(135deg,#dcfce7,#f0fdf4); border-color: #86efac; }
+.summary-card.red    { background: linear-gradient(135deg,#fee2e2,#fff5f5); border-color: #fca5a5; }
+.summary-card.blue   { background: linear-gradient(135deg,#dbeafe,#eff6ff); border-color: #93c5fd; }
 
-/* =============================================
-   ORDER CARDS
-   ============================================= */
-.order-card {
-  background: var(--bg-card);
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-card);
-  margin-bottom: 12px;
-  overflow: hidden;
-}
-.order-card-header {
-  padding: 14px 16px 10px;
-  display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;
-  border-bottom: 1px solid var(--border);
-}
+/* ORDER CARDS */
+.order-card { background: var(--bg-card); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow-card); margin-bottom: 12px; overflow: hidden; }
+.order-card-header { padding: 14px 16px 10px; display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; border-bottom: 1px solid var(--border); }
 .order-card-body { padding: 12px 16px; }
 .order-name { font-size: 1rem; font-weight: 700; }
 .order-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; font-size: 0.88rem; }
@@ -314,299 +211,112 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
 .order-row .val { font-weight: 600; }
 .order-actions { padding: 10px 16px 14px; display: flex; gap: 8px; flex-wrap: wrap; }
 
-/* =============================================
-   DATE LIST
-   ============================================= */
-.date-item {
-  background: var(--bg-card);
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  padding: 14px 16px;
-  margin-bottom: 10px;
-  display: flex; align-items: center; gap: 12px;
-  cursor: pointer;
-  transition: all 0.18s;
-  box-shadow: var(--shadow-card);
-}
+/* DATE LIST */
+.date-item { background: var(--bg-card); border-radius: var(--radius); border: 1px solid var(--border); padding: 14px 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: all 0.18s; box-shadow: var(--shadow-card); }
 .date-item:active { transform: scale(0.98); }
 .date-item.today { border-color: var(--corn-yellow); background: var(--corn-yellow-light); }
-.date-item.selected { border-color: var(--corn-green); }
 .date-item .date-icon { font-size: 1.8rem; }
 .date-item .date-info { flex: 1; }
 .date-item .date-label { font-weight: 700; font-size: 0.95rem; }
 .date-item .date-sub { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
 .date-item .date-arrow { font-size: 1.2rem; color: var(--text-muted); }
 
-/* =============================================
-   MODAL
-   ============================================= */
-.modal-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.55);
-  z-index: 500;
-  align-items: flex-end;
-  justify-content: center;
-  backdrop-filter: blur(2px);
-}
+/* MODAL */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 500; align-items: flex-end; justify-content: center; backdrop-filter: blur(2px); }
 .modal-overlay.active { display: flex; }
-.modal {
-  background: var(--bg-card);
-  border-radius: 24px 24px 0 0;
-  width: 100%;
-  max-width: 640px;
-  max-height: 92vh;
-  display: flex; flex-direction: column;
-  animation: slideUp 0.25s ease;
-  overflow: hidden;
-}
+.modal { background: var(--bg-card); border-radius: 24px 24px 0 0; width: 100%; max-width: 640px; max-height: 92vh; display: flex; flex-direction: column; animation: slideUp 0.25s ease; overflow: hidden; }
 @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-.modal-header {
-  padding: 16px 20px 12px;
-  display: flex; align-items: center; justify-content: space-between;
-  border-bottom: 1px solid var(--border);
-  position: sticky; top: 0; background: var(--bg-card); z-index: 1;
-}
+.modal-header { padding: 16px 20px 12px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg-card); z-index: 1; }
 .modal-title { font-size: 1.1rem; font-weight: 700; }
 .modal-close { font-size: 1.5rem; background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 4px 8px; }
 .modal-body { flex: 1; overflow-y: auto; padding: 16px 20px; }
 .modal-footer { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; gap: 10px; }
-
-/* Confirm Modal */
 .modal-confirm .modal { border-radius: 20px; max-width: 340px; align-self: center; }
 .modal-confirm.active { align-items: center; }
 
-/* =============================================
-   TOAST
-   ============================================= */
-#toast-container {
-  position: fixed;
-  top: 16px; left: 50%;
-  transform: translateX(-50%);
-  z-index: 9999;
-  display: flex; flex-direction: column; gap: 8px;
-  width: calc(100% - 32px);
-  max-width: 400px;
-  pointer-events: none;
-}
-.toast {
-  background: var(--toast-bg);
-  color: var(--toast-text);
-  padding: 13px 18px;
-  border-radius: 12px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  animation: toastIn 0.25s ease;
-  display: flex; align-items: center; gap: 8px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-}
+/* TOAST */
+#toast-container { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 8px; width: calc(100% - 32px); max-width: 400px; pointer-events: none; }
+.toast { background: var(--toast-bg); color: var(--toast-text); padding: 13px 18px; border-radius: 12px; font-size: 0.9rem; font-weight: 500; animation: toastIn 0.25s ease; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
 @keyframes toastIn { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
 .toast.success { background: #16a34a; color: #fff; }
-.toast.error { background: #dc2626; color: #fff; }
+.toast.error   { background: #dc2626; color: #fff; }
 .toast.warning { background: #d97706; color: #fff; }
 
-/* =============================================
-   EMPTY STATE
-   ============================================= */
-.empty-state {
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 48px 24px; gap: 12px; text-align: center;
-}
-.empty-state .empty-icon { font-size: 3.5rem; }
+/* EMPTY STATE */
+.empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 48px 24px; gap: 12px; text-align: center; }
+.empty-state .empty-icon  { font-size: 3.5rem; }
 .empty-state .empty-title { font-size: 1.1rem; font-weight: 700; color: var(--text); }
-.empty-state .empty-sub { font-size: 0.88rem; color: var(--text-muted); }
+.empty-state .empty-sub   { font-size: 0.88rem; color: var(--text-muted); }
 
-/* =============================================
-   SECTION DIVIDER
-   ============================================= */
-.section-title {
-  font-size: 0.78rem; font-weight: 700;
-  color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em;
-  padding: 6px 0 10px;
-}
+/* SECTION TITLE */
+.section-title { font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; padding: 6px 0 10px; }
 
-/* =============================================
-   ALERT
-   ============================================= */
-.alert {
-  padding: 12px 16px;
-  border-radius: var(--radius-sm);
-  font-size: 0.88rem;
-  font-weight: 600;
-  margin-bottom: 12px;
-  display: flex; align-items: center; gap: 8px;
-}
-.alert-danger { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
+/* ALERTS */
+.alert { padding: 12px 16px; border-radius: var(--radius-sm); font-size: 0.88rem; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.alert-danger  { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
 .alert-warning { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
 .alert-success { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
-.alert-info { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+.alert-info    { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
 
-/* =============================================
-   SLIP IMAGE
-   ============================================= */
-.slip-thumb {
-  width: 64px; height: 64px;
-  border-radius: 10px;
-  object-fit: cover;
-  border: 2px solid var(--border);
-  cursor: pointer;
-  transition: transform 0.2s;
-}
+/* SLIP */
+.slip-thumb { width: 64px; height: 64px; border-radius: 10px; object-fit: cover; border: 2px solid var(--border); cursor: pointer; transition: transform 0.2s; }
 .slip-thumb:active { transform: scale(0.95); }
 .slips-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 .slip-wrapper { position: relative; }
 .slip-del { position: absolute; top: -6px; right: -6px; background: #dc2626; color: #fff; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-size: 0.75rem; display: flex; align-items: center; justify-content: center; }
 
-/* =============================================
-   PHOTO LIGHTBOX
-   ============================================= */
-#lightbox {
-  display: none;
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.92);
-  z-index: 9000;
-  align-items: center; justify-content: center;
-}
+/* LIGHTBOX */
+#lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 9000; align-items: center; justify-content: center; }
 #lightbox.active { display: flex; }
 #lightbox img { max-width: 95vw; max-height: 90vh; border-radius: 12px; }
 #lightbox-close { position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.2); border: none; color: #fff; font-size: 1.6rem; width: 44px; height: 44px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-/* =============================================
-   CHART WRAPPER
-   ============================================= */
+/* CHART */
 .chart-wrap { position: relative; width: 100%; height: 220px; margin-bottom: 16px; }
 
-/* =============================================
-   SETTINGS ROW
-   ============================================= */
-.settings-row {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 16px;
-  border-bottom: 1px solid var(--border);
-}
+/* SETTINGS */
+.settings-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid var(--border); }
 .settings-row:last-child { border-bottom: none; }
 .settings-label { font-size: 0.95rem; font-weight: 500; }
 .settings-sub { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
-
-/* Toggle Switch */
 .toggle { position: relative; width: 48px; height: 26px; }
 .toggle input { opacity: 0; width: 0; height: 0; }
-.toggle-slider {
-  position: absolute; inset: 0;
-  background: var(--border);
-  border-radius: 13px;
-  cursor: pointer;
-  transition: 0.2s;
-}
-.toggle-slider::before {
-  content: '';
-  position: absolute;
-  top: 3px; left: 3px;
-  width: 20px; height: 20px;
-  background: #fff;
-  border-radius: 50%;
-  transition: 0.2s;
-}
+.toggle-slider { position: absolute; inset: 0; background: var(--border); border-radius: 13px; cursor: pointer; transition: 0.2s; }
+.toggle-slider::before { content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; background: #fff; border-radius: 50%; transition: 0.2s; }
 .toggle input:checked + .toggle-slider { background: var(--corn-green); }
 .toggle input:checked + .toggle-slider::before { transform: translateX(22px); }
 
-/* =============================================
-   BACK BUTTON
-   ============================================= */
-.btn-back {
-  background: none; border: none; cursor: pointer;
-  font-size: 1.5rem; color: var(--text-sub); padding: 2px 6px;
-  display: flex; align-items: center;
-}
+/* BACK BUTTON */
+.btn-back { background: none; border: none; cursor: pointer; font-size: 1.5rem; color: var(--text-sub); padding: 2px 6px; display: flex; align-items: center; }
 
-/* =============================================
-   SEARCH INPUT
-   ============================================= */
+/* SEARCH */
 .search-wrap { position: relative; }
 .search-wrap .form-control { padding-left: 42px; }
 .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 1.1rem; color: var(--text-muted); pointer-events: none; }
 
-/* =============================================
-   LOCKED OVERLAY
-   ============================================= */
-.locked-banner {
-  background: #f3f4f6;
-  border: 2px dashed #9ca3af;
-  border-radius: var(--radius-sm);
-  padding: 10px 16px;
-  text-align: center;
-  color: #6b7280;
-  font-size: 0.88rem;
-  font-weight: 600;
-  margin-bottom: 12px;
-}
+/* LOCKED */
+.locked-banner { background: #f3f4f6; border: 2px dashed #9ca3af; border-radius: var(--radius-sm); padding: 10px 16px; text-align: center; color: #6b7280; font-size: 0.88rem; font-weight: 600; margin-bottom: 12px; }
 [data-theme="dark"] .locked-banner { background: #2d2d2d; border-color: #4b5563; color: #9ca3af; }
 
-/* =============================================
-   RESPONSIVE - TABLET/DESKTOP
-   ============================================= */
-@media (min-width: 768px) {
-  .page { padding-bottom: 0; }
-  #bottom-nav { display: none; }
-  #fab { right: 32px; bottom: 28px; }
+/* QUICK STATS */
+.quick-stats { background: linear-gradient(135deg, var(--corn-yellow), var(--corn-yellow-dark)); padding: 20px; border-radius: var(--radius); margin-bottom: 16px; color: var(--text); }
+.quick-stats h3 { font-size: 0.85rem; font-weight: 600; opacity: 0.75; margin-bottom: 4px; }
+.quick-stats .big-num { font-size: 2rem; font-weight: 800; }
+.quick-stats .small-note { font-size: 0.8rem; opacity: 0.7; }
 
-  #sidebar {
-    display: flex !important;
-    position: fixed;
-    left: 0; top: 0; bottom: 0;
-    width: 240px;
-    background: var(--bg-card);
-    border-right: 1px solid var(--border);
-    flex-direction: column;
-    padding: 24px 0;
-    z-index: 200;
-  }
-  #app-main { margin-left: 240px; }
-  .page-content { max-width: 720px; }
-  .summary-grid { grid-template-columns: repeat(3, 1fr); }
-  .chart-wrap { height: 280px; }
-  .modal { border-radius: 20px; max-height: 85vh; }
-  .modal-overlay { align-items: center; }
-}
-
+/* SIDEBAR (tablet/desktop) */
 #sidebar { display: none; }
 .sidebar-logo { padding: 0 20px 20px; }
 .sidebar-logo h1 { font-size: 1.1rem; font-weight: 800; color: var(--text); }
 .sidebar-logo p { font-size: 0.78rem; color: var(--text-muted); }
 .sidebar-nav { flex: 1; }
-.sidebar-nav-item {
-  display: flex; align-items: center; gap: 12px;
-  padding: 13px 20px;
-  cursor: pointer;
-  font-size: 0.95rem; font-weight: 500;
-  color: var(--text-sub);
-  transition: all 0.15s;
-  border: none; background: none; width: 100%; font-family: inherit;
-}
+.sidebar-nav-item { display: flex; align-items: center; gap: 12px; padding: 13px 20px; cursor: pointer; font-size: 0.95rem; font-weight: 500; color: var(--text-sub); transition: all 0.15s; border: none; background: none; width: 100%; font-family: inherit; }
 .sidebar-nav-item .icon { font-size: 1.3rem; }
 .sidebar-nav-item.active { background: var(--corn-yellow-light); color: var(--text); font-weight: 700; border-right: 3px solid var(--corn-yellow-dark); }
 [data-theme="dark"] .sidebar-nav-item.active { background: rgba(245,200,66,0.12); }
 
-/* =============================================
-   QUICK STATS BAR
-   ============================================= */
-.quick-stats {
-  background: linear-gradient(135deg, var(--corn-yellow), var(--corn-yellow-dark));
-  padding: 20px;
-  border-radius: var(--radius);
-  margin-bottom: 16px;
-  color: var(--text);
-}
-.quick-stats h3 { font-size: 0.85rem; font-weight: 600; opacity: 0.75; margin-bottom: 4px; }
-.quick-stats .big-num { font-size: 2rem; font-weight: 800; }
-.quick-stats .small-note { font-size: 0.8rem; opacity: 0.7; }
-
-/* =============================================
-   UTILS
-   ============================================= */
+/* UTILS */
 .flex { display: flex; }
-.flex-col { flex-direction: column; }
 .items-center { align-items: center; }
 .justify-between { justify-content: space-between; }
 .gap-8 { gap: 8px; }
@@ -624,92 +334,101 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
 .text-muted { color: var(--text-muted); }
 .text-green { color: var(--corn-green); }
 .text-red { color: #dc2626; }
-.text-yellow { color: var(--corn-yellow-dark); }
 .w-full { width: 100%; }
 .divider { height: 1px; background: var(--border); margin: 12px 0; }
-.scroll-x { overflow-x: auto; }
+
+/* RESPONSIVE */
+@media (min-width: 768px) {
+  .page { padding-bottom: 0; }
+  #bottom-nav { display: none; }
+  #fab { right: 32px; bottom: 28px; }
+  #sidebar { display: flex !important; position: fixed; left: 0; top: 0; bottom: 0; width: 240px; background: var(--bg-card); border-right: 1px solid var(--border); flex-direction: column; padding: 24px 0; z-index: 200; }
+  #app-main { margin-left: 240px; }
+  .page-content { max-width: 720px; }
+  .summary-grid { grid-template-columns: repeat(3, 1fr); }
+  .chart-wrap { height: 280px; }
+  .modal { border-radius: 20px; max-height: 85vh; }
+  .modal-overlay { align-items: center; }
+}
 </style>
 </head>
 <body>
 
-<!-- =================== TOAST CONTAINER =================== -->
+<!-- TOAST -->
 <div id="toast-container"></div>
 
-<!-- =================== LIGHTBOX =================== -->
+<!-- LIGHTBOX -->
 <div id="lightbox">
-  <button id="lightbox-close" onclick="closeLightbox()">✕</button>
+  <button id="lightbox-close" onclick="App.closeLightbox()">✕</button>
   <img id="lightbox-img" src="" alt="หลักฐาน">
 </div>
 
-<!-- =================== SIDEBAR (tablet/desktop) =================== -->
+<!-- SIDEBAR -->
 <nav id="sidebar">
   <div class="sidebar-logo">
     <h1>🌽 ร้านข้าวโพด</h1>
-    <p>V2.0 Firebase Sync</p>
+    <p>V3.0 Firebase Sync</p>
   </div>
   <div class="sidebar-nav">
-    <button class="sidebar-nav-item active" onclick="navigate('dashboard')" data-page="dashboard"><span class="icon">🏠</span>แดชบอร์ด</button>
-    <button class="sidebar-nav-item" onclick="navigate('dates')" data-page="dates"><span class="icon">📅</span>รายการวันที่</button>
-    <button class="sidebar-nav-item" onclick="navigate('unpaid')" data-page="unpaid"><span class="icon">💰</span>ยอดค้างจ่าย</button>
-    <button class="sidebar-nav-item" onclick="navigate('search')" data-page="search"><span class="icon">🔍</span>ค้นหาลูกค้า</button>
-    <button class="sidebar-nav-item" onclick="navigate('report')" data-page="report"><span class="icon">📊</span>รายงาน</button>
-    <button class="sidebar-nav-item" onclick="navigate('settings')" data-page="settings"><span class="icon">⚙️</span>ตั้งค่า</button>
+    <button class="sidebar-nav-item active" onclick="App.navigate('dashboard')" data-page="dashboard"><span class="icon">🏠</span>แดชบอร์ด</button>
+    <button class="sidebar-nav-item" onclick="App.navigate('dates')" data-page="dates"><span class="icon">📅</span>รายการวันที่</button>
+    <button class="sidebar-nav-item" onclick="App.navigate('unpaid')" data-page="unpaid"><span class="icon">💰</span>ยอดค้างจ่าย</button>
+    <button class="sidebar-nav-item" onclick="App.navigate('search')" data-page="search"><span class="icon">🔍</span>ค้นหาลูกค้า</button>
+    <button class="sidebar-nav-item" onclick="App.navigate('report')" data-page="report"><span class="icon">📊</span>รายงาน</button>
+    <button class="sidebar-nav-item" onclick="App.navigate('settings')" data-page="settings"><span class="icon">⚙️</span>ตั้งค่า</button>
   </div>
 </nav>
 
-<!-- =================== MAIN APP =================== -->
+<!-- MAIN APP -->
 <div id="app-main">
 
-<!-- =================== SYNC BAR =================== -->
+<!-- SYNC BAR -->
 <div id="sync-bar" class="bar-offline">
   <div id="sync-status-text">
     <span id="sync-dot"></span>
-    <span id="sync-label">กำลังเชื่อมต่อ...</span>
+    <span id="sync-label">กำลังโหลด...</span>
   </div>
   <div style="display:flex;align-items:center;gap:8px;">
     <span id="sync-time" style="font-size:0.72rem;opacity:0.75;"></span>
-    <button onclick="manualSync()" style="background:none;border:1px solid currentColor;border-radius:6px;padding:2px 8px;font-size:0.72rem;font-family:inherit;font-weight:700;cursor:pointer;color:inherit;">🔄 Sync</button>
+    <button onclick="App.manualSync()" style="background:none;border:1px solid currentColor;border-radius:6px;padding:2px 8px;font-size:0.72rem;font-family:inherit;font-weight:700;cursor:pointer;color:inherit;">🔄 Sync</button>
   </div>
 </div>
 
 <div id="app">
 
-<!-- ========== PAGE: DASHBOARD ========== -->
+<!-- PAGE: DASHBOARD -->
 <div class="page active" id="page-dashboard">
   <div class="page-header">
     <span style="font-size:1.5rem">🌽</span>
     <h2>ระบบจัดการร้านข้าวโพด</h2>
-    <button class="btn btn-sm btn-outline" onclick="navigate('settings')" style="padding:8px 10px;">⚙️</button>
+    <button class="btn btn-sm btn-outline" onclick="App.navigate('settings')" style="padding:8px 10px;">⚙️</button>
   </div>
   <div class="page-content">
-    <div id="dash-today-banner" class="quick-stats mb-16">
+    <div class="quick-stats mb-16">
       <h3>ยอดขายวันนี้</h3>
       <div class="big-num" id="dash-sale-total">฿0</div>
       <div class="small-note" id="dash-date-label">วันที่ -</div>
     </div>
-
     <div class="summary-grid mb-16" id="dash-grid"></div>
-
     <div class="section-title">เมนูหลัก</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
-      <button class="btn btn-primary btn-full" style="height:64px;font-size:1rem;" onclick="navigate('dates')">📅 รายการวันที่</button>
-      <button class="btn btn-outline btn-full" style="height:64px;font-size:1rem;" onclick="navigate('unpaid')">💰 ยอดค้างจ่าย</button>
-      <button class="btn btn-outline btn-full" style="height:64px;font-size:1rem;" onclick="navigate('report')">📊 รายงาน</button>
-      <button class="btn btn-outline btn-full" style="height:64px;font-size:1rem;" onclick="navigate('search')">🔍 ค้นหาลูกค้า</button>
+      <button class="btn btn-primary btn-full" style="height:64px;font-size:1rem;" onclick="App.navigate('dates')">📅 รายการวันที่</button>
+      <button class="btn btn-outline btn-full" style="height:64px;font-size:1rem;" onclick="App.navigate('unpaid')">💰 ยอดค้างจ่าย</button>
+      <button class="btn btn-outline btn-full" style="height:64px;font-size:1rem;" onclick="App.navigate('report')">📊 รายงาน</button>
+      <button class="btn btn-outline btn-full" style="height:64px;font-size:1rem;" onclick="App.navigate('search')">🔍 ค้นหาลูกค้า</button>
     </div>
-
     <div class="section-title">คำสั่งด่วน</div>
-    <button class="btn btn-green btn-full" style="height:54px;margin-bottom:12px;" onclick="showQuickAdd()">➕ เพิ่มออเดอร์วันนี้อย่างรวดเร็ว</button>
-    <button class="btn btn-outline btn-full" style="height:46px;" onclick="goToday()">📆 เปิดข้อมูลวันนี้</button>
+    <button class="btn btn-green btn-full" style="height:54px;margin-bottom:12px;" onclick="App.showQuickAdd()">➕ เพิ่มออเดอร์วันนี้อย่างรวดเร็ว</button>
+    <button class="btn btn-outline btn-full" style="height:46px;" onclick="App.goToday()">📆 เปิดข้อมูลวันนี้</button>
   </div>
 </div>
 
-<!-- ========== PAGE: DATES ========== -->
+<!-- PAGE: DATES -->
 <div class="page" id="page-dates">
   <div class="page-header">
-    <button class="btn-back" onclick="navigate('dashboard')">‹</button>
+    <button class="btn-back" onclick="App.navigate('dashboard')">‹</button>
     <h2>รายการวันที่</h2>
-    <button class="btn btn-sm btn-primary" onclick="showAddDate()">+ เพิ่มวัน</button>
+    <button class="btn btn-sm btn-primary" onclick="App.showAddDate()">+ เพิ่มวัน</button>
   </div>
   <div class="page-content">
     <div class="section-title">รายการปัจจุบัน</div>
@@ -719,154 +438,131 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
   </div>
 </div>
 
-<!-- ========== PAGE: DAY DETAIL ========== -->
+<!-- PAGE: DAY DETAIL -->
 <div class="page" id="page-day">
   <div class="page-header">
-    <button class="btn-back" onclick="navigate('dates')">‹</button>
+    <button class="btn-back" onclick="App.navigate('dates')">‹</button>
     <h2 id="day-title">รายละเอียดวัน</h2>
     <div style="display:flex;gap:6px;">
-      <button class="btn btn-sm btn-outline" id="day-lock-btn" onclick="toggleDayLock()">🔓 ปิดวัน</button>
-      <button class="btn btn-sm btn-outline" onclick="showDayCopyMenu()" title="คัดลอกสรุป">📋</button>
-      <button class="btn btn-sm btn-outline" onclick="exportDayCSV()" title="Export CSV">📥</button>
+      <button class="btn btn-sm btn-outline" id="day-lock-btn" onclick="App.toggleDayLock()">🔒 ปิดวัน</button>
+      <button class="btn btn-sm btn-outline" onclick="App.showDayCopyMenu()" title="คัดลอกสรุป">📋</button>
+      <button class="btn btn-sm btn-outline" onclick="App.exportDayCSV()" title="Export CSV">📥</button>
     </div>
   </div>
   <div class="page-content">
     <div id="day-locked-banner" class="locked-banner" style="display:none;">🔒 วันนี้ถูกปิดแล้ว ไม่สามารถแก้ไขได้</div>
-
     <div class="card mb-12">
       <div class="card-body">
         <div class="flex justify-between items-center mb-12">
           <span class="font-bold" style="font-size:1rem;">📊 สรุปยอดวัน</span>
-          <button class="btn btn-sm btn-outline" id="day-settings-btn" onclick="showDaySettings()">⚙️ ตั้งค่าวัน</button>
+          <button class="btn btn-sm btn-outline" id="day-settings-btn" onclick="App.showDaySettings()">⚙️ ตั้งค่าวัน</button>
         </div>
         <div id="day-summary-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;"></div>
         <div id="day-alert" style="margin-top:10px;"></div>
       </div>
     </div>
-
     <div class="flex justify-between items-center mb-8">
       <span class="section-title" style="margin:0;">รายการออเดอร์</span>
-      <button class="btn btn-sm btn-primary" id="day-add-order-btn" onclick="showAddOrder()">+ เพิ่มออเดอร์</button>
+      <button class="btn btn-sm btn-primary" id="day-add-order-btn" onclick="App.showAddOrder()">+ เพิ่มออเดอร์</button>
     </div>
     <div id="day-orders-list"></div>
   </div>
 </div>
 
-<!-- ========== PAGE: UNPAID ========== -->
+<!-- PAGE: UNPAID -->
 <div class="page" id="page-unpaid">
   <div class="page-header">
-    <button class="btn-back" onclick="navigate('dashboard')">‹</button>
+    <button class="btn-back" onclick="App.navigate('dashboard')">‹</button>
     <h2>ยอดค้างจ่าย</h2>
   </div>
   <div class="page-content">
     <div id="unpaid-total-card" class="quick-stats mb-16" style="background:linear-gradient(135deg,#fee2e2,#fecaca);color:#7f1d1d;"></div>
     <div class="search-wrap mb-16">
       <span class="search-icon">🔍</span>
-      <input class="form-control" placeholder="ค้นหาชื่อลูกค้า..." oninput="renderUnpaid(this.value)" id="unpaid-search">
+      <input class="form-control" placeholder="ค้นหาชื่อลูกค้า..." oninput="App.renderUnpaid(this.value)" id="unpaid-search">
     </div>
     <div id="unpaid-list"></div>
   </div>
 </div>
 
-<!-- ========== PAGE: SEARCH ========== -->
+<!-- PAGE: SEARCH -->
 <div class="page" id="page-search">
   <div class="page-header">
-    <button class="btn-back" onclick="navigate('dashboard')">‹</button>
+    <button class="btn-back" onclick="App.navigate('dashboard')">‹</button>
     <h2>ค้นหาลูกค้า</h2>
   </div>
   <div class="page-content">
     <div class="search-wrap mb-16">
       <span class="search-icon">🔍</span>
-      <input class="form-control" placeholder="พิมพ์ชื่อลูกค้า..." oninput="renderSearch(this.value)" id="search-input">
+      <input class="form-control" placeholder="พิมพ์ชื่อลูกค้า..." oninput="App.renderSearch(this.value)" id="search-input">
     </div>
     <div id="search-results"></div>
   </div>
 </div>
 
-<!-- ========== PAGE: REPORT ========== -->
+<!-- PAGE: REPORT -->
 <div class="page" id="page-report">
   <div class="page-header">
-    <button class="btn-back" onclick="navigate('dashboard')">‹</button>
+    <button class="btn-back" onclick="App.navigate('dashboard')">‹</button>
     <h2>รายงาน</h2>
   </div>
   <div class="page-content">
     <div style="display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;padding-bottom:4px;">
-      <button class="btn btn-primary btn-sm" onclick="setReportMode('today')" id="rpt-today">วันนี้</button>
-      <button class="btn btn-outline btn-sm" onclick="setReportMode('month')" id="rpt-month">เดือนนี้</button>
-      <button class="btn btn-outline btn-sm" onclick="setReportMode('year')" id="rpt-year">ปีนี้</button>
-      <button class="btn btn-outline btn-sm" onclick="setReportMode('custom')" id="rpt-custom">กำหนดเอง</button>
+      <button class="btn btn-primary btn-sm" onclick="App.setReportMode('today')" id="rpt-today">วันนี้</button>
+      <button class="btn btn-outline btn-sm" onclick="App.setReportMode('month')" id="rpt-month">เดือนนี้</button>
+      <button class="btn btn-outline btn-sm" onclick="App.setReportMode('year')" id="rpt-year">ปีนี้</button>
+      <button class="btn btn-outline btn-sm" onclick="App.setReportMode('custom')" id="rpt-custom">กำหนดเอง</button>
     </div>
     <div id="report-custom-range" style="display:none;margin-bottom:12px;">
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-        <input type="date" class="form-control" id="rpt-from" style="flex:1;" onchange="renderReport()">
+        <input type="date" class="form-control" id="rpt-from" style="flex:1;" onchange="App.renderReport()">
         <span>ถึง</span>
-        <input type="date" class="form-control" id="rpt-to" style="flex:1;" onchange="renderReport()">
+        <input type="date" class="form-control" id="rpt-to" style="flex:1;" onchange="App.renderReport()">
       </div>
     </div>
     <div id="report-summary-grid" class="summary-grid mb-16"></div>
-    <div class="card mb-16">
-      <div class="card-body">
-        <div class="font-bold mb-8">📈 ยอดขายรายวัน</div>
-        <div class="chart-wrap"><canvas id="chart-sales"></canvas></div>
-      </div>
-    </div>
-    <div class="card mb-16">
-      <div class="card-body">
-        <div class="font-bold mb-8">💹 กำไรรายวัน</div>
-        <div class="chart-wrap"><canvas id="chart-profit"></canvas></div>
-      </div>
-    </div>
-    <div class="card mb-16">
-      <div class="card-body">
-        <div class="font-bold mb-8">⚖️ กิโลที่ขายรายวัน</div>
-        <div class="chart-wrap"><canvas id="chart-kg"></canvas></div>
-      </div>
-    </div>
+    <div class="card mb-16"><div class="card-body"><div class="font-bold mb-8">📈 ยอดขายรายวัน</div><div class="chart-wrap"><canvas id="chart-sales"></canvas></div></div></div>
+    <div class="card mb-16"><div class="card-body"><div class="font-bold mb-8">💹 กำไรรายวัน</div><div class="chart-wrap"><canvas id="chart-profit"></canvas></div></div></div>
+    <div class="card mb-16"><div class="card-body"><div class="font-bold mb-8">⚖️ กิโลที่ขายรายวัน</div><div class="chart-wrap"><canvas id="chart-kg"></canvas></div></div></div>
     <div id="report-best"></div>
   </div>
 </div>
 
-<!-- ========== PAGE: SETTINGS ========== -->
+<!-- PAGE: SETTINGS -->
 <div class="page" id="page-settings">
   <div class="page-header">
-    <button class="btn-back" onclick="navigate('dashboard')">‹</button>
+    <button class="btn-back" onclick="App.navigate('dashboard')">‹</button>
     <h2>ตั้งค่า</h2>
   </div>
   <div class="page-content">
-
-    <!-- Firebase Sync Status Card (V2.0) -->
-    <div class="section-title">☁️ Firebase Sync (V2.0)</div>
+    <div class="section-title">☁️ Firebase Sync (V3.0)</div>
     <div class="card mb-16">
       <div class="card-body">
-        <div id="firebase-status-card">
-          <div class="flex justify-between items-center mb-12">
-            <span class="font-bold">สถานะการเชื่อมต่อ</span>
-            <span id="fb-status-badge" class="badge">กำลังโหลด...</span>
-          </div>
-          <div class="text-sm text-muted mb-8" id="fb-last-sync">ยังไม่เคย Sync</div>
+        <div class="flex justify-between items-center mb-12">
+          <span class="font-bold">สถานะการเชื่อมต่อ</span>
+          <span id="fb-status-badge" class="badge">กำลังโหลด...</span>
         </div>
+        <div class="text-sm text-muted mb-8" id="fb-last-sync">ยังไม่เคย Sync</div>
         <div class="divider"></div>
-        <button class="btn btn-primary btn-full mb-8" onclick="manualSync()">🔄 Sync ตอนนี้ (ดึงจาก Firebase)</button>
-        <button class="btn btn-outline btn-full mb-8" onclick="uploadLocalToFirebase()">☁️ อัปโหลด LocalStorage → Firebase</button>
-        <button class="btn btn-outline btn-full" onclick="migrateFromLocalStorage()">📦 Migrate จาก V1.1 → Firebase</button>
+        <button class="btn btn-primary btn-full mb-8" onclick="App.manualSync()">🔄 Sync ตอนนี้</button>
+        <button class="btn btn-outline btn-full mb-8" onclick="App.uploadLocalToFirebase()">☁️ อัปโหลด Local → Firebase</button>
+        <button class="btn btn-outline btn-full" onclick="App.migrateFromV2()">📦 Migrate จาก V2 → V3</button>
       </div>
     </div>
-
     <div class="section-title">การแสดงผล</div>
     <div class="card mb-16">
       <div class="settings-row">
         <div><div class="settings-label">โหมดมืด (Dark Mode)</div></div>
-        <label class="toggle"><input type="checkbox" id="setting-dark" onchange="toggleDark(this)"><span class="toggle-slider"></span></label>
+        <label class="toggle"><input type="checkbox" id="setting-dark" onchange="App.toggleDark(this)"><span class="toggle-slider"></span></label>
       </div>
       <div class="settings-row">
         <div><div class="settings-label">แสดงปีแบบ พ.ศ.</div><div class="settings-sub">ปิด = ค.ศ.</div></div>
-        <label class="toggle"><input type="checkbox" id="setting-buddhist" onchange="saveSetting('buddhistYear',this.checked)"><span class="toggle-slider"></span></label>
+        <label class="toggle"><input type="checkbox" id="setting-buddhist" onchange="App.saveSetting('buddhistYear',this.checked)"><span class="toggle-slider"></span></label>
       </div>
     </div>
-
     <div class="section-title">ข้อมูล</div>
     <div class="card mb-16">
-      <div class="settings-row" style="cursor:pointer;" onclick="exportBackup()">
+      <div class="settings-row" style="cursor:pointer;" onclick="App.exportBackup()">
         <div><div class="settings-label">📤 Export Backup (JSON)</div><div class="settings-sub">บันทึกข้อมูลทั้งหมด</div></div>
         <span>›</span>
       </div>
@@ -874,229 +570,138 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
         <div><div class="settings-label">📥 Import Backup (JSON)</div><div class="settings-sub">นำข้อมูลกลับมา</div></div>
         <span>›</span>
       </div>
-      <input type="file" id="import-file" accept=".json" style="display:none;" onchange="importBackup(event)">
-      <div class="settings-row" style="cursor:pointer;" onclick="deleteOldImages()">
-        <div><div class="settings-label">🗑️ ลบรูปหลักฐานเก่า (>3 เดือน)</div><div class="settings-sub">คงข้อมูลออเดอร์ไว้</div></div>
+      <input type="file" id="import-file" accept=".json" style="display:none;" onchange="App.importBackup(event)">
+      <div class="settings-row" style="cursor:pointer;" onclick="App.deleteOldImages()">
+        <div><div class="settings-label">🗑️ ลบรูปหลักฐานเก่า (&gt;3 เดือน)</div><div class="settings-sub">คงข้อมูลออเดอร์ไว้</div></div>
         <span>›</span>
       </div>
-      <div class="settings-row" style="cursor:pointer;" onclick="confirmDeleteAll()">
+      <div class="settings-row" style="cursor:pointer;" onclick="App.confirmDeleteAll()">
         <div><div class="settings-label" style="color:#dc2626;">⚠️ ลบข้อมูลทั้งหมด</div><div class="settings-sub">ไม่สามารถกู้คืนได้</div></div>
         <span>›</span>
       </div>
     </div>
-
     <div class="section-title">เกี่ยวกับแอป</div>
     <div class="card mb-16">
       <div class="card-body text-center">
         <div style="font-size:2.5rem;">🌽</div>
         <div class="font-bold mt-8">ระบบจัดการร้านข้าวโพด</div>
-        <div class="text-muted text-sm mt-8">Version 2.0.0 • Firebase Firestore Sync</div>
-        <div class="text-muted text-sm mt-8">ข้อมูล sync ทุกเครื่องผ่าน Firebase</div>
+        <div class="text-muted text-sm mt-8">Version 3.0.0 • Firebase Firestore Sync</div>
+        <div class="text-muted text-sm mt-8">Single Source of Truth • Clean Architecture</div>
       </div>
     </div>
-
     <div class="card mb-16">
       <div class="card-body">
-        <div class="font-bold mb-8 text-sm">⚠️ หมายเหตุ V2.0</div>
-        <div class="text-sm text-muted">
-          <b>รูปหลักฐานสลิปใน V2.0 ยังเก็บเฉพาะเครื่องนี้</b><br>
-          (Firebase Storage จะเพิ่มใน V3.0)<br><br>
-          รูปสลิปจะ<b>ไม่ sync</b>ข้ามเครื่อง แต่ข้อมูลออเดอร์ทุกอย่าง sync ปกติ
-        </div>
+        <div class="font-bold mb-8 text-sm">📌 หมายเหตุ V3.0</div>
+        <div class="text-sm text-muted">รูปหลักฐานสลิปเก็บเฉพาะเครื่องนี้ (local-only)<br>ข้อมูลออเดอร์ทุกอย่าง sync ผ่าน Firebase ปกติ</div>
       </div>
     </div>
   </div>
 </div>
 
-</div><!-- end #app -->
-</div><!-- end #app-main -->
+</div><!-- #app -->
+</div><!-- #app-main -->
 
-<!-- =================== BOTTOM NAVIGATION =================== -->
+<!-- BOTTOM NAV -->
 <nav id="bottom-nav">
-  <button class="nav-item active" onclick="navigate('dashboard')" data-page="dashboard">
-    <span class="nav-icon">🏠</span>แดชบอร์ด
-  </button>
-  <button class="nav-item" onclick="navigate('dates')" data-page="dates">
-    <span class="nav-icon">📅</span>วันที่
-  </button>
-  <button class="nav-item" onclick="navigate('unpaid')" data-page="unpaid">
-    <span class="nav-icon">💰</span>ค้างจ่าย
-  </button>
-  <button class="nav-item" onclick="navigate('report')" data-page="report">
-    <span class="nav-icon">📊</span>รายงาน
-  </button>
-  <button class="nav-item" onclick="navigate('settings')" data-page="settings">
-    <span class="nav-icon">⚙️</span>ตั้งค่า
-  </button>
+  <button class="nav-item active" onclick="App.navigate('dashboard')" data-page="dashboard"><span class="nav-icon">🏠</span>แดชบอร์ด</button>
+  <button class="nav-item" onclick="App.navigate('dates')" data-page="dates"><span class="nav-icon">📅</span>วันที่</button>
+  <button class="nav-item" onclick="App.navigate('unpaid')" data-page="unpaid"><span class="nav-icon">💰</span>ค้างจ่าย</button>
+  <button class="nav-item" onclick="App.navigate('report')" data-page="report"><span class="nav-icon">📊</span>รายงาน</button>
+  <button class="nav-item" onclick="App.navigate('settings')" data-page="settings"><span class="nav-icon">⚙️</span>ตั้งค่า</button>
 </nav>
 
-<!-- =================== FAB =================== -->
-<button id="fab" onclick="showQuickAdd()" title="เพิ่มออเดอร์">＋</button>
+<!-- FAB -->
+<button id="fab" onclick="App.showQuickAdd()" title="เพิ่มออเดอร์">＋</button>
 
-<!-- ========== MODAL: ADD DATE ========== -->
+<!-- MODAL: ADD DATE -->
 <div class="modal-overlay" id="modal-add-date">
   <div class="modal">
-    <div class="modal-header">
-      <span class="modal-title">➕ เพิ่มวันที่ใหม่</span>
-      <button class="modal-close" onclick="closeModal('modal-add-date')">✕</button>
-    </div>
+    <div class="modal-header"><span class="modal-title">➕ เพิ่มวันที่ใหม่</span><button class="modal-close" onclick="App.closeModal('modal-add-date')">✕</button></div>
     <div class="modal-body">
-      <div class="form-group">
-        <label class="form-label">เลือกวันที่</label>
-        <input type="date" class="form-control" id="new-date-input">
-      </div>
+      <div class="form-group"><label class="form-label">เลือกวันที่</label><input type="date" class="form-control" id="new-date-input"></div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-outline" style="flex:1;" onclick="closeModal('modal-add-date')">ยกเลิก</button>
-      <button class="btn btn-primary" style="flex:1;" onclick="addDate()">เพิ่มวันที่</button>
+      <button class="btn btn-outline" style="flex:1;" onclick="App.closeModal('modal-add-date')">ยกเลิก</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="App.addDate()">เพิ่มวันที่</button>
     </div>
   </div>
 </div>
 
-<!-- ========== MODAL: DAY SETTINGS ========== -->
+<!-- MODAL: DAY SETTINGS -->
 <div class="modal-overlay" id="modal-day-settings">
   <div class="modal">
-    <div class="modal-header">
-      <span class="modal-title">⚙️ ตั้งค่าวัน</span>
-      <button class="modal-close" onclick="closeModal('modal-day-settings')">✕</button>
-    </div>
+    <div class="modal-header"><span class="modal-title">⚙️ ตั้งค่าวัน</span><button class="modal-close" onclick="App.closeModal('modal-day-settings')">✕</button></div>
     <div class="modal-body">
-      <div class="form-group">
-        <label class="form-label">ข้าวโพดทั้งหมด (กิโล)</label>
-        <input type="number" class="form-control" id="ds-total-kg" placeholder="0" min="0">
-      </div>
-      <div class="form-group">
-        <label class="form-label">ราคาขายต่อกิโล (บาท)</label>
-        <input type="number" class="form-control" id="ds-sell-price" placeholder="0" min="0">
-      </div>
-      <div class="form-group">
-        <label class="form-label">ต้นทุนต่อกิโล (บาท)</label>
-        <input type="number" class="form-control" id="ds-cost-price" placeholder="0" min="0">
-      </div>
-      <div class="form-group">
-        <label class="form-label">ข้าวโพดเสีย (กิโล)</label>
-        <input type="number" class="form-control" id="ds-waste-kg" placeholder="0" min="0">
-      </div>
+      <div class="form-group"><label class="form-label">ข้าวโพดทั้งหมด (กิโล)</label><input type="number" class="form-control" id="ds-total-kg" placeholder="0" min="0"></div>
+      <div class="form-group"><label class="form-label">ราคาขายต่อกิโล (บาท)</label><input type="number" class="form-control" id="ds-sell-price" placeholder="0" min="0"></div>
+      <div class="form-group"><label class="form-label">ต้นทุนต่อกิโล (บาท)</label><input type="number" class="form-control" id="ds-cost-price" placeholder="0" min="0"></div>
+      <div class="form-group"><label class="form-label">ข้าวโพดเสีย (กิโล)</label><input type="number" class="form-control" id="ds-waste-kg" placeholder="0" min="0"></div>
       <div class="section-title">ค่าใช้จ่ายเพิ่มเติม</div>
       <div id="ds-expenses-list"></div>
-      <button class="btn btn-outline btn-sm mt-8" onclick="addExpenseRow()">+ เพิ่มค่าใช้จ่าย</button>
-      <div class="form-group mt-12">
-        <label class="form-label">หมายเหตุวัน</label>
-        <textarea class="form-control" id="ds-note" rows="2" placeholder="หมายเหตุ..."></textarea>
-      </div>
+      <button class="btn btn-outline btn-sm mt-8" onclick="App.addExpenseRow()">+ เพิ่มค่าใช้จ่าย</button>
+      <div class="form-group mt-12"><label class="form-label">หมายเหตุวัน</label><textarea class="form-control" id="ds-note" rows="2" placeholder="หมายเหตุ..."></textarea></div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-outline" style="flex:1;" onclick="closeModal('modal-day-settings')">ยกเลิก</button>
-      <button class="btn btn-primary" style="flex:1;" onclick="saveDaySettings()">บันทึก</button>
+      <button class="btn btn-outline" style="flex:1;" onclick="App.closeModal('modal-day-settings')">ยกเลิก</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="App.saveDaySettings()">บันทึก</button>
     </div>
   </div>
 </div>
 
-<!-- ========== MODAL: ADD/EDIT ORDER ========== -->
+<!-- MODAL: ADD/EDIT ORDER -->
 <div class="modal-overlay" id="modal-order">
   <div class="modal">
-    <div class="modal-header">
-      <span class="modal-title" id="modal-order-title">➕ เพิ่มออเดอร์</span>
-      <button class="modal-close" onclick="closeModal('modal-order')">✕</button>
-    </div>
+    <div class="modal-header"><span class="modal-title" id="modal-order-title">➕ เพิ่มออเดอร์</span><button class="modal-close" onclick="App.closeModal('modal-order')">✕</button></div>
     <div class="modal-body">
       <input type="hidden" id="order-edit-id">
-      <div class="form-group">
-        <label class="form-label">ชื่อลูกค้า *</label>
-        <input type="text" class="form-control" id="o-name" placeholder="ชื่อลูกค้า">
+      <div class="form-group"><label class="form-label">ชื่อลูกค้า *</label><input type="text" class="form-control" id="o-name" placeholder="ชื่อลูกค้า"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div class="form-group"><label class="form-label">จำนวน (กิโล)</label><input type="number" class="form-control" id="o-kg" placeholder="0" min="0" oninput="App.calcOrderTotal()"></div>
+        <div class="form-group"><label class="form-label">ราคา/กิโล</label><input type="number" class="form-control" id="o-price" placeholder="0" min="0" oninput="App.calcOrderTotal()"></div>
+      </div>
+      <div class="form-group"><label class="form-label">ประเภทออเดอร์</label>
+        <select class="form-control" id="o-type"><option value="booking">จองล่วงหน้า</option><option value="walkin">หน้าร้าน</option></select>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-        <div class="form-group">
-          <label class="form-label">จำนวน (กิโล)</label>
-          <input type="number" class="form-control" id="o-kg" placeholder="0" min="0" oninput="calcOrderTotal()">
-        </div>
-        <div class="form-group">
-          <label class="form-label">ราคา/กิโล</label>
-          <input type="number" class="form-control" id="o-price" placeholder="0" min="0" oninput="calcOrderTotal()">
-        </div>
+        <div class="form-group"><label class="form-label">ยอดที่ต้องจ่าย</label><input type="number" class="form-control" id="o-total" placeholder="0" readonly style="opacity:0.7;"></div>
+        <div class="form-group"><label class="form-label">จ่ายแล้ว (บาท)</label><input type="number" class="form-control" id="o-paid" placeholder="0" min="0" oninput="App.calcOrderTotal()"></div>
       </div>
-      <div class="form-group">
-        <label class="form-label">ประเภทออเดอร์</label>
-        <select class="form-control" id="o-type">
-          <option value="booking">จองล่วงหน้า</option>
-          <option value="walkin">หน้าร้าน</option>
-        </select>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-        <div class="form-group">
-          <label class="form-label">ยอดที่ต้องจ่าย</label>
-          <input type="number" class="form-control" id="o-total" placeholder="0" readonly style="opacity:0.7;">
-        </div>
-        <div class="form-group">
-          <label class="form-label">จ่ายแล้ว (บาท)</label>
-          <input type="number" class="form-control" id="o-paid" placeholder="0" min="0" oninput="calcOrderTotal()">
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">หมายเหตุ</label>
-        <input type="text" class="form-control" id="o-note" placeholder="หมายเหตุ...">
-      </div>
+      <div class="form-group"><label class="form-label">หมายเหตุ</label><input type="text" class="form-control" id="o-note" placeholder="หมายเหตุ..."></div>
       <div class="form-group">
         <label class="form-label">หลักฐานการจ่ายเงิน</label>
-        <div class="alert alert-info" style="font-size:0.78rem;padding:8px 12px;margin-bottom:8px;">📱 รูปหลักฐานใน V2.0 ยังเก็บเฉพาะเครื่องนี้</div>
-        <input type="file" class="form-control" id="o-slips" accept="image/*" multiple onchange="handleSlipFiles(event)" style="padding:10px;">
+        <div class="alert alert-info" style="font-size:0.78rem;padding:8px 12px;margin-bottom:8px;">📱 รูปหลักฐานเก็บเฉพาะเครื่องนี้ (local-only)</div>
+        <input type="file" class="form-control" id="o-slips" accept="image/*" multiple onchange="App.handleSlipFiles(event)" style="padding:10px;">
         <div id="o-slips-preview" class="slips-row mt-8"></div>
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-outline" style="flex:1;" onclick="closeModal('modal-order')">ยกเลิก</button>
-      <button class="btn btn-primary" style="flex:1;" onclick="saveOrder()">บันทึก</button>
+      <button class="btn btn-outline" style="flex:1;" onclick="App.closeModal('modal-order')">ยกเลิก</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="App.saveOrder()">บันทึก</button>
     </div>
   </div>
 </div>
 
-<!-- ========== MODAL: QUICK ADD ========== -->
+<!-- MODAL: QUICK ADD -->
 <div class="modal-overlay" id="modal-quick-add">
   <div class="modal">
-    <div class="modal-header">
-      <span class="modal-title">⚡ เพิ่มออเดอร์เร็ว</span>
-      <button class="modal-close" onclick="closeModal('modal-quick-add')">✕</button>
-    </div>
+    <div class="modal-header"><span class="modal-title">⚡ เพิ่มออเดอร์เร็ว</span><button class="modal-close" onclick="App.closeModal('modal-quick-add')">✕</button></div>
     <div class="modal-body">
       <div class="text-sm text-muted mb-12" id="quick-add-day-info"></div>
-      <div class="form-group">
-        <label class="form-label">ชื่อลูกค้า *</label>
-        <input type="text" class="form-control" id="qa-name" placeholder="ชื่อลูกค้า" style="font-size:1.1rem;">
-      </div>
+      <div class="form-group"><label class="form-label">ชื่อลูกค้า *</label><input type="text" class="form-control" id="qa-name" placeholder="ชื่อลูกค้า" style="font-size:1.1rem;"></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-        <div class="form-group">
-          <label class="form-label">กิโล</label>
-          <input type="number" class="form-control" id="qa-kg" placeholder="0" min="0" style="font-size:1.1rem;" oninput="calcQA()">
-        </div>
-        <div class="form-group">
-          <label class="form-label">จ่ายแล้ว</label>
-          <input type="number" class="form-control" id="qa-paid" placeholder="0" min="0" style="font-size:1.1rem;">
-        </div>
+        <div class="form-group"><label class="form-label">กิโล</label><input type="number" class="form-control" id="qa-kg" placeholder="0" min="0" style="font-size:1.1rem;" oninput="App.calcQA()"></div>
+        <div class="form-group"><label class="form-label">จ่ายแล้ว</label><input type="number" class="form-control" id="qa-paid" placeholder="0" min="0" style="font-size:1.1rem;"></div>
       </div>
       <div class="alert alert-warning" id="qa-total-show" style="margin-top:4px;"></div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-outline" style="flex:1;" onclick="closeModal('modal-quick-add')">ยกเลิก</button>
-      <button class="btn btn-primary" style="flex:1;" onclick="saveQuickAdd()">เพิ่มทันที</button>
+      <button class="btn btn-outline" style="flex:1;" onclick="App.closeModal('modal-quick-add')">ยกเลิก</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="App.saveQuickAdd()">เพิ่มทันที</button>
     </div>
   </div>
 </div>
 
-<!-- ========== MODAL: OLD IMAGES ALERT ========== -->
-<div class="modal-overlay modal-confirm" id="modal-old-images">
-  <div class="modal" style="border-radius:20px;max-width:360px;align-self:center;">
-    <div class="modal-body" style="padding:24px 20px;">
-      <div style="font-size:2rem;text-align:center;margin-bottom:12px;">🗑️</div>
-      <div class="font-bold" style="text-align:center;margin-bottom:8px;font-size:1.05rem;">พบรูปหลักฐานเก่า</div>
-      <div class="text-sm text-muted text-center" id="old-images-msg">มีรูปหลักฐานที่เก่ากว่า 3 เดือน ควรลบเพื่อประหยัดพื้นที่ (ข้อมูลออเดอร์ยังคงอยู่)</div>
-    </div>
-    <div class="modal-footer" style="flex-direction:column;gap:8px;">
-      <button class="btn btn-danger btn-full" id="old-images-delete-btn">🗑️ ลบตอนนี้</button>
-      <button class="btn btn-outline btn-full" onclick="closeModal('modal-old-images')">ไว้ทีหลัง</button>
-    </div>
-  </div>
-</div>
-
+<!-- MODAL: CONFIRM -->
 <div class="modal-overlay modal-confirm" id="modal-confirm">
   <div class="modal" style="border-radius:20px;max-width:340px;align-self:center;">
     <div class="modal-body" style="padding:24px 20px;">
@@ -1105,199 +710,111 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
       <div class="text-sm text-muted text-center" id="confirm-msg"></div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-outline" style="flex:1;" onclick="closeModal('modal-confirm')">ยกเลิก</button>
+      <button class="btn btn-outline" style="flex:1;" onclick="App.closeModal('modal-confirm')">ยกเลิก</button>
       <button class="btn btn-danger" style="flex:1;" id="confirm-ok-btn">ยืนยัน</button>
     </div>
   </div>
 </div>
 
-<!-- ========== MODAL: COPY SUMMARY ========== -->
+<!-- MODAL: COPY SUMMARY -->
 <div class="modal-overlay" id="modal-copy">
   <div class="modal">
-    <div class="modal-header">
-      <span class="modal-title">📋 คัดลอกสรุป</span>
-      <button class="modal-close" onclick="closeModal('modal-copy')">✕</button>
-    </div>
-    <div class="modal-body">
-      <textarea class="form-control" id="copy-text" rows="14" readonly style="font-size:0.85rem;font-family:monospace;"></textarea>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-primary btn-full" onclick="copyText()">📋 คัดลอก</button>
-    </div>
+    <div class="modal-header"><span class="modal-title">📋 คัดลอกสรุป</span><button class="modal-close" onclick="App.closeModal('modal-copy')">✕</button></div>
+    <div class="modal-body"><textarea class="form-control" id="copy-text" rows="14" readonly style="font-size:0.85rem;font-family:monospace;"></textarea></div>
+    <div class="modal-footer"><button class="btn btn-primary btn-full" onclick="App.copyText()">📋 คัดลอก</button></div>
   </div>
 </div>
 
 <!-- =============================================
-     FIREBASE SDK (V2.0) - โหลดแบบ module
+     FIREBASE MODULE
      ============================================= -->
 <script type="module">
 // =============================================
-//  🔥 FIREBASE CONFIG — ใส่ค่าจาก Firebase Console ของคุณ
+//  🔥 FIREBASE CONFIG — ใส่ค่าจาก Firebase Console
 // =============================================
 const firebaseConfig = {
-  apiKey: "ใส่ค่าจาก Firebase Console",
-  authDomain: "ใส่ค่าจาก Firebase Console",
-  projectId: "ใส่ค่าจาก Firebase Console",
-  storageBucket: "ใส่ค่าจาก Firebase Console",
-  messagingSenderId: "ใส่ค่าจาก Firebase Console",
-  appId: "ใส่ค่าจาก Firebase Console"
+  apiKey: "AIzaSyBwlRjJ-dMHRK-2qYD4EO-ZXSmCgQsAE3k",
+  authDomain: "corn-shop-fbea9.firebaseapp.com",
+  projectId: "corn-shop-fbea9",
+  storageBucket: "corn-shop-fbea9.firebasestorage.app",
+  messagingSenderId: "154719994225",
+  appId: "1:154719994225:web:26d97a5adbc5b3734176d0"
 };
 
-// =============================================
-//  FIREBASE IMPORTS
-// =============================================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getFirestore,
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  setDoc,
-  deleteDoc,
-  onSnapshot,
-  serverTimestamp,
+  collection, doc,
+  getDocs, setDoc, deleteDoc,
+  onSnapshot, serverTimestamp,
   enableIndexedDbPersistence
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// =============================================
-//  INIT FIREBASE
-// =============================================
-const FIREBASE_CONFIGURED = !firebaseConfig.apiKey.includes('ใส่ค่า');
-
-let app, firestoreDb;
-let unsubscribeSnapshot = null;
-
-if (FIREBASE_CONFIGURED) {
-  try {
-    app = initializeApp(firebaseConfig);
-    firestoreDb = getFirestore(app);
-    // เปิด offline persistence (IndexedDB cache)
-    enableIndexedDbPersistence(firestoreDb).catch(err => {
-      console.warn('Offline persistence:', err.code);
-    });
-  } catch (e) {
-    console.error('Firebase init error:', e);
-  }
-}
-
-// =============================================
-//  FIRESTORE PATH HELPERS
-// =============================================
-// cornShops/defaultShop/days/{YYYY-MM-DD}
+const IS_CONFIGURED = !firebaseConfig.apiKey.includes('ใส่ค่า');
 const SHOP_ID = 'defaultShop';
 
-function getDaysCol() {
-  return collection(firestoreDb, 'cornShops', SHOP_ID, 'days');
-}
+let fsdb = null;
+let unsubSnap = null;
 
-function getDayDocRef(dateStr) {
-  return doc(firestoreDb, 'cornShops', SHOP_ID, 'days', dateStr);
-}
-
-// =============================================
-//  SYNC STATE
-// =============================================
-let syncStatus = 'offline'; // offline | online | saving | synced | error
-let lastSyncTime = null;
-let isOnline = navigator.onLine;
-
-function setSyncStatus(status, msg) {
-  syncStatus = status;
-  const bar = document.getElementById('sync-bar');
-  const label = document.getElementById('sync-label');
-  const badge = document.getElementById('fb-status-badge');
-  const timeEl = document.getElementById('sync-time');
-
-  bar.className = 'bar-' + status;
-  const statusMap = {
-    online:  { text: '🟢 Online',         barLabel: '🟢 เชื่อมต่อแล้ว',  badgeCls: 'badge' },
-    offline: { text: '🟡 Offline',        barLabel: '🟡 ออฟไลน์ (ใช้ Cache)', badgeCls: 'badge badge-partial' },
-    saving:  { text: '🔵 กำลังบันทึก...', barLabel: '🔵 กำลังบันทึก...', badgeCls: 'badge badge-booking' },
-    synced:  { text: '✅ Synced',          barLabel: '✅ ซิงค์สำเร็จ',    badgeCls: 'badge badge-paid' },
-    error:   { text: '🔴 Sync Error',     barLabel: '🔴 เกิดข้อผิดพลาด', badgeCls: 'badge badge-unpaid' },
-  };
-  const s = statusMap[status] || statusMap.offline;
-  if (label) label.textContent = msg || s.barLabel;
-  if (badge) { badge.textContent = msg || s.text; badge.className = s.badgeCls; }
-  if (status === 'synced' && timeEl) {
-    lastSyncTime = new Date();
-    const t = lastSyncTime.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
-    timeEl.textContent = `อัปเดต ${t}`;
-    const lastSyncEl = document.getElementById('fb-last-sync');
-    if (lastSyncEl) lastSyncEl.textContent = `ซิงค์ล่าสุด: ${t}`;
-  }
-}
-
-// Online/offline event listeners
-window.addEventListener('online', () => {
-  isOnline = true;
-  if (FIREBASE_CONFIGURED && firestoreDb) {
-    setSyncStatus('online');
-    startRealtimeSync();
-  }
-});
-window.addEventListener('offline', () => {
-  isOnline = false;
-  setSyncStatus('offline');
-  if (unsubscribeSnapshot) { unsubscribeSnapshot(); unsubscribeSnapshot = null; }
-});
-
-// =============================================
-//  LOAD ALL DAYS FROM FIRESTORE → local db
-// =============================================
-async function loadFromFirestore() {
-  if (!FIREBASE_CONFIGURED || !firestoreDb) return false;
+if (IS_CONFIGURED) {
   try {
-    setSyncStatus('saving', '🔵 กำลังโหลดจาก Firebase...');
-    const snap = await getDocs(getDaysCol());
-    snap.forEach(docSnap => {
-      const data = docSnap.data();
-      const dateStr = docSnap.id;
-      // Merge: Firebase overrides local for same date
-      // Preserve slips (local-only) when merging
-      const existingOrders = (window._db && window._db.days && window._db.days[dateStr])
-        ? window._db.days[dateStr].orders || []
-        : [];
-      const mergedOrders = (data.orders || []).map((fbOrder, i) => {
-        const localOrder = existingOrders.find(lo => lo.id === fbOrder.id);
-        return {
-          ...fbOrder,
-          slips: localOrder ? (localOrder.slips || []) : []
-        };
-      });
-      window._db.days[dateStr] = { ...data, orders: mergedOrders };
+    const app = initializeApp(firebaseConfig);
+    fsdb = getFirestore(app);
+    enableIndexedDbPersistence(fsdb).catch(() => {});
+  } catch(e) {
+    console.warn('Firebase init error:', e);
+  }
+}
+
+function daysCol() { return collection(fsdb, 'cornShops', SHOP_ID, 'days'); }
+function dayRef(d) { return doc(fsdb, 'cornShops', SHOP_ID, 'days', d); }
+
+// Strip local-only slip data before saving to Firestore
+function stripSlips(orders) {
+  return (orders || []).map(o => ({
+    ...o,
+    slips: (o.slips || []).map(s => ({ date: s.date || '', deleted: s.deleted || false }))
+  }));
+}
+
+// Merge Firebase orders with local slips
+function mergeSlips(fbOrders, localOrders) {
+  return (fbOrders || []).map(fo => {
+    const lo = (localOrders || []).find(x => x.id === fo.id);
+    return { ...fo, slips: lo ? (lo.slips || []) : [] };
+  });
+}
+
+// Full load from Firestore
+async function loadAll() {
+  if (!IS_CONFIGURED || !fsdb) return false;
+  try {
+    const snap = await getDocs(daysCol());
+    snap.forEach(ds => {
+      const dateStr = ds.id;
+      const data = ds.data();
+      const existing = window.DB.days[dateStr];
+      window.DB.days[dateStr] = {
+        ...data,
+        orders: mergeSlips(data.orders, existing ? existing.orders : [])
+      };
     });
-    saveDB();
-    setSyncStatus('synced');
+    App.saveCache();
     return true;
-  } catch (e) {
-    console.error('loadFromFirestore', e);
-    setSyncStatus('error', '🔴 โหลดไม่สำเร็จ');
+  } catch(e) {
+    console.error('loadAll', e);
     return false;
   }
 }
 
-// =============================================
-//  SAVE ONE DAY TO FIRESTORE
-// =============================================
-async function saveDayToFirestore(dateStr) {
-  if (!FIREBASE_CONFIGURED || !firestoreDb) return;
+// Save one day to Firestore
+async function saveDay(dateStr) {
+  if (!IS_CONFIGURED || !fsdb) return;
   try {
-    const day = window._db.days[dateStr];
+    const day = window.DB.days[dateStr];
     if (!day) return;
-    setSyncStatus('saving');
-    // Strip slips.data (base64) before saving to Firestore — keep only metadata
-    const ordersForFirestore = (day.orders || []).map(o => ({
-      ...o,
-      slips: (o.slips || []).map(s => ({
-        date: s.date || '',
-        deleted: s.deleted || false
-        // data (base64) intentionally excluded — local only
-      }))
-    }));
     const payload = {
-      date: day.date,
+      date: day.date || dateStr,
       totalKg: day.totalKg || 0,
       sellPrice: day.sellPrice || 0,
       costPrice: day.costPrice || 0,
@@ -1305,1298 +822,1274 @@ async function saveDayToFirestore(dateStr) {
       expenses: day.expenses || [],
       note: day.note || '',
       locked: day.locked || false,
-      orders: ordersForFirestore,
+      orders: stripSlips(day.orders),
       updatedAt: serverTimestamp()
     };
-    await setDoc(getDayDocRef(dateStr), payload, { merge: true });
-    setSyncStatus('synced');
-  } catch (e) {
-    console.error('saveDayToFirestore', e);
-    setSyncStatus('error', '🔴 บันทึกไม่สำเร็จ');
-    toast('Sync ไม่สำเร็จ — บันทึก Local แล้ว', 'warning');
+    await setDoc(dayRef(dateStr), payload, { merge: true });
+  } catch(e) {
+    console.error('saveDay', e);
+    throw e;
   }
 }
 
-// =============================================
-//  REALTIME SNAPSHOT — sync จาก Firestore แบบ realtime
-// =============================================
-function startRealtimeSync() {
-  if (!FIREBASE_CONFIGURED || !firestoreDb) return;
-  if (unsubscribeSnapshot) unsubscribeSnapshot(); // unsubscribe เดิมก่อน
+// Delete one day from Firestore
+async function deleteDay(dateStr) {
+  if (!IS_CONFIGURED || !fsdb) return;
+  try { await deleteDoc(dayRef(dateStr)); } catch(e) { console.error('deleteDay', e); }
+}
 
-  unsubscribeSnapshot = onSnapshot(getDaysCol(), (snapshot) => {
+// Realtime snapshot
+function startSnapshot() {
+  if (!IS_CONFIGURED || !fsdb) return;
+  if (unsubSnap) unsubSnap();
+
+  unsubSnap = onSnapshot(daysCol(), (snapshot) => {
     let changed = false;
     snapshot.docChanges().forEach(change => {
       const dateStr = change.doc.id;
-      const data = change.doc.data();
-
       if (change.type === 'removed') {
-        delete window._db.days[dateStr];
+        delete window.DB.days[dateStr];
         changed = true;
         return;
       }
-
-      // Merge: preserve local slips
-      const existingOrders = (window._db.days[dateStr] || {}).orders || [];
-      const mergedOrders = (data.orders || []).map(fbOrder => {
-        const localOrder = existingOrders.find(lo => lo.id === fbOrder.id);
-        return { ...fbOrder, slips: localOrder ? (localOrder.slips || []) : [] };
-      });
-
-      const wasLocked = window._db.days[dateStr] ? window._db.days[dateStr].locked : undefined;
-      window._db.days[dateStr] = { ...data, orders: mergedOrders };
+      const data = change.doc.data();
+      const existing = window.DB.days[dateStr];
+      window.DB.days[dateStr] = {
+        ...data,
+        orders: mergeSlips(data.orders, existing ? existing.orders : [])
+      };
       changed = true;
-
-      // Re-render ถ้ากำลังดูวันนี้อยู่
-      if (window._currentDay === dateStr && window._currentPage === 'day') {
-        renderDay();
-      }
     });
-
     if (changed) {
-      saveDB();
-      renderDashboard();
-      setSyncStatus('synced');
+      App.saveCache();
+      App.renderAll();
+      App.setSyncStatus('synced');
     }
   }, (err) => {
-    console.error('onSnapshot error', err);
-    setSyncStatus('error', '🔴 Realtime sync ขาด');
+    console.error('snapshot error', err);
+    App.setSyncStatus('error', '🔴 Realtime sync ขาด');
   });
 
-  setSyncStatus('online', '🟢 Realtime Sync');
+  App.setSyncStatus('online', '🟢 Realtime Sync');
 }
 
-// =============================================
-//  MANUAL SYNC (ปุ่ม Sync ตอนนี้)
-// =============================================
-window.manualSync = async function() {
-  if (!FIREBASE_CONFIGURED) {
-    toast('ยังไม่ได้ตั้งค่า Firebase Config', 'error');
-    return;
-  }
-  if (!navigator.onLine) {
-    toast('ไม่มีอินเทอร์เน็ต', 'warning');
-    return;
-  }
-  const ok = await loadFromFirestore();
-  if (ok) {
-    renderDashboard();
-    if (window._currentPage === 'dates') renderDates();
-    if (window._currentPage === 'day') renderDay();
-    toast('Sync สำเร็จ ✅', 'success');
-  }
+function stopSnapshot() { if (unsubSnap) { unsubSnap(); unsubSnap = null; } }
+
+// Expose Firebase API to global App
+window._firebase = {
+  IS_CONFIGURED,
+  loadAll,
+  saveDay,
+  deleteDay,
+  startSnapshot,
+  stopSnapshot
 };
 
-// =============================================
-//  UPLOAD LOCAL → FIREBASE (สำหรับ manual push)
-// =============================================
-window.uploadLocalToFirebase = async function() {
-  if (!FIREBASE_CONFIGURED) { toast('ยังไม่ได้ตั้งค่า Firebase Config', 'error'); return; }
-  if (!navigator.onLine) { toast('ไม่มีอินเทอร์เน็ต', 'warning'); return; }
-  showConfirm('อัปโหลดไป Firebase', 'อัปโหลดข้อมูล LocalStorage ทั้งหมดไปยัง Firebase Firestore?', async () => {
-    const dates = Object.keys(window._db.days);
-    if (!dates.length) { toast('ไม่มีข้อมูลให้อัปโหลด', 'warning'); return; }
-    setSyncStatus('saving', `🔵 กำลังอัปโหลด ${dates.length} วัน...`);
-    let count = 0;
-    for (const dateStr of dates) {
-      await saveDayToFirestore(dateStr);
-      count++;
-    }
-    setSyncStatus('synced');
-    toast(`อัปโหลดสำเร็จ ${count} วัน ✅`, 'success');
-  });
-};
-
-// =============================================
-//  MIGRATE FROM V1.1 LOCALSTORAGE → FIREBASE
-// =============================================
-window.migrateFromLocalStorage = async function() {
-  if (!FIREBASE_CONFIGURED) { toast('ยังไม่ได้ตั้งค่า Firebase Config', 'error'); return; }
-  if (!navigator.onLine) { toast('ไม่มีอินเทอร์เน็ต', 'warning'); return; }
-
-  const v1Raw = localStorage.getItem('corn_shop_v1');
-  if (!v1Raw) {
-    toast('ไม่พบข้อมูล V1.1 (corn_shop_v1)', 'warning');
+// Init on load
+window.addEventListener('load', async () => {
+  if (!IS_CONFIGURED) {
+    App.setSyncStatus('offline', '⚠️ ยังไม่ได้ตั้งค่า Firebase');
+    const badge = document.getElementById('fb-status-badge');
+    if (badge) { badge.textContent = '⚠️ ยังไม่ได้ตั้งค่า Config'; badge.className = 'badge badge-unpaid'; }
+    const lastSync = document.getElementById('fb-last-sync');
+    if (lastSync) lastSync.textContent = 'ใส่ค่า firebaseConfig แล้วบันทึกไฟล์';
     return;
   }
-  let v1Data;
-  try { v1Data = JSON.parse(v1Raw); } catch(e) { toast('ไฟล์ V1.1 เสียหาย', 'error'); return; }
-
-  const dates = Object.keys(v1Data.days || {});
-  if (!dates.length) { toast('ไม่มีข้อมูลวันใน V1.1', 'warning'); return; }
-
-  showConfirm(
-    '📦 Migrate V1.1 → Firebase',
-    `พบข้อมูล ${dates.length} วัน จาก V1.1\nจะนำเข้า Firestore ทั้งหมด\n\n(LocalStorage เดิมจะยังคงอยู่ ไม่ถูกลบ)`,
-    async () => {
-      setSyncStatus('saving', `🔵 Migrate ${dates.length} วัน...`);
-      // Merge v1 data into current db
-      for (const dateStr of dates) {
-        if (!window._db.days[dateStr]) {
-          window._db.days[dateStr] = v1Data.days[dateStr];
-        } else {
-          // ถ้ามีอยู่แล้ว ใช้ของใหม่กว่า (ไม่ overwrite)
-        }
-        await saveDayToFirestore(dateStr);
-      }
-      saveDB();
-      renderDashboard();
-      setSyncStatus('synced');
-      toast(`Migrate สำเร็จ ${dates.length} วัน ✅`, 'success');
-    },
-    '📦'
-  );
-};
-
-// =============================================
-//  EXPOSE FIREBASE SAVE FUNCTION TO GLOBAL
-//  (ให้ saveDB() เรียกได้จาก non-module scope)
-// =============================================
-window._saveDayToFirestore = saveDayToFirestore;
-window._loadFromFirestore = loadFromFirestore;
-window._startRealtimeSync = startRealtimeSync;
-window._FIREBASE_CONFIGURED = FIREBASE_CONFIGURED;
-
-// =============================================
-//  INIT FIREBASE ON LOAD
-// =============================================
-window.addEventListener('load', () => {
-  if (FIREBASE_CONFIGURED) {
-    if (navigator.onLine) {
-      loadFromFirestore().then(ok => {
-        if (ok) {
-          renderDashboard();
-          startRealtimeSync();
-        }
-      });
+  if (navigator.onLine) {
+    App.setSyncStatus('saving', '🔵 กำลังโหลด...');
+    const ok = await loadAll();
+    if (ok) {
+      App.renderAll();
+      App.setSyncStatus('synced');
+      startSnapshot();
     } else {
-      setSyncStatus('offline');
+      App.setSyncStatus('error');
     }
   } else {
-    setSyncStatus('offline', '⚠️ ยังไม่ได้ตั้งค่า Firebase');
-    const badge = document.getElementById('fb-status-badge');
-    if (badge) {
-      badge.textContent = '⚠️ ยังไม่ได้ตั้งค่า Firebase Config';
-      badge.className = 'badge badge-unpaid';
-    }
-    const lastSyncEl = document.getElementById('fb-last-sync');
-    if (lastSyncEl) lastSyncEl.textContent = 'ใส่ค่า firebaseConfig แล้วบันทึกไฟล์ใหม่';
+    App.setSyncStatus('offline');
   }
 });
+
+window.addEventListener('online', () => {
+  if (IS_CONFIGURED) {
+    App.setSyncStatus('online');
+    startSnapshot();
+  }
+});
+window.addEventListener('offline', () => {
+  stopSnapshot();
+  App.setSyncStatus('offline');
+});
+
 </script>
 
+<!-- =============================================
+     MAIN APP SCRIPT
+     ============================================= -->
 <script>
-// =============================================
-//  DATA STORE (V2.0 — เพิ่ม Firebase hooks)
-// =============================================
-const DB_KEY = 'corn_shop_v2';
-let db = { days: {}, settings: { dark: false, buddhistYear: true } };
-window._db = db; // expose ให้ module script เข้าถึง
+'use strict';
 
-function loadDB() {
-  try {
-    const raw = localStorage.getItem(DB_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      db.days = parsed.days || {};
-      db.settings = parsed.settings || { dark: false, buddhistYear: true };
-      window._db = db;
+// =============================================
+//  SINGLE SOURCE OF TRUTH
+// =============================================
+window.DB = {
+  days: {},
+  settings: { dark: false, buddhistYear: true }
+};
+
+const CACHE_KEY = 'corn_shop_v3_cache';
+
+// =============================================
+//  App NAMESPACE — all functions here
+// =============================================
+const App = window.App = (() => {
+
+  // --- STATE ---
+  let currentPage = 'dashboard';
+  let currentDay  = '';
+  let reportMode  = 'today';
+  let tempExpenses = [];
+  let tempSlips    = [];
+  let lastSyncTime = null;
+  let _saveDebounce = {};
+
+  // Charts
+  let salesChart = null, profitChart = null, kgChart = null;
+
+  // =============================================
+  //  CACHE (localStorage)
+  // =============================================
+  function loadCache() {
+    try {
+      const raw = localStorage.getItem(CACHE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        window.DB.days     = parsed.days     || {};
+        window.DB.settings = parsed.settings || { dark: false, buddhistYear: true };
+      }
+    } catch(e) { /* ignore */ }
+  }
+
+  function saveCache() {
+    try {
+      localStorage.setItem(CACHE_KEY, JSON.stringify(window.DB));
+    } catch(e) {
+      toast('พื้นที่เก็บข้อมูลเต็ม กรุณาลบรูปเก่า', 'error');
     }
-  } catch(e) { console.error('loadDB', e); }
-}
-
-function saveDB() {
-  try {
-    localStorage.setItem(DB_KEY, JSON.stringify(db));
-    window._db = db;
-  } catch(e) { toast('พื้นที่เก็บข้อมูลเต็ม กรุณาลบรูปเก่า', 'error'); }
-}
-
-// saveDB พร้อม sync Firebase — ใช้แทน saveDB() เมื่อแก้ไขข้อมูลวัน
-function saveAndSync(dateStr) {
-  saveDB();
-  if (typeof window._saveDayToFirestore === 'function' && window._FIREBASE_CONFIGURED) {
-    window._saveDayToFirestore(dateStr);
   }
-}
 
-// =============================================
-//  SETTINGS
-// =============================================
-function saveSetting(key, val) {
-  db.settings[key] = val;
-  saveDB();
-}
+  // =============================================
+  //  FIREBASE SAVE (debounced per day)
+  // =============================================
+  function syncDay(dateStr) {
+    saveCache();
+    if (!window._firebase || !window._firebase.IS_CONFIGURED) return;
+    clearTimeout(_saveDebounce[dateStr]);
+    _saveDebounce[dateStr] = setTimeout(async () => {
+      setSyncStatus('saving');
+      try {
+        await window._firebase.saveDay(dateStr);
+        setSyncStatus('synced');
+      } catch(e) {
+        setSyncStatus('error', '🔴 บันทึกไม่สำเร็จ');
+        toast('Sync ไม่สำเร็จ — บันทึก Local แล้ว', 'warning');
+      }
+    }, 600);
+  }
 
-function toggleDark(el) {
-  db.settings.dark = el.checked;
-  applyTheme();
-  saveDB();
-}
+  // =============================================
+  //  SYNC STATUS BAR
+  // =============================================
+  function setSyncStatus(status, msg) {
+    const bar   = document.getElementById('sync-bar');
+    const label = document.getElementById('sync-label');
+    const badge = document.getElementById('fb-status-badge');
+    const timeEl = document.getElementById('sync-time');
+    if (!bar) return;
 
-function applyTheme() {
-  document.documentElement.setAttribute('data-theme', db.settings.dark ? 'dark' : 'light');
-}
-
-function applySettings() {
-  document.getElementById('setting-dark').checked = !!db.settings.dark;
-  document.getElementById('setting-buddhist').checked = db.settings.buddhistYear !== false;
-  applyTheme();
-}
-
-// =============================================
-//  DATE HELPERS
-// =============================================
-function todayStr() {
-  const d = new Date();
-  return d.toISOString().slice(0, 10);
-}
-
-function fmtDate(str) {
-  if (!str) return '';
-  const d = new Date(str + 'T00:00:00');
-  const isBuddhist = db.settings.buddhistYear !== false;
-  const year = isBuddhist ? d.getFullYear() + 543 : d.getFullYear();
-  const months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
-  const days = ['อา.','จ.','อ.','พ.','พฤ.','ศ.','ส.'];
-  return `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]} ${year}`;
-}
-
-function isOlderThan3Months(str) {
-  const d = new Date(str + 'T00:00:00');
-  const cutoff = new Date();
-  cutoff.setMonth(cutoff.getMonth() - 3);
-  return d < cutoff;
-}
-
-function numFmt(n) {
-  return Number(n || 0).toLocaleString('th-TH', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
-}
-
-function moneyFmt(n) { return '฿' + numFmt(n); }
-
-// =============================================
-//  NAVIGATION
-// =============================================
-let currentPage = 'dashboard';
-window._currentPage = currentPage;
-
-function navigate(page) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-' + page).classList.add('active');
-  currentPage = page;
-  window._currentPage = page;
-
-  document.querySelectorAll('[data-page]').forEach(el => {
-    el.classList.toggle('active', el.dataset.page === page);
-  });
-
-  if (page === 'dashboard') renderDashboard();
-  if (page === 'dates') renderDates();
-  if (page === 'unpaid') renderUnpaid();
-  if (page === 'report') renderReport();
-  if (page === 'settings') applySettings();
-  if (page === 'search') document.getElementById('search-input').value = '';
-}
-
-// =============================================
-//  DAY DATA STRUCTURE
-// =============================================
-function getDay(dateStr) {
-  if (!db.days[dateStr]) {
-    db.days[dateStr] = {
-      date: dateStr,
-      totalKg: 0,
-      sellPrice: 0,
-      costPrice: 0,
-      wasteKg: 0,
-      expenses: [],
-      note: '',
-      locked: false,
-      orders: []
+    bar.className = 'bar-' + status;
+    const map = {
+      online:  { bar: '🟢 เชื่อมต่อแล้ว',       badge: '🟢 Online',         cls: 'badge' },
+      offline: { bar: '🟡 ออฟไลน์ (ใช้ Cache)',  badge: '🟡 Offline',        cls: 'badge badge-partial' },
+      saving:  { bar: '🔵 กำลังบันทึก...',       badge: '🔵 กำลังบันทึก...', cls: 'badge badge-booking' },
+      synced:  { bar: '✅ ซิงค์สำเร็จ',          badge: '✅ Synced',          cls: 'badge badge-paid' },
+      error:   { bar: '🔴 เกิดข้อผิดพลาด',      badge: '🔴 Sync Error',     cls: 'badge badge-unpaid' },
     };
-  }
-  return db.days[dateStr];
-}
-
-function calcDay(dateStr) {
-  const day = getDay(dateStr);
-  const soldKg = day.orders.reduce((s, o) => s + parseFloat(o.kg || 0), 0);
-  const remaining = parseFloat(day.totalKg || 0) - soldKg - parseFloat(day.wasteKg || 0);
-  const saleTotal = day.orders.reduce((s, o) => s + (parseFloat(o.kg || 0) * parseFloat(o.price || 0)), 0);
-  const paidTotal = day.orders.reduce((s, o) => s + parseFloat(o.paid || 0), 0);
-  const unpaidTotal = saleTotal - paidTotal;
-  const cornCost = parseFloat(day.totalKg || 0) * parseFloat(day.costPrice || 0);
-  const extraExpenses = (day.expenses || []).reduce((s, e) => s + parseFloat(e.amount || 0), 0);
-  const profit = saleTotal - cornCost - extraExpenses;
-  return { soldKg, remaining, saleTotal, paidTotal, unpaidTotal, cornCost, extraExpenses, profit };
-}
-
-// =============================================
-//  DASHBOARD
-// =============================================
-function renderDashboard() {
-  const today = todayStr();
-  const day = getDay(today);
-  const c = calcDay(today);
-
-  document.getElementById('dash-sale-total').textContent = moneyFmt(c.saleTotal);
-  document.getElementById('dash-date-label').textContent = fmtDate(today);
-
-  const grid = document.getElementById('dash-grid');
-  grid.innerHTML = `
-    <div class="summary-card yellow"><div class="label">กำไรวันนี้</div><div class="value">${moneyFmt(c.profit)}</div></div>
-    <div class="summary-card green"><div class="label">ข้าวโพดคงเหลือ</div><div class="value">${numFmt(c.remaining)}<span class="unit"> กก.</span></div></div>
-    <div class="summary-card red"><div class="label">ยอดค้างจ่าย</div><div class="value">${moneyFmt(c.unpaidTotal)}</div></div>
-    <div class="summary-card blue"><div class="label">จำนวนลูกค้า</div><div class="value">${day.orders.length}<span class="unit"> คน</span></div></div>
-    <div class="summary-card"><div class="label">จ่ายแล้ว</div><div class="value">${moneyFmt(c.paidTotal)}</div></div>
-    <div class="summary-card"><div class="label">ขายแล้ว</div><div class="value">${numFmt(c.soldKg)}<span class="unit"> กก.</span></div></div>
-  `;
-}
-
-// =============================================
-//  DATE LIST
-// =============================================
-function renderDates() {
-  const allDates = Object.keys(db.days).sort((a, b) => b.localeCompare(a));
-  const today = todayStr();
-  const currentList = document.getElementById('dates-current-list');
-  const archiveList = document.getElementById('dates-archive-list');
-  currentList.innerHTML = '';
-  archiveList.innerHTML = '';
-
-  if (!allDates.length) {
-    currentList.innerHTML = `<div class="empty-state"><div class="empty-icon">📅</div><div class="empty-title">ยังไม่มีข้อมูล</div><div class="empty-sub">กด + เพิ่มวันที่ เพื่อเริ่มต้น</div></div>`;
-    return;
+    const s = map[status] || map.offline;
+    if (label) label.textContent = msg || s.bar;
+    if (badge) { badge.textContent = msg || s.badge; badge.className = s.cls; }
+    if (status === 'synced') {
+      lastSyncTime = new Date();
+      const t = lastSyncTime.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+      if (timeEl) timeEl.textContent = `อัปเดต ${t}`;
+      const el = document.getElementById('fb-last-sync');
+      if (el) el.textContent = `ซิงค์ล่าสุด: ${t}`;
+    }
   }
 
-  allDates.forEach(date => {
-    const c = calcDay(date);
-    const day = getDay(date);
-    const isToday = date === today;
-    const isArchive = isOlderThan3Months(date);
-    const el = document.createElement('div');
-    el.className = 'date-item' + (isToday ? ' today' : '');
-    el.innerHTML = `
-      <span class="date-icon">${isToday ? '📌' : '📅'}</span>
-      <div class="date-info">
-        <div class="date-label">${fmtDate(date)} ${day.locked ? '<span class="badge badge-locked">🔒</span>' : ''}</div>
-        <div class="date-sub">ยอดขาย ${moneyFmt(c.saleTotal)} • กำไร ${moneyFmt(c.profit)} • คงเหลือ ${numFmt(c.remaining)} กก.</div>
-      </div>
-      <span class="date-arrow">›</span>
+  // =============================================
+  //  SETTINGS
+  // =============================================
+  function saveSetting(key, val) {
+    window.DB.settings[key] = val;
+    saveCache();
+  }
+
+  function toggleDark(el) {
+    window.DB.settings.dark = el.checked;
+    applyTheme();
+    saveCache();
+  }
+
+  function applyTheme() {
+    document.documentElement.setAttribute('data-theme', window.DB.settings.dark ? 'dark' : 'light');
+  }
+
+  function applySettings() {
+    const dEl = document.getElementById('setting-dark');
+    const bEl = document.getElementById('setting-buddhist');
+    if (dEl) dEl.checked = !!window.DB.settings.dark;
+    if (bEl) bEl.checked = window.DB.settings.buddhistYear !== false;
+    applyTheme();
+  }
+
+  // =============================================
+  //  DATE HELPERS
+  // =============================================
+  function todayStr() { return new Date().toISOString().slice(0, 10); }
+
+  function fmtDate(str) {
+    if (!str) return '';
+    const d = new Date(str + 'T00:00:00');
+    const buddhist = window.DB.settings.buddhistYear !== false;
+    const year = buddhist ? d.getFullYear() + 543 : d.getFullYear();
+    const months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+    const days   = ['อา.','จ.','อ.','พ.','พฤ.','ศ.','ส.'];
+    return `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]} ${year}`;
+  }
+
+  function isArchive(str) {
+    const d = new Date(str + 'T00:00:00');
+    const cut = new Date(); cut.setMonth(cut.getMonth() - 3);
+    return d < cut;
+  }
+
+  function numFmt(n)   { return Number(n || 0).toLocaleString('th-TH', { minimumFractionDigits: 0, maximumFractionDigits: 2 }); }
+  function moneyFmt(n) { return '฿' + numFmt(n); }
+  function esc(s)      { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  // =============================================
+  //  DAY DATA HELPERS
+  // =============================================
+  function getDay(dateStr) {
+    if (!window.DB.days[dateStr]) {
+      window.DB.days[dateStr] = {
+        date: dateStr, totalKg: 0, sellPrice: 0, costPrice: 0,
+        wasteKg: 0, expenses: [], note: '', locked: false, orders: []
+      };
+    }
+    // Ensure orders is always an array
+    if (!Array.isArray(window.DB.days[dateStr].orders)) {
+      window.DB.days[dateStr].orders = [];
+    }
+    return window.DB.days[dateStr];
+  }
+
+  function calcDay(dateStr) {
+    const day = getDay(dateStr);
+    const soldKg       = day.orders.reduce((s, o) => s + parseFloat(o.kg  || 0), 0);
+    const saleTotal    = day.orders.reduce((s, o) => s + parseFloat(o.kg  || 0) * parseFloat(o.price || 0), 0);
+    const paidTotal    = day.orders.reduce((s, o) => s + parseFloat(o.paid|| 0), 0);
+    const unpaidTotal  = saleTotal - paidTotal;
+    const remaining    = parseFloat(day.totalKg || 0) - soldKg - parseFloat(day.wasteKg || 0);
+    const cornCost     = parseFloat(day.totalKg || 0) * parseFloat(day.costPrice || 0);
+    const extraExpenses = (day.expenses || []).reduce((s, e) => s + parseFloat(e.amount || 0), 0);
+    const profit       = saleTotal - cornCost - extraExpenses;
+    return { soldKg, saleTotal, paidTotal, unpaidTotal, remaining, cornCost, extraExpenses, profit };
+  }
+
+  // =============================================
+  //  NAVIGATION
+  // =============================================
+  function navigate(page) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const el = document.getElementById('page-' + page);
+    if (el) el.classList.add('active');
+    currentPage = page;
+
+    document.querySelectorAll('[data-page]').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.page === page);
+    });
+
+    if (page === 'dashboard') renderDashboard();
+    if (page === 'dates')     renderDates();
+    if (page === 'unpaid')    renderUnpaid();
+    if (page === 'report')    renderReport();
+    if (page === 'settings')  applySettings();
+    if (page === 'search') {
+      const inp = document.getElementById('search-input');
+      if (inp) inp.value = '';
+      renderSearch('');
+    }
+  }
+
+  // =============================================
+  //  RENDER ALL (called on Firebase update)
+  // =============================================
+  function renderAll() {
+    if (currentPage === 'dashboard') renderDashboard();
+    if (currentPage === 'dates')     renderDates();
+    if (currentPage === 'unpaid')    renderUnpaid();
+    if (currentPage === 'search')    renderSearch(document.getElementById('search-input') ? document.getElementById('search-input').value : '');
+    if (currentPage === 'day')       renderDayPage();
+    if (currentPage === 'report')    renderReport();
+    // Also always refresh dashboard data silently
+    if (currentPage !== 'dashboard') renderDashboard();
+  }
+
+  // =============================================
+  //  DASHBOARD
+  // =============================================
+  function renderDashboard() {
+    const today = todayStr();
+    const c = calcDay(today);
+    const day = getDay(today);
+
+    const saleTotalEl = document.getElementById('dash-sale-total');
+    const dateLabelEl = document.getElementById('dash-date-label');
+    if (saleTotalEl) saleTotalEl.textContent = moneyFmt(c.saleTotal);
+    if (dateLabelEl) dateLabelEl.textContent = fmtDate(today);
+
+    const grid = document.getElementById('dash-grid');
+    if (grid) grid.innerHTML = `
+      <div class="summary-card yellow"><div class="label">กำไรวันนี้</div><div class="value">${moneyFmt(c.profit)}</div></div>
+      <div class="summary-card green"><div class="label">ข้าวโพดคงเหลือ</div><div class="value">${numFmt(c.remaining)}<span class="unit"> กก.</span></div></div>
+      <div class="summary-card red"><div class="label">ยอดค้างจ่าย</div><div class="value">${moneyFmt(c.unpaidTotal)}</div></div>
+      <div class="summary-card blue"><div class="label">จำนวนลูกค้า</div><div class="value">${day.orders.length}<span class="unit"> คน</span></div></div>
+      <div class="summary-card"><div class="label">จ่ายแล้ว</div><div class="value">${moneyFmt(c.paidTotal)}</div></div>
+      <div class="summary-card"><div class="label">ขายแล้ว</div><div class="value">${numFmt(c.soldKg)}<span class="unit"> กก.</span></div></div>
     `;
-    el.onclick = () => openDay(date);
-    if (isArchive) archiveList.appendChild(el);
-    else currentList.appendChild(el);
-  });
-
-  if (!archiveList.children.length) archiveList.innerHTML = `<div class="text-sm text-muted text-center" style="padding:16px;">ไม่มีข้อมูลเก่า</div>`;
-}
-
-function showAddDate() {
-  document.getElementById('new-date-input').value = todayStr();
-  openModal('modal-add-date');
-}
-
-function addDate() {
-  const val = document.getElementById('new-date-input').value;
-  if (!val) return toast('กรุณาเลือกวันที่', 'error');
-  if (db.days[val]) { closeModal('modal-add-date'); openDay(val); return; }
-  getDay(val);
-  saveAndSync(val);
-  closeModal('modal-add-date');
-  renderDates();
-  toast('เพิ่มวันที่สำเร็จ ✅', 'success');
-}
-
-// =============================================
-//  DAY DETAIL
-// =============================================
-let currentDay = '';
-window._currentDay = currentDay;
-
-function openDay(dateStr) {
-  currentDay = dateStr;
-  window._currentDay = dateStr;
-  navigate('day');
-  renderDay();
-}
-
-function goToday() {
-  const today = todayStr();
-  if (!db.days[today]) {
-    getDay(today);
-    saveAndSync(today);
-  }
-  openDay(today);
-}
-
-function renderDay() {
-  const day = getDay(currentDay);
-  const c = calcDay(currentDay);
-  const locked = day.locked;
-
-  document.getElementById('day-title').textContent = fmtDate(currentDay);
-  document.getElementById('day-locked-banner').style.display = locked ? 'block' : 'none';
-  document.getElementById('day-settings-btn').style.display = locked ? 'none' : '';
-  document.getElementById('day-add-order-btn').style.display = locked ? 'none' : '';
-  document.getElementById('day-lock-btn').textContent = locked ? '🔓 ปลดล็อก' : '🔒 ปิดวัน';
-
-  const grid = document.getElementById('day-summary-grid');
-  grid.innerHTML = `
-    <div class="summary-card"><div class="label">ข้าวโพดทั้งหมด</div><div class="value">${numFmt(day.totalKg)}<span class="unit">กก.</span></div></div>
-    <div class="summary-card green"><div class="label">คงเหลือ</div><div class="value" style="color:${c.remaining < 0 ? '#dc2626' : 'inherit'}">${numFmt(c.remaining)}<span class="unit">กก.</span></div></div>
-    <div class="summary-card yellow"><div class="label">ยอดขายรวม</div><div class="value">${moneyFmt(c.saleTotal)}</div></div>
-    <div class="summary-card green"><div class="label">จ่ายแล้ว</div><div class="value">${moneyFmt(c.paidTotal)}</div></div>
-    <div class="summary-card red"><div class="label">ค้างจ่าย</div><div class="value">${moneyFmt(c.unpaidTotal)}</div></div>
-    <div class="summary-card"><div class="label">กำไรสุทธิ</div><div class="value" style="color:${c.profit>=0?'var(--corn-green)':'#dc2626'}">${moneyFmt(c.profit)}</div></div>
-    <div class="summary-card"><div class="label">ขาย/จองแล้ว</div><div class="value">${numFmt(c.soldKg)}<span class="unit">กก.</span></div></div>
-    <div class="summary-card"><div class="label">ข้าวโพดเสีย</div><div class="value">${numFmt(day.wasteKg)}<span class="unit">กก.</span></div></div>
-    <div class="summary-card"><div class="label">ต้นทุนข้าวโพด</div><div class="value">${moneyFmt(c.cornCost)}</div></div>
-    <div class="summary-card"><div class="label">ค่าใช้จ่ายรวม</div><div class="value">${moneyFmt(c.extraExpenses)}</div></div>
-  `;
-
-  const alert = document.getElementById('day-alert');
-  if (c.remaining < 0) {
-    alert.innerHTML = `<div class="alert alert-danger">⚠️ ข้าวโพดไม่พอ! ขาดอยู่ ${numFmt(Math.abs(c.remaining))} กก.</div>`;
-  } else { alert.innerHTML = ''; }
-
-  renderOrders();
-}
-
-function renderOrders() {
-  const day = getDay(currentDay);
-  const list = document.getElementById('day-orders-list');
-  list.innerHTML = '';
-
-  if (!day.orders.length) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-icon">🛒</div><div class="empty-title">ยังไม่มีออเดอร์</div><div class="empty-sub">กด + เพิ่มออเดอร์ด้านบน</div></div>`;
-    return;
   }
 
-  day.orders.forEach((o, i) => {
-    const total = parseFloat(o.kg || 0) * parseFloat(o.price || 0);
-    const paid = parseFloat(o.paid || 0);
-    const unpaid = total - paid;
-    let status, statusClass;
-    if (unpaid <= 0) { status = 'จ่ายแล้ว'; statusClass = 'badge-paid'; }
-    else if (paid > 0) { status = 'จ่ายบางส่วน'; statusClass = 'badge-partial'; }
-    else { status = 'ยังไม่จ่าย'; statusClass = 'badge-unpaid'; }
+  // =============================================
+  //  DATE LIST
+  // =============================================
+  function renderDates() {
+    const allDates = Object.keys(window.DB.days).sort((a, b) => b.localeCompare(a));
+    const today = todayStr();
+    const curList = document.getElementById('dates-current-list');
+    const arcList = document.getElementById('dates-archive-list');
+    if (!curList || !arcList) return;
 
-    const hasSlips = o.slips && o.slips.filter(s => !s.deleted && s.data).length > 0;
-    const slipCount = hasSlips ? o.slips.filter(s => !s.deleted && s.data).length : 0;
-    const slipBadge = hasSlips
-      ? `<span class="badge" style="background:#dbeafe;color:#1d4ed8;font-size:0.7rem;">📎 มีหลักฐาน ${slipCount} รูป</span>`
-      : `<span class="badge" style="background:#f3f4f6;color:#6b7280;font-size:0.7rem;">ยังไม่มีหลักฐาน</span>`;
+    curList.innerHTML = '';
+    arcList.innerHTML = '';
 
-    const typeBadge = o.type === 'booking'
-      ? `<span class="badge badge-booking">จอง</span>`
-      : `<span class="badge badge-walkin">หน้าร้าน</span>`;
+    if (!allDates.length) {
+      curList.innerHTML = `<div class="empty-state"><div class="empty-icon">📅</div><div class="empty-title">ยังไม่มีข้อมูล</div><div class="empty-sub">กด + เพิ่มวันที่ เพื่อเริ่มต้น</div></div>`;
+      arcList.innerHTML = `<div class="text-sm text-muted text-center" style="padding:16px;">ไม่มีข้อมูลเก่า</div>`;
+      return;
+    }
 
-    const slipsHtml = (o.slips || []).filter(s => s.data || s.deleted).map((s, si) =>
-      `<div class="slip-wrapper">${s.deleted ? `<div style="width:64px;height:64px;border-radius:10px;background:var(--bg-input);display:flex;align-items:center;justify-content:center;font-size:0.65rem;color:var(--text-muted);text-align:center;border:2px dashed var(--border);">ลบแล้ว</div>` : `<img class="slip-thumb" src="${s.data}" onclick="openLightbox('${s.data}')" loading="lazy">${!day.locked ? `<button class="slip-del" onclick="deleteSlip(${i},${si})">✕</button>` : ''}`}</div>`
+    let hasCurrent = false, hasArchive = false;
+    allDates.forEach(date => {
+      const c   = calcDay(date);
+      const day = getDay(date);
+      const isToday  = date === today;
+      const isArc    = isArchive(date);
+      const el = document.createElement('div');
+      el.className = 'date-item' + (isToday ? ' today' : '');
+      el.innerHTML = `
+        <span class="date-icon">${isToday ? '📌' : '📅'}</span>
+        <div class="date-info">
+          <div class="date-label">${fmtDate(date)} ${day.locked ? '<span class="badge badge-locked">🔒</span>' : ''}</div>
+          <div class="date-sub">${day.orders.length} ออเดอร์ • ยอด ${moneyFmt(c.saleTotal)} • คงเหลือ ${numFmt(c.remaining)} กก.</div>
+        </div>
+        <span class="date-arrow">›</span>
+      `;
+      el.addEventListener('click', () => openDay(date));
+      if (isArc) { arcList.appendChild(el); hasArchive = true; }
+      else       { curList.appendChild(el); hasCurrent = true; }
+    });
+
+    if (!hasCurrent) curList.innerHTML = `<div class="text-sm text-muted text-center" style="padding:16px;">ไม่มีรายการปัจจุบัน</div>`;
+    if (!hasArchive) arcList.innerHTML = `<div class="text-sm text-muted text-center" style="padding:16px;">ไม่มีข้อมูลเก่า</div>`;
+  }
+
+  function showAddDate() {
+    document.getElementById('new-date-input').value = todayStr();
+    openModal('modal-add-date');
+  }
+
+  function addDate() {
+    const val = document.getElementById('new-date-input').value;
+    if (!val) return toast('กรุณาเลือกวันที่', 'error');
+    if (window.DB.days[val]) { closeModal('modal-add-date'); openDay(val); return; }
+    getDay(val); // creates it
+    syncDay(val);
+    closeModal('modal-add-date');
+    renderDates();
+    toast('เพิ่มวันที่สำเร็จ ✅', 'success');
+  }
+
+  // =============================================
+  //  DAY DETAIL
+  // =============================================
+  function openDay(dateStr) {
+    currentDay = dateStr;
+    navigate('day');
+    renderDayPage();
+  }
+
+  function goToday() {
+    const today = todayStr();
+    getDay(today); // ensure exists
+    syncDay(today);
+    openDay(today);
+  }
+
+  function renderDayPage() {
+    const day = getDay(currentDay);
+    const c   = calcDay(currentDay);
+    const locked = !!day.locked;
+
+    const titleEl = document.getElementById('day-title');
+    if (titleEl) titleEl.textContent = fmtDate(currentDay);
+
+    const banner = document.getElementById('day-locked-banner');
+    if (banner) banner.style.display = locked ? 'block' : 'none';
+
+    const settBtn = document.getElementById('day-settings-btn');
+    if (settBtn) settBtn.style.display = locked ? 'none' : '';
+
+    const addBtn = document.getElementById('day-add-order-btn');
+    if (addBtn) addBtn.style.display = locked ? 'none' : '';
+
+    const lockBtn = document.getElementById('day-lock-btn');
+    if (lockBtn) lockBtn.textContent = locked ? '🔓 ปลดล็อก' : '🔒 ปิดวัน';
+
+    const grid = document.getElementById('day-summary-grid');
+    if (grid) grid.innerHTML = `
+      <div class="summary-card"><div class="label">ข้าวโพดทั้งหมด</div><div class="value">${numFmt(day.totalKg)}<span class="unit">กก.</span></div></div>
+      <div class="summary-card green"><div class="label">คงเหลือ</div><div class="value" style="color:${c.remaining<0?'#dc2626':'inherit'}">${numFmt(c.remaining)}<span class="unit">กก.</span></div></div>
+      <div class="summary-card yellow"><div class="label">ยอดขายรวม</div><div class="value">${moneyFmt(c.saleTotal)}</div></div>
+      <div class="summary-card green"><div class="label">จ่ายแล้ว</div><div class="value">${moneyFmt(c.paidTotal)}</div></div>
+      <div class="summary-card red"><div class="label">ค้างจ่าย</div><div class="value">${moneyFmt(c.unpaidTotal)}</div></div>
+      <div class="summary-card"><div class="label">กำไรสุทธิ</div><div class="value" style="color:${c.profit>=0?'var(--corn-green)':'#dc2626'}">${moneyFmt(c.profit)}</div></div>
+      <div class="summary-card"><div class="label">ขาย/จองแล้ว</div><div class="value">${numFmt(c.soldKg)}<span class="unit">กก.</span></div></div>
+      <div class="summary-card"><div class="label">ข้าวโพดเสีย</div><div class="value">${numFmt(day.wasteKg)}<span class="unit">กก.</span></div></div>
+      <div class="summary-card"><div class="label">ต้นทุนข้าวโพด</div><div class="value">${moneyFmt(c.cornCost)}</div></div>
+      <div class="summary-card"><div class="label">ค่าใช้จ่ายรวม</div><div class="value">${moneyFmt(c.extraExpenses)}</div></div>
+    `;
+
+    const alertEl = document.getElementById('day-alert');
+    if (alertEl) {
+      alertEl.innerHTML = c.remaining < 0
+        ? `<div class="alert alert-danger">⚠️ ข้าวโพดไม่พอ! ขาดอยู่ ${numFmt(Math.abs(c.remaining))} กก.</div>` : '';
+    }
+
+    renderOrders();
+  }
+
+  function renderOrders() {
+    const day  = getDay(currentDay);
+    const list = document.getElementById('day-orders-list');
+    if (!list) return;
+    list.innerHTML = '';
+
+    if (!day.orders.length) {
+      list.innerHTML = `<div class="empty-state"><div class="empty-icon">🛒</div><div class="empty-title">ยังไม่มีออเดอร์</div><div class="empty-sub">กด + เพิ่มออเดอร์ด้านบน</div></div>`;
+      return;
+    }
+
+    day.orders.forEach((o, i) => {
+      const total  = parseFloat(o.kg || 0) * parseFloat(o.price || 0);
+      const paid   = parseFloat(o.paid || 0);
+      const unpaid = total - paid;
+      let statusLabel, statusCls;
+      if (unpaid <= 0)  { statusLabel = 'จ่ายแล้ว';     statusCls = 'badge-paid'; }
+      else if (paid > 0){ statusLabel = 'จ่ายบางส่วน'; statusCls = 'badge-partial'; }
+      else              { statusLabel = 'ยังไม่จ่าย';   statusCls = 'badge-unpaid'; }
+
+      const validSlips = (o.slips || []).filter(s => !s.deleted && s.data);
+      const slipBadge = validSlips.length
+        ? `<span class="badge" style="background:#dbeafe;color:#1d4ed8;font-size:0.7rem;">📎 มีหลักฐาน ${validSlips.length} รูป</span>`
+        : `<span class="badge" style="background:#f3f4f6;color:#6b7280;font-size:0.7rem;">ยังไม่มีหลักฐาน</span>`;
+
+      const typeBadge = o.type === 'booking'
+        ? `<span class="badge badge-booking">จอง</span>`
+        : `<span class="badge badge-walkin">หน้าร้าน</span>`;
+
+      const slipsHtml = (o.slips || []).map((s, si) => {
+        if (s.deleted || !s.data) return `<div class="slip-wrapper"><div style="width:64px;height:64px;border-radius:10px;background:var(--bg-input);display:flex;align-items:center;justify-content:center;font-size:0.65rem;color:var(--text-muted);text-align:center;border:2px dashed var(--border);">ลบแล้ว</div></div>`;
+        const safeData = esc(s.data);
+        return `<div class="slip-wrapper"><img class="slip-thumb" src="${s.data}" onclick="App.openLightbox('${safeData}')" loading="lazy">${!day.locked ? `<button class="slip-del" onclick="App.deleteSlip(${i},${si})">✕</button>` : ''}</div>`;
+      }).join('');
+
+      const div = document.createElement('div');
+      div.className = 'order-card';
+      div.innerHTML = `
+        <div class="order-card-header">
+          <div style="flex:1;">
+            <div class="order-name">${esc(o.name)}</div>
+            <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">${typeBadge}<span class="badge ${statusCls}">${statusLabel}</span>${slipBadge}</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="font-bold">${moneyFmt(total)}</div>
+            <div class="text-sm text-muted">${numFmt(o.kg)} กก. × ฿${numFmt(o.price)}</div>
+          </div>
+        </div>
+        <div class="order-card-body">
+          <div class="order-row"><span class="key">จ่ายแล้ว</span><span class="val text-green">${moneyFmt(paid)}</span></div>
+          <div class="order-row"><span class="key">ค้างจ่าย</span><span class="val" style="color:${unpaid>0?'#dc2626':'var(--text)'};">${moneyFmt(unpaid)}</span></div>
+          ${o.note ? `<div class="order-row text-sm text-muted">${esc(o.note)}</div>` : ''}
+          ${slipsHtml ? `<div class="slips-row">${slipsHtml}</div>` : ''}
+        </div>
+        ${!day.locked ? `<div class="order-actions">
+          <button class="btn btn-sm btn-outline" onclick="App.editOrder(${i})">✏️ แก้ไข</button>
+          <button class="btn btn-sm btn-danger"  onclick="App.deleteOrder(${i})">🗑️ ลบ</button>
+        </div>` : ''}
+      `;
+      list.appendChild(div);
+    });
+  }
+
+  // =============================================
+  //  DAY SETTINGS
+  // =============================================
+  function showDaySettings() {
+    const day = getDay(currentDay);
+    if (day.locked) return toast('วันนี้ถูกปิดแล้ว', 'warning');
+    document.getElementById('ds-total-kg').value  = day.totalKg  || '';
+    document.getElementById('ds-sell-price').value= day.sellPrice|| '';
+    document.getElementById('ds-cost-price').value= day.costPrice|| '';
+    document.getElementById('ds-waste-kg').value  = day.wasteKg  || '';
+    document.getElementById('ds-note').value      = day.note     || '';
+    tempExpenses = JSON.parse(JSON.stringify(day.expenses || []));
+    renderExpenseRows();
+    openModal('modal-day-settings');
+  }
+
+  function renderExpenseRows() {
+    const list = document.getElementById('ds-expenses-list');
+    if (!list) return;
+    list.innerHTML = '';
+    tempExpenses.forEach((e, i) => {
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex;gap:8px;margin-bottom:8px;';
+      row.innerHTML = `
+        <input class="form-control" placeholder="รายการ" value="${esc(e.label)}" oninput="App.updateExpense(${i},'label',this.value)" style="flex:2;">
+        <input class="form-control" type="number" placeholder="0" value="${e.amount || 0}" oninput="App.updateExpense(${i},'amount',this.value)" style="flex:1;">
+        <button class="btn btn-danger btn-sm btn-icon" onclick="App.removeExpense(${i})">✕</button>
+      `;
+      list.appendChild(row);
+    });
+  }
+
+  function addExpenseRow() {
+    tempExpenses.push({ label: '', amount: 0 });
+    renderExpenseRows();
+  }
+
+  function updateExpense(i, key, val) {
+    if (!tempExpenses[i]) return;
+    tempExpenses[i][key] = key === 'amount' ? (parseFloat(val) || 0) : val;
+  }
+
+  function removeExpense(i) {
+    tempExpenses.splice(i, 1);
+    renderExpenseRows();
+  }
+
+  function saveDaySettings() {
+    const day = getDay(currentDay);
+    day.totalKg   = parseFloat(document.getElementById('ds-total-kg').value)   || 0;
+    day.sellPrice = parseFloat(document.getElementById('ds-sell-price').value) || 0;
+    day.costPrice = parseFloat(document.getElementById('ds-cost-price').value) || 0;
+    day.wasteKg   = parseFloat(document.getElementById('ds-waste-kg').value)   || 0;
+    day.note      = document.getElementById('ds-note').value || '';
+    day.expenses  = JSON.parse(JSON.stringify(tempExpenses));
+    tempExpenses  = [];
+    syncDay(currentDay);
+    closeModal('modal-day-settings');
+    renderDayPage();
+    toast('บันทึกตั้งค่าวันสำเร็จ ✅', 'success');
+  }
+
+  // =============================================
+  //  LOCK DAY
+  // =============================================
+  function toggleDayLock() {
+    const day = getDay(currentDay);
+    if (day.locked) {
+      showConfirm('ปลดล็อกวัน', 'ต้องการปลดล็อกวันนี้?', () => {
+        day.locked = false;
+        syncDay(currentDay);
+        renderDayPage();
+        toast('ปลดล็อกแล้ว 🔓', 'success');
+      });
+    } else {
+      showConfirm('ปิดวัน', 'ต้องการปิดวันนี้? ข้อมูลจะถูกล็อก', () => {
+        day.locked = true;
+        syncDay(currentDay);
+        renderDayPage();
+        toast('ปิดวันสำเร็จ 🔒', 'success');
+      });
+    }
+  }
+
+  // =============================================
+  //  ORDERS
+  // =============================================
+  function showAddOrder() {
+    const day = getDay(currentDay);
+    if (day.locked) return toast('วันนี้ถูกปิดแล้ว', 'warning');
+    tempSlips = [];
+    document.getElementById('modal-order-title').textContent = '➕ เพิ่มออเดอร์';
+    document.getElementById('order-edit-id').value = '';
+    document.getElementById('o-name').value  = '';
+    document.getElementById('o-kg').value    = '';
+    document.getElementById('o-price').value = day.sellPrice || '';
+    document.getElementById('o-type').value  = 'walkin';
+    document.getElementById('o-total').value = '';
+    document.getElementById('o-paid').value  = '';
+    document.getElementById('o-note').value  = '';
+    document.getElementById('o-slips').value = '';
+    document.getElementById('o-slips-preview').innerHTML = '';
+    openModal('modal-order');
+  }
+
+  function editOrder(i) {
+    const day = getDay(currentDay);
+    if (day.locked) return toast('วันนี้ถูกปิดแล้ว', 'warning');
+    const o = day.orders[i];
+    tempSlips = JSON.parse(JSON.stringify(o.slips || []));
+    document.getElementById('modal-order-title').textContent = '✏️ แก้ไขออเดอร์';
+    document.getElementById('order-edit-id').value = i;
+    document.getElementById('o-name').value  = o.name  || '';
+    document.getElementById('o-kg').value    = o.kg    || '';
+    document.getElementById('o-price').value = o.price || '';
+    document.getElementById('o-type').value  = o.type  || 'walkin';
+    document.getElementById('o-total').value = (parseFloat(o.kg||0)*parseFloat(o.price||0));
+    document.getElementById('o-paid').value  = o.paid  || '';
+    document.getElementById('o-note').value  = o.note  || '';
+    document.getElementById('o-slips').value = '';
+    renderSlipsPreview();
+    openModal('modal-order');
+  }
+
+  function calcOrderTotal() {
+    const kg    = parseFloat(document.getElementById('o-kg').value)    || 0;
+    const price = parseFloat(document.getElementById('o-price').value) || 0;
+    document.getElementById('o-total').value = kg * price;
+  }
+
+  async function handleSlipFiles(evt) {
+    const files = Array.from(evt.target.files);
+    for (const f of files) {
+      const b64 = await compressImage(f, 1000);
+      tempSlips.push({ data: b64, deleted: false, date: new Date().toISOString() });
+    }
+    renderSlipsPreview();
+  }
+
+  function compressImage(file, maxWidth) {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let w = img.width, h = img.height;
+          if (w > maxWidth) { h = h * maxWidth / w; w = maxWidth; }
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL('image/jpeg', 0.7));
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function renderSlipsPreview() {
+    const preview = document.getElementById('o-slips-preview');
+    if (!preview) return;
+    preview.innerHTML = tempSlips.map((s, i) =>
+      `<div class="slip-wrapper">${
+        s.deleted ? `<div style="width:64px;height:64px;border-radius:10px;background:var(--bg-input);display:flex;align-items:center;justify-content:center;font-size:0.6rem;color:var(--text-muted);text-align:center;border:2px dashed var(--border);">ลบแล้ว</div>`
+        : `<img class="slip-thumb" src="${s.data}" onclick="App.openLightbox('${esc(s.data)}')"><button class="slip-del" onclick="App.removeTempSlip(${i})">✕</button>`
+      }</div>`
     ).join('');
+  }
 
-    const div = document.createElement('div');
-    div.className = 'order-card';
-    div.innerHTML = `
-      <div class="order-card-header">
-        <div style="flex:1;">
-          <div class="order-name">${escHtml(o.name)}</div>
-          <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">${typeBadge}<span class="badge ${statusClass}">${status}</span>${slipBadge}</div>
-        </div>
-        <div style="text-align:right;">
-          <div class="font-bold">${moneyFmt(total)}</div>
-          <div class="text-sm text-muted">${numFmt(o.kg)} กก. × ฿${numFmt(o.price)}</div>
-        </div>
-      </div>
-      <div class="order-card-body">
-        <div class="order-row"><span class="key">จ่ายแล้ว</span><span class="val text-green">${moneyFmt(paid)}</span></div>
-        <div class="order-row"><span class="key">ค้างจ่าย</span><span class="val" style="color:${unpaid>0?'#dc2626':'var(--text)'};">${moneyFmt(unpaid)}</span></div>
-        ${o.note ? `<div class="order-row text-sm text-muted">${escHtml(o.note)}</div>` : ''}
-        ${slipsHtml ? `<div class="slips-row">${slipsHtml}</div>` : ''}
-      </div>
-      ${!day.locked ? `<div class="order-actions">
-        <button class="btn btn-sm btn-outline" onclick="editOrder(${i})">✏️ แก้ไข</button>
-        <button class="btn btn-sm btn-danger" onclick="deleteOrder(${i})">🗑️ ลบ</button>
-      </div>` : ''}
-    `;
-    list.appendChild(div);
-  });
-}
+  function removeTempSlip(i) {
+    tempSlips.splice(i, 1);
+    renderSlipsPreview();
+  }
 
-// =============================================
-//  DAY SETTINGS
-// =============================================
-function showDaySettings() {
-  const day = getDay(currentDay);
-  if (day.locked) return toast('วันนี้ถูกปิดแล้ว', 'warning');
-  document.getElementById('ds-total-kg').value = day.totalKg || '';
-  document.getElementById('ds-sell-price').value = day.sellPrice || '';
-  document.getElementById('ds-cost-price').value = day.costPrice || '';
-  document.getElementById('ds-waste-kg').value = day.wasteKg || '';
-  document.getElementById('ds-note').value = day.note || '';
-  renderExpenseRows(day.expenses || []);
-  openModal('modal-day-settings');
-}
+  function saveOrder() {
+    const name = document.getElementById('o-name').value.trim();
+    if (!name) return toast('กรุณากรอกชื่อลูกค้า', 'error');
+    const kg    = parseFloat(document.getElementById('o-kg').value)    || 0;
+    const price = parseFloat(document.getElementById('o-price').value) || 0;
+    const paid  = parseFloat(document.getElementById('o-paid').value)  || 0;
+    const order = {
+      id: Date.now().toString(), name, kg, price,
+      type: document.getElementById('o-type').value,
+      paid, note: document.getElementById('o-note').value || '',
+      slips: JSON.parse(JSON.stringify(tempSlips)),
+      createdAt: new Date().toISOString()
+    };
+    const day    = getDay(currentDay);
+    const editId = document.getElementById('order-edit-id').value;
+    if (editId !== '') {
+      const idx = parseInt(editId);
+      order.id        = day.orders[idx].id;
+      order.createdAt = day.orders[idx].createdAt;
+      day.orders[idx] = order;
+      toast('แก้ไขออเดอร์สำเร็จ ✅', 'success');
+    } else {
+      day.orders.push(order);
+      toast('เพิ่มออเดอร์สำเร็จ ✅', 'success');
+    }
+    syncDay(currentDay);
+    closeModal('modal-order');
+    renderDayPage();
+  }
 
-function renderExpenseRows(expenses) {
-  const list = document.getElementById('ds-expenses-list');
-  list.innerHTML = '';
-  expenses.forEach((e, i) => {
-    const row = document.createElement('div');
-    row.style.cssText = 'display:flex;gap:8px;margin-bottom:8px;';
-    row.innerHTML = `
-      <input class="form-control" placeholder="รายการ" value="${escHtml(e.label)}" oninput="updateExpense(${i},'label',this.value)" style="flex:2;">
-      <input class="form-control" type="number" placeholder="0" value="${e.amount}" oninput="updateExpense(${i},'amount',this.value)" style="flex:1;">
-      <button class="btn btn-danger btn-sm btn-icon" onclick="removeExpense(${i})">✕</button>
-    `;
-    list.appendChild(row);
-  });
-}
-
-let tempExpenses = [];
-
-function showDaySettingsWithExpenses() {
-  const day = getDay(currentDay);
-  tempExpenses = JSON.parse(JSON.stringify(day.expenses || []));
-  renderExpenseRows(tempExpenses);
-}
-
-function addExpenseRow() {
-  const day = getDay(currentDay);
-  if (!tempExpenses) tempExpenses = JSON.parse(JSON.stringify(day.expenses || []));
-  tempExpenses.push({ label: '', amount: 0 });
-  renderExpenseRows(tempExpenses);
-}
-
-function updateExpense(i, key, val) {
-  if (!tempExpenses) return;
-  tempExpenses[i][key] = key === 'amount' ? parseFloat(val) || 0 : val;
-}
-
-function removeExpense(i) {
-  if (!tempExpenses) return;
-  tempExpenses.splice(i, 1);
-  renderExpenseRows(tempExpenses);
-}
-
-function saveDaySettings() {
-  const day = getDay(currentDay);
-  day.totalKg = parseFloat(document.getElementById('ds-total-kg').value) || 0;
-  day.sellPrice = parseFloat(document.getElementById('ds-sell-price').value) || 0;
-  day.costPrice = parseFloat(document.getElementById('ds-cost-price').value) || 0;
-  day.wasteKg = parseFloat(document.getElementById('ds-waste-kg').value) || 0;
-  day.note = document.getElementById('ds-note').value;
-  if (tempExpenses) day.expenses = tempExpenses;
-  tempExpenses = [];
-  saveAndSync(currentDay);
-  closeModal('modal-day-settings');
-  renderDay();
-  toast('บันทึกตั้งค่าวันสำเร็จ ✅', 'success');
-}
-
-// =============================================
-//  LOCK DAY
-// =============================================
-function toggleDayLock() {
-  const day = getDay(currentDay);
-  if (day.locked) {
-    showConfirm('ปลดล็อกวัน', 'ต้องการปลดล็อกวันนี้? คุณจะสามารถแก้ไขข้อมูลได้อีกครั้ง', () => {
-      day.locked = false;
-      saveAndSync(currentDay);
-      renderDay();
-      toast('ปลดล็อกแล้ว 🔓', 'success');
-    });
-  } else {
-    showConfirm('ปิดวัน', 'ต้องการปิดวันนี้? ข้อมูลจะถูกล็อกไม่ให้แก้ไข', () => {
-      day.locked = true;
-      saveAndSync(currentDay);
-      renderDay();
-      toast('ปิดวันสำเร็จ 🔒', 'success');
+  function deleteOrder(i) {
+    showConfirm('ลบออเดอร์', 'ต้องการลบออเดอร์นี้?', () => {
+      const day = getDay(currentDay);
+      day.orders.splice(i, 1);
+      syncDay(currentDay);
+      renderDayPage();
+      toast('ลบออเดอร์แล้ว', 'success');
     });
   }
-}
 
-// =============================================
-//  ORDERS
-// =============================================
-let tempSlips = [];
-
-function showAddOrder() {
-  const day = getDay(currentDay);
-  if (day.locked) return toast('วันนี้ถูกปิดแล้ว', 'warning');
-  tempSlips = [];
-  document.getElementById('modal-order-title').textContent = '➕ เพิ่มออเดอร์';
-  document.getElementById('order-edit-id').value = '';
-  document.getElementById('o-name').value = '';
-  document.getElementById('o-kg').value = '';
-  document.getElementById('o-price').value = day.sellPrice || '';
-  document.getElementById('o-type').value = 'walkin';
-  document.getElementById('o-total').value = '';
-  document.getElementById('o-paid').value = '';
-  document.getElementById('o-note').value = '';
-  document.getElementById('o-slips').value = '';
-  document.getElementById('o-slips-preview').innerHTML = '';
-  openModal('modal-order');
-}
-
-function editOrder(i) {
-  const day = getDay(currentDay);
-  if (day.locked) return toast('วันนี้ถูกปิดแล้ว', 'warning');
-  const o = day.orders[i];
-  tempSlips = JSON.parse(JSON.stringify(o.slips || []));
-  document.getElementById('modal-order-title').textContent = '✏️ แก้ไขออเดอร์';
-  document.getElementById('order-edit-id').value = i;
-  document.getElementById('o-name').value = o.name;
-  document.getElementById('o-kg').value = o.kg;
-  document.getElementById('o-price').value = o.price;
-  document.getElementById('o-type').value = o.type || 'walkin';
-  document.getElementById('o-total').value = parseFloat(o.kg) * parseFloat(o.price);
-  document.getElementById('o-paid').value = o.paid;
-  document.getElementById('o-note').value = o.note || '';
-  document.getElementById('o-slips').value = '';
-  renderSlipsPreview();
-  openModal('modal-order');
-}
-
-function calcOrderTotal() {
-  const kg = parseFloat(document.getElementById('o-kg').value) || 0;
-  const price = parseFloat(document.getElementById('o-price').value) || 0;
-  document.getElementById('o-total').value = kg * price;
-}
-
-async function handleSlipFiles(evt) {
-  const files = Array.from(evt.target.files);
-  for (const f of files) {
-    const b64 = await compressImage(f, 1000);
-    tempSlips.push({ data: b64, deleted: false, date: new Date().toISOString() });
+  function deleteSlip(orderIdx, slipIdx) {
+    const day = getDay(currentDay);
+    if (day.orders[orderIdx] && day.orders[orderIdx].slips[slipIdx]) {
+      day.orders[orderIdx].slips[slipIdx].deleted = true;
+      day.orders[orderIdx].slips[slipIdx].data    = '';
+    }
+    syncDay(currentDay);
+    renderDayPage();
+    toast('ลบรูปแล้ว', 'success');
   }
-  renderSlipsPreview();
-}
 
-function compressImage(file, maxWidth) {
-  return new Promise((resolve) => {
+  // =============================================
+  //  QUICK ADD
+  // =============================================
+  function showQuickAdd() {
+    const targetDate = (currentPage === 'day' && currentDay) ? currentDay : todayStr();
+    getDay(targetDate); // ensure exists
+    const day = window.DB.days[targetDate];
+    document.getElementById('qa-name').value  = '';
+    document.getElementById('qa-kg').value    = '';
+    document.getElementById('qa-paid').value  = '';
+    document.getElementById('qa-total-show').textContent = '';
+    const isToday = targetDate === todayStr();
+    document.getElementById('quick-add-day-info').innerHTML =
+      `<span style="background:var(--corn-yellow-light);border:1px solid var(--corn-yellow);border-radius:8px;padding:4px 10px;font-weight:600;color:var(--text);">${isToday ? '📌 วันนี้' : '📅 ' + fmtDate(targetDate)}</span>
+       <span style="margin-left:8px;">ราคา: ฿${numFmt(day.sellPrice||0)}/กก.</span>`;
+    openModal('modal-quick-add');
+  }
+
+  function calcQA() {
+    const targetDate = (currentPage === 'day' && currentDay) ? currentDay : todayStr();
+    const day  = getDay(targetDate);
+    const kg   = parseFloat(document.getElementById('qa-kg').value) || 0;
+    const total = kg * (day.sellPrice || 0);
+    const el   = document.getElementById('qa-total-show');
+    if (el) el.textContent = total > 0 ? `ยอดที่ต้องจ่าย: ${moneyFmt(total)}` : '';
+  }
+
+  function saveQuickAdd() {
+    const name = document.getElementById('qa-name').value.trim();
+    if (!name) return toast('กรุณากรอกชื่อลูกค้า', 'error');
+    const targetDate = (currentPage === 'day' && currentDay) ? currentDay : todayStr();
+    const day  = getDay(targetDate);
+    if (day.locked) return toast('วันนี้ถูกปิดแล้ว', 'warning');
+    const kg   = parseFloat(document.getElementById('qa-kg').value)   || 0;
+    const paid = parseFloat(document.getElementById('qa-paid').value) || 0;
+    day.orders.push({
+      id: Date.now().toString(), name, kg,
+      price: day.sellPrice || 0, type: 'walkin', paid,
+      note: '', slips: [], createdAt: new Date().toISOString()
+    });
+    syncDay(targetDate);
+    closeModal('modal-quick-add');
+    if (currentPage === 'day' && currentDay === targetDate) renderDayPage();
+    renderDashboard();
+    toast(`เพิ่ม ${name} เข้า${targetDate === todayStr() ? 'วันนี้' : fmtDate(targetDate)} ✅`, 'success');
+  }
+
+  // =============================================
+  //  UNPAID
+  // =============================================
+  function renderUnpaid(filter) {
+    if (filter === undefined) filter = (document.getElementById('unpaid-search') || {}).value || '';
+    const list      = document.getElementById('unpaid-list');
+    const totalCard = document.getElementById('unpaid-total-card');
+    if (!list || !totalCard) return;
+
+    const items = [];
+    let grandTotal = 0;
+
+    Object.keys(window.DB.days).sort((a, b) => b.localeCompare(a)).forEach(date => {
+      const day = window.DB.days[date];
+      if (!day) return;
+      (day.orders || []).forEach(o => {
+        const total  = parseFloat(o.kg || 0) * parseFloat(o.price || 0);
+        const paid   = parseFloat(o.paid || 0);
+        const unpaid = total - paid;
+        if (unpaid > 0 && (!filter || o.name.toLowerCase().includes(filter.toLowerCase()))) {
+          items.push({ date, order: o, total, paid, unpaid });
+          grandTotal += unpaid;
+        }
+      });
+    });
+
+    totalCard.innerHTML = `<h3>ยอดค้างจ่ายทั้งหมด</h3><div class="big-num">${moneyFmt(grandTotal)}</div><div class="small-note">${items.length} รายการ</div>`;
+
+    if (!items.length) {
+      list.innerHTML = `<div class="empty-state"><div class="empty-icon">✅</div><div class="empty-title">ไม่มียอดค้างจ่าย</div><div class="empty-sub">ลูกค้าจ่ายครบหมดแล้ว</div></div>`;
+      return;
+    }
+
+    list.innerHTML = items.map(item => `
+      <div class="order-card mb-12" onclick="App.openDay('${item.date}')" style="cursor:pointer;">
+        <div class="order-card-header">
+          <div><div class="order-name">${esc(item.order.name)}</div><div class="text-sm text-muted">${fmtDate(item.date)}</div></div>
+          <span class="badge badge-unpaid">ค้าง ${moneyFmt(item.unpaid)}</span>
+        </div>
+        <div class="order-card-body">
+          <div class="order-row"><span class="key">ยอดต้องจ่าย</span><span class="val">${moneyFmt(item.total)}</span></div>
+          <div class="order-row"><span class="key">จ่ายแล้ว</span><span class="val text-green">${moneyFmt(item.paid)}</span></div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // =============================================
+  //  SEARCH
+  // =============================================
+  function renderSearch(q) {
+    if (q === undefined) q = '';
+    const results = document.getElementById('search-results');
+    if (!results) return;
+
+    if (!q.trim()) {
+      results.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">ค้นหาชื่อลูกค้า</div><div class="empty-sub">พิมพ์ชื่อด้านบนเพื่อค้นหา</div></div>`;
+      return;
+    }
+
+    const customers = {};
+    Object.keys(window.DB.days).sort((a, b) => b.localeCompare(a)).forEach(date => {
+      const day = window.DB.days[date];
+      if (!day) return;
+      (day.orders || []).forEach(o => {
+        const nameMatch = o.name.toLowerCase().includes(q.toLowerCase());
+        const noteMatch = (o.note || '').toLowerCase().includes(q.toLowerCase());
+        if (!nameMatch && !noteMatch) return;
+        if (!customers[o.name]) customers[o.name] = { orders: [], totalKg: 0, totalSale: 0, totalPaid: 0 };
+        const total = parseFloat(o.kg||0)*parseFloat(o.price||0);
+        const paid  = parseFloat(o.paid||0);
+        customers[o.name].orders.push({ date, order: o, total, paid });
+        customers[o.name].totalKg   += parseFloat(o.kg||0);
+        customers[o.name].totalSale += total;
+        customers[o.name].totalPaid += paid;
+      });
+    });
+
+    const keys = Object.keys(customers);
+    if (!keys.length) {
+      results.innerHTML = `<div class="empty-state"><div class="empty-icon">😕</div><div class="empty-title">ไม่พบลูกค้า</div></div>`;
+      return;
+    }
+
+    results.innerHTML = keys.map(name => {
+      const c = customers[name];
+      const unpaid = c.totalSale - c.totalPaid;
+      return `<div class="card mb-12">
+        <div class="card-body">
+          <div class="font-bold" style="font-size:1.05rem;">${esc(name)}</div>
+          <div class="order-row mt-8"><span class="key">จำนวนครั้ง</span><span class="val">${c.orders.length} ครั้ง</span></div>
+          <div class="order-row"><span class="key">รวมกิโล</span><span class="val">${numFmt(c.totalKg)} กก.</span></div>
+          <div class="order-row"><span class="key">รวมยอดเงิน</span><span class="val">${moneyFmt(c.totalSale)}</span></div>
+          <div class="order-row"><span class="key">ค้างจ่าย</span><span class="val" style="color:${unpaid>0?'#dc2626':'var(--corn-green)'};">${moneyFmt(unpaid)}</span></div>
+          <div class="divider"></div>
+          ${c.orders.map(item => `
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);cursor:pointer;" onclick="App.openDay('${item.date}')">
+              <div><div class="text-sm font-bold">${fmtDate(item.date)}</div><div class="text-sm text-muted">${numFmt(item.order.kg)} กก.</div></div>
+              <div class="text-right"><div class="text-sm font-bold">${moneyFmt(item.total)}</div>${item.total-item.paid>0?`<div class="badge badge-partial" style="font-size:0.65rem;">ค้าง ${moneyFmt(item.total-item.paid)}</div>`:''}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // =============================================
+  //  REPORT
+  // =============================================
+  function setReportMode(mode) {
+    reportMode = mode;
+    ['today','month','year','custom'].forEach(m => {
+      const el = document.getElementById('rpt-' + m);
+      if (el) el.className = 'btn btn-sm ' + (m === mode ? 'btn-primary' : 'btn-outline');
+    });
+    const customRange = document.getElementById('report-custom-range');
+    if (customRange) customRange.style.display = mode === 'custom' ? 'block' : 'none';
+    renderReport();
+  }
+
+  function getReportDates() {
+    const today = todayStr();
+    const now = new Date();
+    if (reportMode === 'today') return [today, today];
+    if (reportMode === 'month') {
+      const first = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-01`;
+      return [first, today];
+    }
+    if (reportMode === 'year') return [`${now.getFullYear()}-01-01`, today];
+    if (reportMode === 'custom') {
+      const from = (document.getElementById('rpt-from') || {}).value || today;
+      const to   = (document.getElementById('rpt-to')   || {}).value || today;
+      return [from, to];
+    }
+    return [today, today];
+  }
+
+  function renderReport() {
+    const [from, to] = getReportDates();
+    const allDates = Object.keys(window.DB.days).filter(d => d >= from && d <= to).sort();
+
+    let totalSale = 0, totalKg = 0, totalCost = 0, totalExp = 0, totalProfit = 0, totalUnpaid = 0;
+    const daySales = [], dayProfits = [], dayKgs = [], dayLabels = [];
+    let bestDay = null, bestVal = -Infinity;
+
+    allDates.forEach(date => {
+      const c = calcDay(date);
+      totalSale   += c.saleTotal;
+      totalKg     += c.soldKg;
+      totalCost   += c.cornCost;
+      totalExp    += c.extraExpenses;
+      totalProfit += c.profit;
+      totalUnpaid += c.unpaidTotal;
+      daySales.push(c.saleTotal);
+      dayProfits.push(c.profit);
+      dayKgs.push(c.soldKg);
+      dayLabels.push(fmtDate(date).split(' ').slice(0,3).join(' '));
+      if (c.saleTotal > bestVal) { bestVal = c.saleTotal; bestDay = date; }
+    });
+
+    const grid = document.getElementById('report-summary-grid');
+    if (grid) grid.innerHTML = `
+      <div class="summary-card yellow"><div class="label">ยอดขายรวม</div><div class="value">${moneyFmt(totalSale)}</div></div>
+      <div class="summary-card green"><div class="label">กำไรสุทธิ</div><div class="value">${moneyFmt(totalProfit)}</div></div>
+      <div class="summary-card"><div class="label">กิโลขายรวม</div><div class="value">${numFmt(totalKg)}<span class="unit"> กก.</span></div></div>
+      <div class="summary-card red"><div class="label">ยอดค้างจ่าย</div><div class="value">${moneyFmt(totalUnpaid)}</div></div>
+      <div class="summary-card"><div class="label">ต้นทุนรวม</div><div class="value">${moneyFmt(totalCost)}</div></div>
+      <div class="summary-card"><div class="label">ค่าใช้จ่ายรวม</div><div class="value">${moneyFmt(totalExp)}</div></div>
+    `;
+
+    const bestEl = document.getElementById('report-best');
+    if (bestEl) bestEl.innerHTML = bestDay ? `<div class="alert alert-success">🏆 วันขายดีที่สุด: ${fmtDate(bestDay)} ยอด ${moneyFmt(bestVal)}</div>` : '';
+
+    const chartOpts = (label, color) => ({
+      type: 'bar',
+      data: { labels: dayLabels, datasets: [{ label, data: [], backgroundColor: color, borderRadius: 6 }] },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { font: { size: 10 } } }, y: { ticks: { font: { size: 10 } } } } }
+    });
+
+    if (salesChart)  salesChart.destroy();
+    if (profitChart) profitChart.destroy();
+    if (kgChart)     kgChart.destroy();
+
+    const sc = document.getElementById('chart-sales');
+    if (sc) { salesChart = new Chart(sc.getContext('2d'), chartOpts('ยอดขาย', 'rgba(245,200,66,0.8)')); salesChart.data.datasets[0].data = daySales; salesChart.update(); }
+
+    const pc = document.getElementById('chart-profit');
+    if (pc) { profitChart = new Chart(pc.getContext('2d'), chartOpts('กำไร', 'rgba(74,140,63,0.8)')); profitChart.data.datasets[0].data = dayProfits; profitChart.update(); }
+
+    const kc = document.getElementById('chart-kg');
+    if (kc) { kgChart = new Chart(kc.getContext('2d'), chartOpts('กิโล', 'rgba(139,94,60,0.6)')); kgChart.data.datasets[0].data = dayKgs; kgChart.update(); }
+  }
+
+  // =============================================
+  //  COPY / EXPORT
+  // =============================================
+  function showDayCopyMenu() {
+    const day = getDay(currentDay);
+    const c   = calcDay(currentDay);
+    const text = `🌽 สรุปยอดข้าวโพด\n📅 วันที่: ${fmtDate(currentDay)}\n━━━━━━━━━━━━━━━━\n🌾 ข้าวโพดทั้งหมด: ${numFmt(day.totalKg)} กก.\n📦 ขายแล้ว: ${numFmt(c.soldKg)} กก.\n🗑 ของเสีย: ${numFmt(day.wasteKg)} กก.\n✅ คงเหลือ: ${numFmt(c.remaining)} กก.\n━━━━━━━━━━━━━━━━\n💰 ยอดขาย: ${moneyFmt(c.saleTotal)}\n✅ จ่ายแล้ว: ${moneyFmt(c.paidTotal)}\n⚠️ ค้างจ่าย: ${moneyFmt(c.unpaidTotal)}\n━━━━━━━━━━━━━━━━\n📊 ต้นทุนข้าวโพด: ${moneyFmt(c.cornCost)}\n📊 ค่าใช้จ่ายรวม: ${moneyFmt(c.extraExpenses)}\n💹 กำไรสุทธิ: ${moneyFmt(c.profit)}\n━━━━━━━━━━━━━━━━\n👥 ลูกค้า ${day.orders.length} คน\n${day.orders.map(o=>`  • ${o.name}: ${numFmt(o.kg)}กก. จ่าย ${moneyFmt(o.paid)}`).join('\n')}`;
+    document.getElementById('copy-text').value = text;
+    openModal('modal-copy');
+  }
+
+  function copyText() {
+    const text = document.getElementById('copy-text').value;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(() => toast('คัดลอกแล้ว ✅', 'success'));
+    } else {
+      document.getElementById('copy-text').select();
+      document.execCommand('copy');
+      toast('คัดลอกแล้ว ✅', 'success');
+    }
+  }
+
+  function exportBackup() {
+    const blob = new Blob([JSON.stringify(window.DB, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `corn_backup_v3_${todayStr()}.json`;
+    a.click();
+    toast('Export สำเร็จ ✅', 'success');
+  }
+
+  function importBackup(evt) {
+    const file = evt.target.files[0];
+    if (!file) return;
     const reader = new FileReader();
     reader.onload = (e) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        let w = img.width, h = img.height;
-        if (w > maxWidth) { h = h * maxWidth / w; w = maxWidth; }
-        canvas.width = w; canvas.height = h;
-        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-        resolve(canvas.toDataURL('image/jpeg', 0.7));
-      };
-      img.src = e.target.result;
+      showConfirm('Import ข้อมูล', 'ข้อมูลปัจจุบันจะถูกแทนที่ทั้งหมด ต้องการดำเนินการต่อ?', () => {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          window.DB.days     = parsed.days     || {};
+          window.DB.settings = parsed.settings || window.DB.settings;
+          saveCache();
+          renderAll();
+          applySettings();
+          toast('Import สำเร็จ ✅', 'success');
+        } catch(err) { toast('ไฟล์ไม่ถูกต้อง', 'error'); }
+      });
     };
-    reader.readAsDataURL(file);
-  });
-}
-
-function renderSlipsPreview() {
-  const preview = document.getElementById('o-slips-preview');
-  preview.innerHTML = tempSlips.map((s, i) => `
-    <div class="slip-wrapper">
-      ${s.deleted ? `<div style="width:64px;height:64px;border-radius:10px;background:var(--bg-input);display:flex;align-items:center;justify-content:center;font-size:0.6rem;color:var(--text-muted);text-align:center;border:2px dashed var(--border);">ลบแล้ว</div>` :
-      `<img class="slip-thumb" src="${s.data}" onclick="openLightbox('${s.data}')">
-       <button class="slip-del" onclick="removeTempSlip(${i})">✕</button>`}
-    </div>
-  `).join('');
-}
-
-function removeTempSlip(i) {
-  tempSlips.splice(i, 1);
-  renderSlipsPreview();
-}
-
-function saveOrder() {
-  const name = document.getElementById('o-name').value.trim();
-  if (!name) return toast('กรุณากรอกชื่อลูกค้า', 'error');
-  const kg = parseFloat(document.getElementById('o-kg').value) || 0;
-  const price = parseFloat(document.getElementById('o-price').value) || 0;
-  const paid = parseFloat(document.getElementById('o-paid').value) || 0;
-  const order = {
-    id: Date.now().toString(),
-    name,
-    kg,
-    price,
-    type: document.getElementById('o-type').value,
-    paid,
-    note: document.getElementById('o-note').value,
-    slips: tempSlips,
-    createdAt: new Date().toISOString()
-  };
-  const day = getDay(currentDay);
-  const editId = document.getElementById('order-edit-id').value;
-  if (editId !== '') {
-    order.id = day.orders[editId].id;
-    order.createdAt = day.orders[editId].createdAt;
-    day.orders[editId] = order;
-    toast('แก้ไขออเดอร์สำเร็จ ✅', 'success');
-  } else {
-    day.orders.push(order);
-    toast('เพิ่มออเดอร์สำเร็จ ✅', 'success');
+    reader.readAsText(file);
   }
-  saveAndSync(currentDay);
-  closeModal('modal-order');
-  renderDay();
-}
 
-function deleteOrder(i) {
-  showConfirm('ลบออเดอร์', 'ต้องการลบออเดอร์นี้?', () => {
+  function exportDayCSV() {
+    if (!currentDay) return toast('ไม่พบข้อมูลวัน', 'error');
     const day = getDay(currentDay);
-    day.orders.splice(i, 1);
-    saveAndSync(currentDay);
-    renderDay();
-    toast('ลบออเดอร์แล้ว', 'success');
-  });
-}
-
-function deleteSlip(orderIdx, slipIdx) {
-  const day = getDay(currentDay);
-  day.orders[orderIdx].slips[slipIdx].deleted = true;
-  day.orders[orderIdx].slips[slipIdx].data = '';
-  saveAndSync(currentDay);
-  renderDay();
-  toast('ลบรูปแล้ว', 'success');
-}
-
-// =============================================
-//  QUICK ADD
-// =============================================
-function getQuickAddTargetDay() {
-  if (currentPage === 'day' && currentDay) return currentDay;
-  return todayStr();
-}
-
-function showQuickAdd() {
-  const targetDate = getQuickAddTargetDay();
-  if (!db.days[targetDate]) getDay(targetDate);
-  const day = db.days[targetDate];
-  document.getElementById('qa-name').value = '';
-  document.getElementById('qa-kg').value = '';
-  document.getElementById('qa-paid').value = '';
-  document.getElementById('qa-total-show').textContent = '';
-  const isToday = targetDate === todayStr();
-  document.getElementById('quick-add-day-info').innerHTML =
-    `<span style="background:var(--corn-yellow-light);border:1px solid var(--corn-yellow);border-radius:8px;padding:4px 10px;font-weight:600;color:var(--text);">
-      ${isToday ? '📌 วันนี้' : '📅 ' + fmtDate(targetDate)}
-    </span>
-    <span style="margin-left:8px;">ราคา: ฿${numFmt(day.sellPrice || 0)}/กก.</span>`;
-  openModal('modal-quick-add');
-}
-
-function calcQA() {
-  const targetDate = getQuickAddTargetDay();
-  const day = getDay(targetDate);
-  const kg = parseFloat(document.getElementById('qa-kg').value) || 0;
-  const price = day.sellPrice || 0;
-  const total = kg * price;
-  document.getElementById('qa-total-show').textContent = total > 0 ? `ยอดที่ต้องจ่าย: ${moneyFmt(total)}` : '';
-}
-
-function saveQuickAdd() {
-  const name = document.getElementById('qa-name').value.trim();
-  if (!name) return toast('กรุณากรอกชื่อลูกค้า', 'error');
-  const targetDate = getQuickAddTargetDay();
-  const day = getDay(targetDate);
-  if (day.locked) return toast('วันนี้ถูกปิดแล้ว ไม่สามารถเพิ่มได้', 'warning');
-  const kg = parseFloat(document.getElementById('qa-kg').value) || 0;
-  const paid = parseFloat(document.getElementById('qa-paid').value) || 0;
-  day.orders.push({
-    id: Date.now().toString(),
-    name, kg,
-    price: day.sellPrice || 0,
-    type: 'walkin', paid,
-    note: '',
-    slips: [],
-    createdAt: new Date().toISOString()
-  });
-  saveAndSync(targetDate);
-  closeModal('modal-quick-add');
-  renderDashboard();
-  if (currentPage === 'day' && currentDay === targetDate) renderDay();
-  const isToday = targetDate === todayStr();
-  toast(`เพิ่ม ${name} เข้า${isToday ? 'วันนี้' : fmtDate(targetDate)} ✅`, 'success');
-}
-
-// =============================================
-//  UNPAID
-// =============================================
-function renderUnpaid(filter = '') {
-  const list = document.getElementById('unpaid-list');
-  const totalCard = document.getElementById('unpaid-total-card');
-  let items = [];
-  let grandTotal = 0;
-
-  Object.keys(db.days).sort((a,b) => b.localeCompare(a)).forEach(date => {
-    const day = getDay(date);
-    day.orders.forEach(o => {
-      const total = parseFloat(o.kg || 0) * parseFloat(o.price || 0);
-      const paid = parseFloat(o.paid || 0);
-      const unpaid = total - paid;
-      if (unpaid > 0 && (!filter || o.name.toLowerCase().includes(filter.toLowerCase()))) {
-        items.push({ date, order: o, total, paid, unpaid });
-        grandTotal += unpaid;
-      }
-    });
-  });
-
-  totalCard.innerHTML = `<h3>ยอดค้างจ่ายทั้งหมด</h3><div class="big-num">${moneyFmt(grandTotal)}</div><div class="small-note">${items.length} รายการ</div>`;
-
-  if (!items.length) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-icon">✅</div><div class="empty-title">ไม่มียอดค้างจ่าย</div><div class="empty-sub">ลูกค้าจ่ายครบหมดแล้ว</div></div>`;
-    return;
-  }
-
-  list.innerHTML = items.map(item => `
-    <div class="order-card mb-12" onclick="openDay('${item.date}')" style="cursor:pointer;">
-      <div class="order-card-header">
-        <div><div class="order-name">${escHtml(item.order.name)}</div><div class="text-sm text-muted">${fmtDate(item.date)}</div></div>
-        <span class="badge badge-unpaid">ค้าง ${moneyFmt(item.unpaid)}</span>
-      </div>
-      <div class="order-card-body">
-        <div class="order-row"><span class="key">ยอดต้องจ่าย</span><span class="val">${moneyFmt(item.total)}</span></div>
-        <div class="order-row"><span class="key">จ่ายแล้ว</span><span class="val text-green">${moneyFmt(item.paid)}</span></div>
-      </div>
-    </div>
-  `).join('');
-}
-
-// =============================================
-//  SEARCH / CUSTOMER HISTORY
-// =============================================
-function renderSearch(q = '') {
-  const results = document.getElementById('search-results');
-  if (!q.trim()) {
-    results.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">ค้นหาชื่อลูกค้า</div><div class="empty-sub">พิมพ์ชื่อด้านบนเพื่อค้นหา</div></div>`;
-    return;
-  }
-
-  const customers = {};
-  Object.keys(db.days).sort((a,b)=>b.localeCompare(a)).forEach(date => {
-    const day = getDay(date);
-    day.orders.forEach(o => {
-      if (!o.name.toLowerCase().includes(q.toLowerCase())) return;
-      if (!customers[o.name]) customers[o.name] = { orders: [], totalKg: 0, totalSale: 0, totalPaid: 0 };
-      const total = parseFloat(o.kg||0)*parseFloat(o.price||0);
+    const c   = calcDay(currentDay);
+    const summaryRows = [
+      ['สรุปยอดวัน', fmtDate(currentDay)],
+      ['ข้าวโพดทั้งหมด (กก.)', day.totalKg],
+      ['ราคาขาย/กก.', day.sellPrice],
+      ['ต้นทุน/กก.', day.costPrice],
+      ['ขายแล้ว (กก.)', c.soldKg],
+      ['ของเสีย (กก.)', day.wasteKg],
+      ['คงเหลือ (กก.)', c.remaining],
+      ['ยอดขายรวม', c.saleTotal],
+      ['จ่ายแล้ว', c.paidTotal],
+      ['ค้างจ่าย', c.unpaidTotal],
+      ['ต้นทุนข้าวโพด', c.cornCost],
+      ['ค่าใช้จ่ายรวม', c.extraExpenses],
+      ['กำไรสุทธิ', c.profit],
+      [],
+      ['รายการออเดอร์'],
+      ['ชื่อลูกค้า','ประเภท','กิโล','ราคา/กก.','ยอดต้องจ่าย','จ่ายแล้ว','ค้างจ่าย','สถานะ','หมายเหตุ']
+    ];
+    const orderRows = day.orders.map(o => {
+      const tot  = parseFloat(o.kg||0)*parseFloat(o.price||0);
       const paid = parseFloat(o.paid||0);
-      customers[o.name].orders.push({ date, order: o, total, paid });
-      customers[o.name].totalKg += parseFloat(o.kg||0);
-      customers[o.name].totalSale += total;
-      customers[o.name].totalPaid += paid;
+      const unp  = tot - paid;
+      const st   = unp <= 0 ? 'จ่ายแล้ว' : paid > 0 ? 'จ่ายบางส่วน' : 'ยังไม่จ่าย';
+      return [o.name, o.type === 'booking' ? 'จอง' : 'หน้าร้าน', o.kg, o.price, tot, paid, unp, st, o.note||''];
     });
-  });
-
-  const keys = Object.keys(customers);
-  if (!keys.length) {
-    results.innerHTML = `<div class="empty-state"><div class="empty-icon">😕</div><div class="empty-title">ไม่พบลูกค้า</div></div>`;
-    return;
+    const allRows = [...summaryRows, ...orderRows];
+    const csv = '\uFEFF' + allRows.map(row =>
+      row.map(cell => { const s = String(cell ?? ''); return s.includes(',') || s.includes('"') || s.includes('\n') ? `"${s.replace(/"/g,'""')}"` : s; }).join(',')
+    ).join('\r\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `corn_${currentDay}.csv`;
+    a.click();
+    toast('Export CSV สำเร็จ ✅', 'success');
   }
 
-  results.innerHTML = keys.map(name => {
-    const c = customers[name];
-    const unpaid = c.totalSale - c.totalPaid;
-    return `<div class="card mb-12">
-      <div class="card-body">
-        <div class="font-bold" style="font-size:1.05rem;">${escHtml(name)}</div>
-        <div class="order-row mt-8"><span class="key">จำนวนครั้ง</span><span class="val">${c.orders.length} ครั้ง</span></div>
-        <div class="order-row"><span class="key">รวมกิโล</span><span class="val">${numFmt(c.totalKg)} กก.</span></div>
-        <div class="order-row"><span class="key">รวมยอดเงิน</span><span class="val">${moneyFmt(c.totalSale)}</span></div>
-        <div class="order-row"><span class="key">ค้างจ่าย</span><span class="val" style="color:${unpaid>0?'#dc2626':'var(--corn-green)'};">${moneyFmt(unpaid)}</span></div>
-        <div class="divider"></div>
-        ${c.orders.map(item=>`
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);cursor:pointer;" onclick="openDay('${item.date}')">
-            <div><div class="text-sm font-bold">${fmtDate(item.date)}</div><div class="text-sm text-muted">${numFmt(item.order.kg)} กก.</div></div>
-            <div class="text-right"><div class="text-sm font-bold">${moneyFmt(item.total)}</div>${item.total-item.paid>0?`<div class="badge badge-partial" style="font-size:0.65rem;">ค้าง ${moneyFmt(item.total-item.paid)}</div>`:''}</div>
-          </div>
-        `).join('')}
-      </div>
-    </div>`;
-  }).join('');
-}
-
-// =============================================
-//  REPORT
-// =============================================
-let reportMode = 'today';
-let salesChart, profitChart, kgChart;
-
-function setReportMode(mode) {
-  reportMode = mode;
-  ['today','month','year','custom'].forEach(m => {
-    document.getElementById('rpt-'+m).className = 'btn btn-sm ' + (m === mode ? 'btn-primary' : 'btn-outline');
-  });
-  document.getElementById('report-custom-range').style.display = mode === 'custom' ? 'block' : 'none';
-  renderReport();
-}
-
-function getReportDates() {
-  const today = todayStr();
-  const now = new Date();
-  if (reportMode === 'today') return [today, today];
-  if (reportMode === 'month') {
-    const first = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-01`;
-    return [first, today];
-  }
-  if (reportMode === 'year') {
-    return [`${now.getFullYear()}-01-01`, today];
-  }
-  if (reportMode === 'custom') {
-    return [document.getElementById('rpt-from').value || today, document.getElementById('rpt-to').value || today];
-  }
-  return [today, today];
-}
-
-function renderReport() {
-  const [from, to] = getReportDates();
-  const allDates = Object.keys(db.days).filter(d => d >= from && d <= to).sort();
-
-  let totalSale = 0, totalKg = 0, totalCost = 0, totalExp = 0, totalProfit = 0, totalUnpaid = 0, totalCustomers = 0;
-  const daySales = [], dayProfits = [], dayKgs = [], dayLabels = [];
-  let bestSaleDay = null, bestSaleVal = -Infinity;
-
-  allDates.forEach(date => {
-    const c = calcDay(date);
-    const day = getDay(date);
-    totalSale += c.saleTotal;
-    totalKg += c.soldKg;
-    totalCost += c.cornCost;
-    totalExp += c.extraExpenses;
-    totalProfit += c.profit;
-    totalUnpaid += c.unpaidTotal;
-    totalCustomers += day.orders.length;
-    daySales.push(c.saleTotal);
-    dayProfits.push(c.profit);
-    dayKgs.push(c.soldKg);
-    dayLabels.push(fmtDate(date).split(' ').slice(0,3).join(' '));
-    if (c.saleTotal > bestSaleVal) { bestSaleVal = c.saleTotal; bestSaleDay = date; }
-  });
-
-  const grid = document.getElementById('report-summary-grid');
-  grid.innerHTML = `
-    <div class="summary-card yellow"><div class="label">ยอดขายรวม</div><div class="value">${moneyFmt(totalSale)}</div></div>
-    <div class="summary-card green"><div class="label">กำไรสุทธิ</div><div class="value">${moneyFmt(totalProfit)}</div></div>
-    <div class="summary-card"><div class="label">กิโลขายรวม</div><div class="value">${numFmt(totalKg)}<span class="unit"> กก.</span></div></div>
-    <div class="summary-card red"><div class="label">ยอดค้างจ่าย</div><div class="value">${moneyFmt(totalUnpaid)}</div></div>
-    <div class="summary-card"><div class="label">ต้นทุนรวม</div><div class="value">${moneyFmt(totalCost)}</div></div>
-    <div class="summary-card"><div class="label">ค่าใช้จ่ายรวม</div><div class="value">${moneyFmt(totalExp)}</div></div>
-  `;
-
-  document.getElementById('report-best').innerHTML = bestSaleDay ? `
-    <div class="alert alert-success">🏆 วันขายดีที่สุด: ${fmtDate(bestSaleDay)} ยอด ${moneyFmt(bestSaleVal)}</div>
-  ` : '';
-
-  const chartOpts = (label, color) => ({
-    type: 'bar',
-    data: { labels: dayLabels, datasets: [{ label, data: [], backgroundColor: color, borderRadius: 6 }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { font: { size: 10 } } }, y: { ticks: { font: { size: 10 } } } } }
-  });
-
-  if (salesChart) salesChart.destroy();
-  if (profitChart) profitChart.destroy();
-  if (kgChart) kgChart.destroy();
-
-  const sc = document.getElementById('chart-sales').getContext('2d');
-  salesChart = new Chart(sc, chartOpts('ยอดขาย', 'rgba(245,200,66,0.8)'));
-  salesChart.data.datasets[0].data = daySales;
-  salesChart.update();
-
-  const pc = document.getElementById('chart-profit').getContext('2d');
-  profitChart = new Chart(pc, chartOpts('กำไร', 'rgba(74,140,63,0.8)'));
-  profitChart.data.datasets[0].data = dayProfits;
-  profitChart.update();
-
-  const kc = document.getElementById('chart-kg').getContext('2d');
-  kgChart = new Chart(kc, chartOpts('กิโล', 'rgba(139,94,60,0.6)'));
-  kgChart.data.datasets[0].data = dayKgs;
-  kgChart.update();
-}
-
-// =============================================
-//  COPY / EXPORT
-// =============================================
-function showDayCopyMenu() {
-  const day = getDay(currentDay);
-  const c = calcDay(currentDay);
-  const text = `🌽 สรุปยอดข้าวโพด
-📅 วันที่: ${fmtDate(currentDay)}
-━━━━━━━━━━━━━━━━
-🌾 ข้าวโพดทั้งหมด: ${numFmt(day.totalKg)} กก.
-📦 ขายแล้ว: ${numFmt(c.soldKg)} กก.
-🗑 ของเสีย: ${numFmt(day.wasteKg)} กก.
-✅ คงเหลือ: ${numFmt(c.remaining)} กก.
-━━━━━━━━━━━━━━━━
-💰 ยอดขาย: ${moneyFmt(c.saleTotal)}
-✅ จ่ายแล้ว: ${moneyFmt(c.paidTotal)}
-⚠️ ค้างจ่าย: ${moneyFmt(c.unpaidTotal)}
-━━━━━━━━━━━━━━━━
-📊 ต้นทุนข้าวโพด: ${moneyFmt(c.cornCost)}
-📊 ค่าใช้จ่ายรวม: ${moneyFmt(c.extraExpenses)}
-💹 กำไรสุทธิ: ${moneyFmt(c.profit)}
-━━━━━━━━━━━━━━━━
-👥 ลูกค้า ${day.orders.length} คน
-${day.orders.map(o=>`  • ${o.name}: ${numFmt(o.kg)}กก. จ่าย ${moneyFmt(o.paid)}`).join('\n')}`;
-
-  document.getElementById('copy-text').value = text;
-  openModal('modal-copy');
-}
-
-function copyText() {
-  const text = document.getElementById('copy-text').value;
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(text).then(() => toast('คัดลอกแล้ว ✅', 'success'));
-  } else {
-    document.getElementById('copy-text').select();
-    document.execCommand('copy');
-    toast('คัดลอกแล้ว ✅', 'success');
-  }
-}
-
-function exportBackup() {
-  const blob = new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `corn_backup_v2_${todayStr()}.json`;
-  a.click();
-  toast('Export สำเร็จ ✅', 'success');
-}
-
-// =============================================
-//  EXPORT CSV รายวัน
-// =============================================
-function exportDayCSV() {
-  if (!currentDay) return toast('ไม่พบข้อมูลวัน', 'error');
-  const day = getDay(currentDay);
-  const c = calcDay(currentDay);
-
-  const summaryRows = [
-    ['สรุปยอดวัน', fmtDate(currentDay)],
-    ['ข้าวโพดทั้งหมด (กก.)', day.totalKg],
-    ['ราคาขาย/กก.', day.sellPrice],
-    ['ต้นทุน/กก.', day.costPrice],
-    ['ขายแล้ว (กก.)', c.soldKg],
-    ['ของเสีย (กก.)', day.wasteKg],
-    ['คงเหลือ (กก.)', c.remaining],
-    ['ยอดขายรวม', c.saleTotal],
-    ['จ่ายแล้ว', c.paidTotal],
-    ['ค้างจ่าย', c.unpaidTotal],
-    ['ต้นทุนข้าวโพด', c.cornCost],
-    ['ค่าใช้จ่ายรวม', c.extraExpenses],
-    ['กำไรสุทธิ', c.profit],
-    [],
-    ['รายการออเดอร์'],
-    ['ชื่อลูกค้า','ประเภท','กิโล','ราคา/กก.','ยอดต้องจ่าย','จ่ายแล้ว','ค้างจ่าย','สถานะ','หมายเหตุ']
-  ];
-
-  const orderRows = day.orders.map(o => {
-    const total = parseFloat(o.kg||0)*parseFloat(o.price||0);
-    const paid = parseFloat(o.paid||0);
-    const unpaid = total - paid;
-    let status = unpaid <= 0 ? 'จ่ายแล้ว' : paid > 0 ? 'จ่ายบางส่วน' : 'ยังไม่จ่าย';
-    const typeLabel = o.type === 'booking' ? 'จอง' : 'หน้าร้าน';
-    return [o.name, typeLabel, o.kg, o.price, total, paid, unpaid, status, o.note || ''];
-  });
-
-  const allRows = [...summaryRows, ...orderRows];
-  const csvContent = allRows.map(row =>
-    row.map(cell => {
-      const s = String(cell === undefined || cell === null ? '' : cell);
-      return s.includes(',') || s.includes('"') || s.includes('\n') ? `"${s.replace(/"/g,'""')}"` : s;
-    }).join(',')
-  ).join('\r\n');
-
-  const bom = '\uFEFF';
-  const blob = new Blob([bom + csvContent], { type: 'text/csv;charset=utf-8;' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `corn_${currentDay}.csv`;
-  a.click();
-  toast('Export CSV สำเร็จ ✅', 'success');
-}
-
-function importBackup(evt) {
-  const file = evt.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    showConfirm('Import ข้อมูล', 'ข้อมูลปัจจุบันจะถูกแทนที่ทั้งหมด ต้องการดำเนินการต่อ?', () => {
-      try {
-        const parsed = JSON.parse(e.target.result);
-        db.days = parsed.days || {};
-        db.settings = parsed.settings || db.settings;
-        saveDB();
-        window._db = db;
-        renderDashboard();
-        applySettings();
-        toast('Import สำเร็จ ✅', 'success');
-      } catch(err) { toast('ไฟล์ไม่ถูกต้อง', 'error'); }
-    });
-  };
-  reader.readAsText(file);
-}
-
-function deleteOldImages() {
-  showConfirm('ลบรูปเก่า', 'ลบรูปหลักฐานที่เก่ากว่า 3 เดือน? ข้อมูลออเดอร์ยังคงอยู่', () => {
-    let count = 0;
-    Object.keys(db.days).forEach(date => {
-      if (isOlderThan3Months(date)) {
-        const day = getDay(date);
-        day.orders.forEach(o => {
-          (o.slips || []).forEach(s => {
-            if (s.data) { s.data = ''; s.deleted = true; count++; }
+  function deleteOldImages() {
+    showConfirm('ลบรูปเก่า', 'ลบรูปหลักฐานที่เก่ากว่า 3 เดือน? ข้อมูลออเดอร์ยังคงอยู่', () => {
+      let count = 0;
+      Object.keys(window.DB.days).forEach(date => {
+        if (isArchive(date)) {
+          (window.DB.days[date].orders || []).forEach(o => {
+            (o.slips || []).forEach(s => {
+              if (s.data) { s.data = ''; s.deleted = true; count++; }
+            });
           });
-        });
-      }
+        }
+      });
+      saveCache();
+      toast(`ลบรูปแล้ว ${count} รูป`, 'success');
     });
-    saveDB();
-    toast(`ลบรูปแล้ว ${count} รูป`, 'success');
-  });
-}
+  }
 
-function confirmDeleteAll() {
-  showConfirm('⚠️ ลบข้อมูลทั้งหมด', 'ข้อมูลทั้งหมดจะถูกลบและไม่สามารถกู้คืนได้!', () => {
-    db.days = {};
-    db.settings = db.settings;
-    saveDB();
-    window._db = db;
+  function confirmDeleteAll() {
+    showConfirm('⚠️ ลบข้อมูลทั้งหมด', 'ข้อมูลทั้งหมดจะถูกลบและไม่สามารถกู้คืนได้!', () => {
+      window.DB.days = {};
+      saveCache();
+      renderAll();
+      toast('ลบข้อมูลทั้งหมดแล้ว', 'warning');
+    }, '⚠️');
+  }
+
+  // =============================================
+  //  FIREBASE MANUAL ACTIONS
+  // =============================================
+  async function manualSync() {
+    if (!window._firebase) return;
+    if (!window._firebase.IS_CONFIGURED) { toast('ยังไม่ได้ตั้งค่า Firebase Config', 'error'); return; }
+    if (!navigator.onLine) { toast('ไม่มีอินเทอร์เน็ต', 'warning'); return; }
+    setSyncStatus('saving', '🔵 กำลัง Sync...');
+    const ok = await window._firebase.loadAll();
+    if (ok) {
+      setSyncStatus('synced');
+      renderAll();
+      toast('Sync สำเร็จ ✅', 'success');
+    } else {
+      setSyncStatus('error');
+      toast('Sync ไม่สำเร็จ', 'error');
+    }
+  }
+
+  async function uploadLocalToFirebase() {
+    if (!window._firebase || !window._firebase.IS_CONFIGURED) { toast('ยังไม่ได้ตั้งค่า Firebase Config', 'error'); return; }
+    if (!navigator.onLine) { toast('ไม่มีอินเทอร์เน็ต', 'warning'); return; }
+    showConfirm('อัปโหลดไป Firebase', 'อัปโหลดข้อมูล Local ทั้งหมดไปยัง Firebase Firestore?', async () => {
+      const dates = Object.keys(window.DB.days);
+      if (!dates.length) { toast('ไม่มีข้อมูลให้อัปโหลด', 'warning'); return; }
+      setSyncStatus('saving', `🔵 กำลังอัปโหลด ${dates.length} วัน...`);
+      let count = 0;
+      for (const d of dates) {
+        await window._firebase.saveDay(d);
+        count++;
+      }
+      setSyncStatus('synced');
+      toast(`อัปโหลดสำเร็จ ${count} วัน ✅`, 'success');
+    });
+  }
+
+  async function migrateFromV2() {
+    if (!window._firebase || !window._firebase.IS_CONFIGURED) { toast('ยังไม่ได้ตั้งค่า Firebase Config', 'error'); return; }
+    if (!navigator.onLine) { toast('ไม่มีอินเทอร์เน็ต', 'warning'); return; }
+    const raw = localStorage.getItem('corn_shop_v2');
+    if (!raw) { toast('ไม่พบข้อมูล V2 (corn_shop_v2)', 'warning'); return; }
+    let v2;
+    try { v2 = JSON.parse(raw); } catch(e) { toast('ไฟล์ V2 เสียหาย', 'error'); return; }
+    const dates = Object.keys(v2.days || {});
+    if (!dates.length) { toast('ไม่มีข้อมูลใน V2', 'warning'); return; }
+    showConfirm('📦 Migrate V2 → V3', `พบข้อมูล ${dates.length} วัน จาก V2 จะนำเข้าทั้งหมด`, async () => {
+      dates.forEach(d => {
+        if (!window.DB.days[d]) window.DB.days[d] = v2.days[d];
+      });
+      saveCache();
+      for (const d of dates) await window._firebase.saveDay(d);
+      renderAll();
+      setSyncStatus('synced');
+      toast(`Migrate สำเร็จ ${dates.length} วัน ✅`, 'success');
+    }, '📦');
+  }
+
+  // =============================================
+  //  MODAL HELPERS
+  // =============================================
+  function openModal(id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.add('active');
+  }
+
+  function closeModal(id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('active');
+  }
+
+  function showConfirm(title, msg, onOk, icon='⚠️') {
+    document.getElementById('confirm-icon').textContent  = icon;
+    document.getElementById('confirm-title').textContent = title;
+    document.getElementById('confirm-msg').textContent   = msg;
+    document.getElementById('confirm-ok-btn').onclick    = () => { closeModal('modal-confirm'); onOk(); };
+    openModal('modal-confirm');
+  }
+
+  // =============================================
+  //  LIGHTBOX
+  // =============================================
+  function openLightbox(src) {
+    document.getElementById('lightbox-img').src = src;
+    document.getElementById('lightbox').classList.add('active');
+  }
+  function closeLightbox() { document.getElementById('lightbox').classList.remove('active'); }
+
+  // =============================================
+  //  TOAST
+  // =============================================
+  function toast(msg, type='default') {
+    const container = document.getElementById('toast-container');
+    const el = document.createElement('div');
+    el.className = `toast ${type}`;
+    const icons = { success: '✅', error: '❌', warning: '⚠️', default: 'ℹ️' };
+    el.innerHTML = `<span>${icons[type]||'ℹ️'}</span><span>${msg}</span>`;
+    container.appendChild(el);
+    setTimeout(() => {
+      el.style.opacity = '0';
+      el.style.transition = 'opacity 0.3s';
+      setTimeout(() => el.remove(), 300);
+    }, 2500);
+  }
+
+  // =============================================
+  //  INIT
+  // =============================================
+  function init() {
+    loadCache();
+    applyTheme();
+    applySettings();
     renderDashboard();
-    toast('ลบข้อมูลทั้งหมดแล้ว', 'warning');
-  }, '⚠️');
-}
 
-// =============================================
-//  MODAL HELPERS
-// =============================================
-function openModal(id) {
-  document.getElementById(id).classList.add('active');
-  if (id === 'modal-day-settings') showDaySettingsWithExpenses();
-}
+    // Set default date inputs
+    const ndi = document.getElementById('new-date-input');
+    if (ndi) ndi.value = todayStr();
+    const rf  = document.getElementById('rpt-from');
+    const rt  = document.getElementById('rpt-to');
+    if (rf) rf.value = todayStr();
+    if (rt) rt.value = todayStr();
 
-function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-
-document.querySelectorAll('.modal-overlay').forEach(overlay => {
-  overlay.addEventListener('click', (e) => {
-    if (e.target === overlay) overlay.classList.remove('active');
-  });
-});
-
-// =============================================
-//  CONFIRM MODAL
-// =============================================
-function showConfirm(title, msg, onOk, icon = '⚠️') {
-  document.getElementById('confirm-icon').textContent = icon;
-  document.getElementById('confirm-title').textContent = title;
-  document.getElementById('confirm-msg').textContent = msg;
-  const btn = document.getElementById('confirm-ok-btn');
-  btn.onclick = () => { closeModal('modal-confirm'); onOk(); };
-  openModal('modal-confirm');
-}
-
-// =============================================
-//  LIGHTBOX
-// =============================================
-function openLightbox(src) {
-  document.getElementById('lightbox-img').src = src;
-  document.getElementById('lightbox').classList.add('active');
-}
-function closeLightbox() { document.getElementById('lightbox').classList.remove('active'); }
-
-// =============================================
-//  TOAST
-// =============================================
-function toast(msg, type = 'default') {
-  const container = document.getElementById('toast-container');
-  const el = document.createElement('div');
-  el.className = `toast ${type}`;
-  const icons = { success: '✅', error: '❌', warning: '⚠️', default: 'ℹ️' };
-  el.innerHTML = `<span>${icons[type] || 'ℹ️'}</span><span>${msg}</span>`;
-  container.appendChild(el);
-  setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity 0.3s'; setTimeout(() => el.remove(), 300); }, 2500);
-}
-
-// =============================================
-//  UTIL
-// =============================================
-function escHtml(str) {
-  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-// =============================================
-//  SAMPLE DATA
-// =============================================
-function insertSampleData() {
-  const today = todayStr();
-  const d = new Date();
-
-  function offsetDate(days) {
-    const dt = new Date(d);
-    dt.setDate(dt.getDate() + days);
-    return dt.toISOString().slice(0, 10);
+    // Close modals on overlay click
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+      overlay.addEventListener('click', e => {
+        if (e.target === overlay) overlay.classList.remove('active');
+      });
+    });
   }
 
-  const todayDay = getDay(today);
-  if (!todayDay.totalKg) {
-    todayDay.totalKg = 1000;
-    todayDay.sellPrice = 20;
-    todayDay.costPrice = 12;
-    todayDay.wasteKg = 20;
-    todayDay.note = 'ตัวอย่างข้อมูลทดสอบ';
-    todayDay.expenses = [
-      { label: 'ค่าน้ำมัน', amount: 300 },
-      { label: 'ค่าถุง', amount: 200 }
-    ];
-    todayDay.orders = [
-      { id: '1', name: 'ลูกค้า A', kg: 300, price: 20, type: 'booking', paid: 6000, note: '', slips: [], createdAt: new Date().toISOString() },
-      { id: '2', name: 'ลูกค้า B', kg: 150, price: 20, type: 'walkin', paid: 1500, note: 'จ่ายบางส่วน', slips: [], createdAt: new Date().toISOString() },
-      { id: '3', name: 'ลูกค้า C', kg: 100, price: 20, type: 'booking', paid: 0, note: '', slips: [], createdAt: new Date().toISOString() }
-    ];
-  }
+  // Public API
+  return {
+    init, navigate, renderAll,
+    renderDashboard, renderDates, renderDayPage, renderOrders,
+    renderUnpaid, renderSearch, renderReport,
+    showAddDate, addDate, openDay, goToday,
+    showDaySettings, saveDaySettings,
+    addExpenseRow, updateExpense, removeExpense,
+    toggleDayLock,
+    showAddOrder, editOrder, saveOrder, deleteOrder,
+    calcOrderTotal, handleSlipFiles, removeTempSlip, deleteSlip,
+    showQuickAdd, calcQA, saveQuickAdd,
+    setReportMode, renderReport,
+    showDayCopyMenu, copyText, exportBackup, importBackup, exportDayCSV,
+    deleteOldImages, confirmDeleteAll,
+    manualSync, uploadLocalToFirebase, migrateFromV2,
+    openModal, closeModal, showConfirm,
+    openLightbox, closeLightbox,
+    toast, setSyncStatus, saveCache,
+    saveSetting, toggleDark
+  };
+})();
 
-  const y1 = offsetDate(-1);
-  const day1 = getDay(y1);
-  if (!day1.totalKg) {
-    day1.totalKg = 800; day1.sellPrice = 20; day1.costPrice = 12; day1.wasteKg = 10;
-    day1.expenses = [{ label: 'ค่าน้ำมัน', amount: 250 }];
-    day1.orders = [
-      { id: '10', name: 'ลูกค้า D', kg: 200, price: 20, type: 'walkin', paid: 4000, note: '', slips: [], createdAt: new Date().toISOString() },
-      { id: '11', name: 'ลูกค้า B', kg: 100, price: 20, type: 'booking', paid: 2000, note: '', slips: [], createdAt: new Date().toISOString() },
-      { id: '12', name: 'ลูกค้า E', kg: 50, price: 20, type: 'walkin', paid: 0, note: '', slips: [], createdAt: new Date().toISOString() }
-    ];
-    day1.locked = false;
-  }
-
-  const y2 = offsetDate(-2);
-  const day2 = getDay(y2);
-  if (!day2.totalKg) {
-    day2.totalKg = 600; day2.sellPrice = 18; day2.costPrice = 11; day2.wasteKg = 5;
-    day2.expenses = [{ label: 'ค่าแรง', amount: 400 }];
-    day2.orders = [
-      { id: '20', name: 'ลูกค้า A', kg: 150, price: 18, type: 'booking', paid: 2700, note: '', slips: [], createdAt: new Date().toISOString() },
-      { id: '21', name: 'ลูกค้า F', kg: 80, price: 18, type: 'walkin', paid: 1440, note: '', slips: [], createdAt: new Date().toISOString() }
-    ];
-    day2.locked = true;
-  }
-
-  saveDB();
-}
-
-// =============================================
-//  INIT
-// =============================================
-function init() {
-  loadDB();
-  insertSampleData();
-  applyTheme();
-  renderDashboard();
-
-  document.getElementById('new-date-input').value = todayStr();
-  document.getElementById('rpt-from').value = todayStr();
-  document.getElementById('rpt-to').value = todayStr();
-}
-
-init();
+// Init on DOM ready
+document.addEventListener('DOMContentLoaded', App.init);
 </script>
 </body>
 </html>
