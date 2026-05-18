@@ -372,7 +372,7 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
 
 /* Summary strip — 4 stats in a row */
 .ec-stats {
-  display: grid; grid-template-columns: repeat(4, 1fr);
+  display: grid; grid-template-columns: repeat(3, 1fr);
   gap: 8px; margin-bottom: 16px;
 }
 .ec-stat-item {
@@ -380,8 +380,21 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
   border-radius: var(--radius-sm); padding: 10px 8px; text-align: center;
   box-shadow: 0 1px 6px var(--shadow);
 }
-.ec-stat-item .esv { font-size: 1.05rem; font-weight: 800; color: var(--text); line-height: 1.2; }
-.ec-stat-item .esl { font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; }
+.ec-stat-item .esv { font-size: 1.0rem; font-weight: 800; color: var(--text); line-height: 1.2; }
+.ec-stat-item .esl { font-size: 0.68rem; color: var(--text-muted); margin-top: 2px; }
+/* highlight card สีพิเศษ */
+.ec-stat-item.ec-hi-corn  { border-color: var(--corn-yellow); background: var(--corn-yellow-light); }
+.ec-stat-item.ec-hi-corn .esv  { color: var(--corn-brown); }
+.ec-stat-item.ec-hi-green { border-color: var(--corn-green); background: #f0fdf4; }
+.ec-stat-item.ec-hi-green .esv { color: var(--corn-green); }
+.ec-stat-item.ec-hi-red   { border-color: #fca5a5; background: #fff5f5; }
+.ec-stat-item.ec-hi-red .esv   { color: #dc2626; }
+[data-theme="dark"] .ec-stat-item.ec-hi-corn  { background: rgba(245,200,66,0.1); border-color: var(--corn-yellow-dark); }
+[data-theme="dark"] .ec-stat-item.ec-hi-corn .esv  { color: var(--corn-yellow); }
+[data-theme="dark"] .ec-stat-item.ec-hi-green { background: rgba(74,140,63,0.12); border-color: #6ab560; }
+[data-theme="dark"] .ec-stat-item.ec-hi-green .esv { color: #86efac; }
+[data-theme="dark"] .ec-stat-item.ec-hi-red   { background: rgba(220,38,38,0.1); border-color: #f87171; }
+[data-theme="dark"] .ec-stat-item.ec-hi-red .esv   { color: #fca5a5; }
 
 /* ── MOBILE CARD LAYOUT (default, < 640px) ── */
 .ec-list { display: flex; flex-direction: column; gap: 10px; }
@@ -485,12 +498,12 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
 @media (min-width: 640px) {
   .ec-list { display: none !important; }
   .ec-table-wrap { display: block !important; }
-  .ec-stats { grid-template-columns: repeat(4, 1fr); }
+  .ec-stats { grid-template-columns: repeat(6, 1fr); }
 }
 @media (max-width: 639px) {
   .ec-table-wrap { display: none !important; }
   .ec-list { display: flex !important; }
-  .ec-stats { grid-template-columns: repeat(2, 1fr); }
+  .ec-stats { grid-template-columns: repeat(3, 1fr); }
 }
 
 /* Desktop table */
@@ -2313,15 +2326,21 @@ const App = window.App = (() => {
     emptyEl.style.display = 'none';
 
     // --- Stats ---
-    let totalKg = 0, cntPaid = 0, cntDeliv = 0;
+    let soldKg = 0, cntPaid = 0, cntDeliv = 0;
     orders.forEach(o => {
-      totalKg += parseFloat(o.kg || 0);
+      soldKg += parseFloat(o.kg || 0);
       if (o.paidChecked)      cntPaid++;
       if (o.deliveredChecked) cntDeliv++;
     });
+    const dayTotalKg  = parseFloat((day && day.totalKg)  || 0);
+    const dayWasteKg  = parseFloat((day && day.wasteKg)  || 0);
+    const remaining   = dayTotalKg - soldKg - dayWasteKg;
+    const remColor    = remaining < 0 ? 'ec-hi-red' : remaining === 0 ? '' : 'ec-hi-green';
     if (statsEl) statsEl.innerHTML = `
       <div class="ec-stat-item"><div class="esv">${orders.length}</div><div class="esl">ออเดอร์</div></div>
-      <div class="ec-stat-item"><div class="esv">${numFmt(totalKg)}</div><div class="esl">กิโล</div></div>
+      <div class="ec-stat-item"><div class="esv">${numFmt(soldKg)}</div><div class="esl">กิโลขาย</div></div>
+      <div class="ec-stat-item ec-hi-corn"><div class="esv">${numFmt(dayTotalKg)}</div><div class="esl">🌽 ทั้งหมด</div></div>
+      <div class="ec-stat-item ${remColor}"><div class="esv">${numFmt(remaining)}</div><div class="esl">📦 คงเหลือ</div></div>
       <div class="ec-stat-item"><div class="esv" style="color:var(--corn-green);">${cntPaid}/${orders.length}</div><div class="esl">💰 จ่ายแล้ว</div></div>
       <div class="ec-stat-item"><div class="esv" style="color:#3b82f6;">${cntDeliv}/${orders.length}</div><div class="esl">🚚 ส่งแล้ว</div></div>
     `;
